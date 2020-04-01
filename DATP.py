@@ -5,8 +5,13 @@ from fortranformat import FortranRecordWriter
 # other python packages
 import os
 import numpy as np
-import time
 import math
+
+# Enables output with more precision to facilitate testing
+try:
+    should_test_output = (os.environ['TEST_DATP'] == 'yes')
+except KeyError:
+    should_test_output = False
 
 
 def debugout(debugstr):
@@ -210,14 +215,19 @@ def reduce_data():
 
     # READ APRIORI
     format99 = '(A16)'  # original: (8A2)
-    format100 = '(2E10.4)'
+    format100r = '(2E10.4)'
+    if not should_test_output:
+        format100 = '(2E10.4)'
+    else:
+        format100 = '(2E14.6)'
+
     LAB = np.empty((NQM,), dtype=object)
     NOD = np.zeros((35,), dtype=int)
     for L in range(NQM):
         LAB[L] = fort_read(file_IO1, format99)
 
         for K in range(1, NOM+1):
-            EQ9, TQ9 = fort_read(file_IO1, format100)
+            EQ9, TQ9 = fort_read(file_IO1, format100r)
             if EQ9 == 0:
                 goto .lbl3
             ER[L, K-1] = EQ9
@@ -228,7 +238,7 @@ def reduce_data():
         goto .lbl4
 
         label .lbl3
-        
+
         NOD[L] = K-1
         label .lbl4
     label .lbl1   # terminal label of FOR loop
@@ -612,8 +622,12 @@ def reduce_data():
 
     # NOTE: format200 and format290 will be used
     #       only much later
-    format200 = '(2E10.4,12F5.1)'
-    format290 = '(2E10.4,12F5.1,F7.3)'
+    if not should_test_output:
+        format200 = '(2E10.4,12F5.1)'
+        format290 = '(2E10.4,12F5.1,F7.3)'
+    else:
+        format200 = '(2E14.6,12F12.7)'
+        format290 = '(2E14.6,12F12.7,F9.5)'
 
     format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
     fort_write(file_IO2, format5173, [None])
@@ -863,7 +877,7 @@ def DATRCL(file_ID3, NZ: int, NAB: int, IBZ: int):
     # data set identification
     label .lbl10
     # original string
-    #format100 = '(2I4,12A2,14A2,10A2)'
+    # format100 = '(2I4,12A2,14A2,10A2)'
 
     format100 = '(2I4, A24, A28, A20)'
     NR, NY, NQT, NAU, NREF = fort_read(file_ID3, format100)
