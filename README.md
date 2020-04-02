@@ -34,7 +34,7 @@ schemes, small numerical differences in the outputs have to
 be expected. The test case therefore relies on the [numdiff]
 tool to compare the outputs, which ignores small numerical
 differences. In the implemented test case, it is set up to 
-accept relative difference below 5x10^5.
+accept relative differences below 5x10^5.
 
 Assuming that you cloned this repository, in order to run the
 test from a command line in Linux, you have to change into the
@@ -59,6 +59,6 @@ the differences in `result/fortran/DAT.RES` and
 Now that a first draft version of the Python code is available,
 with large probability fully functionally equivalent to the
 Fortran version due to implementing exactly the same program flow
-and the equivalence of the output being tested, the Python
-will be incrementally refactored, always validating the effect
+and the equivalence of the output being tested, the Python code
+is going to be incrementally refactored, always validating the effect
 of updates against the output of the original Fortran version.
