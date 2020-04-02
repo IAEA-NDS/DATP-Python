@@ -34,7 +34,7 @@ schemes, small numerical differences in the outputs have to
 be expected. The test case therefore relies on the [numdiff]
 tool to compare the outputs, which ignores small numerical
 differences. In the implemented test case, it is set up to 
-accept relative differences below 5x10^5.
+accept relative differences below 5x10^(-5).
 
 Assuming that you cloned this repository, in order to run the
 test from a command line in Linux, you have to change into the
