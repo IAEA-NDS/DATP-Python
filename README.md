@@ -3,7 +3,7 @@
 The [DATP](https://github.com/gschnabel/DATP-Fortran) code preprocesses 
 experimental data sets prior to fitting with the GMAP code.
 Both codes have been developed by Wolfgang P. Poenitz in Fortran 77.
-As Fortran 77 is not that much used anymore nowadays, the conversion
+As Fortran 77 is not used that much anymore nowadays, the conversion
 to Python will facilitate future developments.
 Due to the large ecosystem of extension modules around Python, the code
 logic of DATP and GMAP can be formulated on a higher level, thereby
@@ -12,15 +12,14 @@ applications, such as web applications and databases will become easier.
 
 ### Approach to conversion
 Because the code is used for the evaluation of neutron cross section
-standards, it is very important that the Python version is functionally
-equivalent to the Fortran version. Only then can methodological
-improvements in the new code be made and their effect on the results
-studied.
+standards, the functional equivalence of the Python and Fortran version
+is very important. Only then can methodological improvements in the
+new code be made and their effect on the results studied.
 
-For this reason, in a first step the code was translated on a line by
-line basis to Python keeping exactly the same logic and level of
+For this reason, the code was translated in a first step on a line by
+line basis to Python, keeping exactly the same logic and level of
 abstraction as present in the Fortran code, even keeping `goto`
-statements which had to be introduced into the Python code using
+statements which had to be introduced into Python using
 a bytecode hack implemented by the [goto-statement] module. 
 Also the [fortranformat] module proved invaluably useful due to
 heavy input/output operations and associated FORMAT edit descriptors
@@ -31,11 +30,11 @@ Fortran code, a test case was written that compares the numerical
 output of both codes. As Python works natively with double
 precision floats whereas the Fortran code with single precision
 and, in addition, Python and Fortran implement different rounding
-schemes, small numerical differences in the outputs have to
+schemes, small numerical differences in the outputs have to 
 be expected. The test case therefore relies on the [numdiff]
-tool to compare the outputs which ignores small insignificant 
-differences. In the test it is set up to accept relative difference
-below 5x10^5.
+tool to compare the outputs, which ignores small numerical
+differences. In the implemented test case, it is set up to 
+accept relative difference below 5x10^5.
 
 Assuming that you cloned this repository, in order to run the
 test from a command line in Linux, you have to change into the
@@ -48,7 +47,7 @@ The shell script will return a text message on the console
 whether outputs are equivalent and also indicate the result
 with the return code, i.e., 0 for equivalent output and
 1 if differences were detected. In the latter case, the file
-in `/result/numdiff.out` contains details on the location of
+in `result/numdiff.out` contains details on the location of
 the differences in `result/fortran/DAT.RES` and
 `result/python/DAT.RES`.
 
