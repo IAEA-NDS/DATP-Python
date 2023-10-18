@@ -130,25 +130,7 @@ W = 0.
 ULI = 3.0
 
 
-@with_goto
-def reduce_data():
-
-    NQQA = NQST
-
-    basedir = '.'
-    # OPEN(14,FILE='DAT.INP')
-    file_IO1 = open(os.path.join(basedir, 'DAT.INP'), 'r')
-    # OPEN(15,FILE='DAT.LST')
-    file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
-    # OPEN(12,FILE='GMDATA.CRD')
-    file_IO3 = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
-    file_ID3 = file_IO3
-    # OPEN(13,FILE='DAT.RES')
-    file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
-
-    format250 = '(4HEDBL,1X,2I5)'
-
-    # COPY OF CONTROLS FOR GMA
+def copy_gma_controls(file_IO1, file_IO2, file_IO4):
     for K in range(10):
         format260 = '(A2,A2,A1,8I5)'
         format483 = "(' reading  ', a2)"
@@ -189,6 +171,27 @@ def reduce_data():
             fort_write(file_IO4, format408, NEXL)
             fort_write(file_IO2, format468, [None])
             fort_write(file_IO2, format408, NEXL)
+
+
+@with_goto
+def reduce_data():
+
+    NQQA = NQST
+
+    basedir = '.'
+    # OPEN(14,FILE='DAT.INP')
+    file_IO1 = open(os.path.join(basedir, 'DAT.INP'), 'r')
+    # OPEN(15,FILE='DAT.LST')
+    file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
+    # OPEN(12,FILE='GMDATA.CRD')
+    file_IO3 = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
+    file_ID3 = file_IO3
+    # OPEN(13,FILE='DAT.RES')
+    file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
+
+    format250 = '(4HEDBL,1X,2I5)'
+
+    copy_gma_controls(file_IO1, file_IO2, file_IO4)
 
     # CLEAR
     Q = np.zeros((NOM,), dtype=float)
