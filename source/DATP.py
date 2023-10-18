@@ -256,22 +256,9 @@ def reduce_data():
         #  Interpolation type (this is very system specific -
         # does not apply for other simultaneous evaluations
         INT = 1
-        if xp.NT == 1 or xp.NT == 2:
-            goto .lbl92
-        if xp.NT == 5 or xp.NT == 8:
-            goto .lbl92
-        goto .lbl94
-
-        label .lbl92
-        if xp.NID[0] == 2 or xp.NID[0] == 5:
-            goto .lbl94
-        if xp.NID[0] == 10:
-            goto .lbl94
-        if xp.NID[0] > 10:
-            goto .lbl94
-        INT = 2
-
-        label .lbl94
+        if xp.NT in (1, 2, 5, 8):
+            if xp.NID[0] not in (2, 5, 10) and xp.NID[0] <= 10:
+                INT = 2
 
         # CONSTRUCT APRIORI
         EQ = np.empty((200,), dtype=float)
