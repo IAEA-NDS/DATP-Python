@@ -608,19 +608,13 @@ def reduce_data():
 
                 # left o energy grid point
                 if INT == 1:
-                    goto .lbl36
+                    ADD = AL * xp.E[K] + BL
+                    AD = xp.S[K] + Q[L] - ADD
+                    goto .lbl34
                 if INT == 2:
-                    goto .lbl37
-
-                label .lbl36
-                ADD = AL * xp.E[K] + BL
-                AD = xp.S[K] + Q[L] - ADD
-                goto .lbl34
-
-                label .lbl37
-                ADD = QAL / (xp.E[K]**QBL)
-                AD = xp.S[K] * Q[L] / ADD
-                goto .lbl34
+                    ADD = QAL / (xp.E[K]**QBL)
+                    AD = xp.S[K] * Q[L] / ADD
+                    goto .lbl34
 
                 # right of energy grid point
                 label .lbl32
