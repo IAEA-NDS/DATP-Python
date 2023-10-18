@@ -687,8 +687,6 @@ def reduce_data():
 
                 NKOT = NKOT + 1
 
-            label .lbl35  # end of loop
-
             AKOT = NKOT
             if AV == 0.0:
                 goto .lbl42
