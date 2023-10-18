@@ -317,11 +317,9 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     pyM3 = M3 - 1
     NO1 = NOD[pyM1]
     NON = NOD[pyM2]
-    if M3 == 0:
-        goto .lbl22
-    NO3 = NOD[pyM3]
+    if M3 != 0:
+        NO3 = NOD[pyM3]
 
-    label .lbl22
     mxm = 0
     for K in range(NO1):  # 23
         etst1 = ER[pyM1, K] * 0.9999
