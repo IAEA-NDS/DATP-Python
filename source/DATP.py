@@ -254,6 +254,53 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q):
 
 
 @with_goto
+def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q):
+    # RATIO + RATIO SHAPE
+    M1 = xp.NID[0]
+    M2 = xp.NID[1]
+    pyM1 = M1 - 1
+    pyM2 = M2 - 1
+    NO1 = NOD[pyM1]
+    NON = NOD[pyM2]
+    mxm = 0
+
+    for K in range(NO1):
+        # find matching energies
+        etst1 = ER[pyM1, K] * 0.9999
+        etst2 = ER[pyM1, K] * 1.0001
+        found = False
+        for L in range(NON):
+            if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
+                found = True
+                break
+
+        if not found:
+            continue
+
+        mxm = mxm + 1
+        pymxm = mxm - 1
+        EQ[pymxm] = ER[pyM1, K]
+        if T[pyM2, L] == 0.:
+            format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
+            fortK = K + 1
+            fortL = L + 1
+            fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
+            exit()
+
+        Q[pymxm] = T[pyM1, K] / T[pyM2, L]
+
+    pymxm = mxm - 1
+    mxm1 = mxm - 1
+    pymxm1 = mxm1 - 1
+    E11 = (EQ[0] + EQ[1]) / 2.
+    E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
+
+    format4612 = "(i6,'  ratio apriori for interp. ')"
+    fort_write(None, format4612, [mxm])
+    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+
+
+@with_goto
 def reduce_data():
 
     NQQA = NQST
@@ -303,7 +350,8 @@ def reduce_data():
             E11, E22, mxm, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q)
             goto .lbl30
         if xp.NT in (3, 4):
-            goto .lbl12
+            E11, E22, mxm, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q)
+            goto .lbl30
         if xp.NT in (5, 8):
             goto .lbl13
         if xp.NT == 6:
@@ -311,51 +359,6 @@ def reduce_data():
         if xp.NT in (7, 9):
             goto .lbl15
         assert xp.NT >= 1 and xp.NT <= 9
-
-        # RATIO + RATIO SHAPE
-        label .lbl12
-        M1 = xp.NID[0]
-        M2 = xp.NID[1]
-        pyM1 = M1 - 1
-        pyM2 = M2 - 1
-        NO1 = NOD[pyM1]
-        NON = NOD[pyM2]
-        mxm = 0
-
-        for K in range(NO1):
-            # find matching energies
-            etst1 = ER[pyM1, K] * 0.9999
-            etst2 = ER[pyM1, K] * 1.0001
-            found = False
-            for L in range(NON):
-                if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                    found = True
-                    break
-
-            if not found:
-                continue
-
-            mxm = mxm + 1
-            pymxm = mxm - 1
-            EQ[pymxm] = ER[pyM1, K]
-            if T[pyM2, L] == 0.:
-                format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
-                fortK = K + 1
-                fortL = L + 1
-                fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
-                exit()
-
-            Q[pymxm] = T[pyM1, K] / T[pyM2, L]
-
-        pymxm = mxm - 1
-        mxm1 = mxm - 1
-        pymxm1 = mxm1 - 1
-        E11 = (EQ[0] + EQ[1]) / 2.
-        E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
-
-        format4612 = "(i6,'  ratio apriori for interp. ')"
-        fort_write(None, format4612, [mxm])
-        goto .lbl30
 
         # SUM AND SHAPE OF SUM
         label .lbl13
