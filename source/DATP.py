@@ -645,13 +645,10 @@ def reduce_data():
                 # statistical uncertainty reduces if more than one value contributes,
                 # average for all other uncertainties
                 for M in range(11):  # 38
-                    if xp.NETG[M] == 9:
-                        goto .lbl53
+                    if xp.NETG[M] != 9:
+                        xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + xp.F[M, K]
+                        goto .lbl54
 
-                    xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + xp.F[M, K]
-                    goto .lbl54
-
-                    label .lbl53
                     if xp.F[M, K] == 0.0:
                         goto .lbl54
 
