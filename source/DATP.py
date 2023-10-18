@@ -109,9 +109,17 @@ def unflatten(flat_list, skeleton):
     except StopIteration:
         return result
 
+
+# global constants
+NQND = 'EB'
+NHEL = 'EL'
+NQST = 'ST'
+NHMO = 'MO'
+NHFI = 'FI'
+MTY = '  '
+
+
 # global vars
-
-
 MAXF = 900
 pyMAXF = MAXF - 1  # helper variable for Python indexing
 NOM = 200
@@ -125,12 +133,6 @@ ULI = 3.0
 @with_goto
 def reduce_data():
 
-    NQND = 'EB'
-    NHEL = 'EL'
-    NQST = 'ST'
-    NHMO = 'MO'
-    NHFI = 'FI'
-    MTY = '  '
     NQQA = NQST
 
     basedir = '.'
