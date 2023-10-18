@@ -363,6 +363,58 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q):
 
 
 @with_goto
+def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q):
+    #  RATIO OF CS VS. SUM + SHAPE
+    M1 = xp.NID[0]
+    pyM1 = M1 - 1
+    M2 = xp.NID[1]
+    pyM2 = M2 - 1
+    M3 = xp.NID[2]
+    pyM3 = M3 - 1
+    NO1 = NOD[pyM1]
+    NON = NOD[pyM2]
+    NO3 = NOD[pyM3]
+    mxm = 0
+    pymxm = mxm - 1
+
+    for K in range(NO1):  # 27
+        etst1 = ER[pyM1, K] * 0.9999
+        etst2 = ER[pyM1, K] * 1.0001
+        for L in range(NON):  # 76
+            if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
+                goto .lbl77
+        label .lbl76  # end loop
+
+        goto .lbl71
+
+        label .lbl77
+        for J in range(NO3):  # 79
+            if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
+                goto .lbl78
+        label .lbl79
+
+        goto .lbl71
+
+        label .lbl78
+        mxm = mxm + 1
+        pymxm = mxm - 1
+        EQ[pymxm] = ER[pyM1, K]
+        Q[pymxm] = T[pyM1, K] / (T[pyM2, L] + T[pyM3, J])
+
+        label .lbl71
+    label .lbl27  # end of loop
+
+    mxm1 = mxm - 1
+    pymxm1 = mxm1 - 1
+    E11 = (EQ[0] + EQ[1]) / 2.
+    E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
+
+    format4614 = "(i6,'  cr. sec. vs sum apriori for interp. ')"
+    fort_write(None, format4614, [mxm])
+    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+
+
+@with_goto
 def reduce_data():
 
     NQQA = NQST
@@ -420,57 +472,9 @@ def reduce_data():
         if xp.NT == 6:
             goto .lbl14
         if xp.NT in (7, 9):
-            goto .lbl15
+            E11, E22, mxm, mxm1, _, _, _, _, _, _ = deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q)
+            goto .lbl30
         assert xp.NT >= 1 and xp.NT <= 9
-
-        #  RATIO OF CS VS. SUM + SHAPE
-        label .lbl15
-        M1 = xp.NID[0]
-        pyM1 = M1 - 1
-        M2 = xp.NID[1]
-        pyM2 = M2 - 1
-        M3 = xp.NID[2]
-        pyM3 = M3 - 1
-        NO1 = NOD[pyM1]
-        NON = NOD[pyM2]
-        NO3 = NOD[pyM3]
-        mxm = 0
-        pymxm = mxm - 1
-
-        for K in range(NO1):  # 27
-            etst1 = ER[pyM1, K] * 0.9999
-            etst2 = ER[pyM1, K] * 1.0001
-            for L in range(NON):  # 76
-                if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                    goto .lbl77
-            label .lbl76  # end loop
-
-            goto .lbl71
-
-            label .lbl77
-            for J in range(NO3):  # 79
-                if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
-                    goto .lbl78
-            label .lbl79
-
-            goto .lbl71
-
-            label .lbl78
-            mxm = mxm + 1
-            pymxm = mxm - 1
-            EQ[pymxm] = ER[pyM1, K]
-            Q[pymxm] = T[pyM1, K] / (T[pyM2, L] + T[pyM3, J])
-
-            label .lbl71
-        label .lbl27  # end of loop
-
-        mxm1 = mxm - 1
-        pymxm1 = mxm1 - 1
-        E11 = (EQ[0] + EQ[1]) / 2.
-        E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
-
-        format4614 = "(i6,'  cr. sec. vs sum apriori for interp. ')"
-        fort_write(None, format4614, [mxm])
 
         # REDUCTION
         label .lbl30
