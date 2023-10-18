@@ -431,6 +431,14 @@ def reduce_data():
     file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
     format250 = '(4HEDBL,1X,2I5)'
+    # NOTE: format200 and format290 will be used
+    #       only much later
+    if not should_test_output:
+        format200 = '(2E10.4,12F5.1)'
+        format290 = '(2E10.4,12F5.1,F7.3)'
+    else:
+        format200 = '(2E14.6,12F12.7)'
+        format290 = '(2E14.6,12F12.7,F9.5)'
 
     copy_gma_controls(file_IO1, file_IO2, file_IO4)
     NOD, LAB, ER, T = read_apriori(file_IO1)
@@ -541,18 +549,14 @@ def reduce_data():
                 fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
 
         if xp.NT == 6:
-            goto .lbl1003
+            # fission spectrum average data set
+            fort_write(file_IO2, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
+            fort_write(file_IO4, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
+            fort_write(file_IO2, format200, [W, W, xp.F[0:12, pyMAXF]])
+            fort_write(file_IO4, format200, [W, W, xp.F[0:12, pyMAXF]])
+            continue
 
         # GET GRID VALUES  - try at all apriori energies to find data
-
-        # NOTE: format200 and format290 will be used
-        #       only much later
-        if not should_test_output:
-            format200 = '(2E10.4,12F5.1)'
-            format290 = '(2E10.4,12F5.1,F7.3)'
-        else:
-            format200 = '(2E14.6,12F12.7)'
-            format290 = '(2E14.6,12F12.7,F9.5)'
 
         format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
         fort_write(file_IO2, format5173, [None])
@@ -744,15 +748,6 @@ def reduce_data():
             fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
             fort_write(file_IO4, format6115, [xp.ECOR[KL, :(KL+1)]])
         label .lbl6113  # end of loop
-
-        continue
-
-        # fission spectrum average data set
-        label .lbl1003
-        fort_write(file_IO2, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-        fort_write(file_IO4, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-        fort_write(file_IO2, format200, [W, W, xp.F[0:12, pyMAXF]])
-        fort_write(file_IO4, format200, [W, W, xp.F[0:12, pyMAXF]])
 
         continue
 
