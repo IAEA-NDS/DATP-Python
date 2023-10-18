@@ -541,7 +541,6 @@ def reduce_data():
             fort_write(file_IO2, format263, [xp.NCST[K], xp.NEC[:, :, K]])
             fort_write(file_IO4, format293, [xp.FCFC[0:10, K]])
             fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
-        label .lbl83
 
         label .lbl82
 
