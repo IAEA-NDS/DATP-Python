@@ -647,14 +647,8 @@ def reduce_data():
                 for M in range(11):  # 38
                     if xp.NETG[M] != 9:
                         xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + xp.F[M, K]
-                        goto .lbl54
-
-                    if xp.F[M, K] == 0.0:
-                        goto .lbl54
-
-                    xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + (1./xp.F[M, K])**2
-
-                    label .lbl54
+                    elif xp.F[M, K] != 0.0:
+                        xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + (1./xp.F[M, K])**2
 
                 NKOT = NKOT + 1
 
