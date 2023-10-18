@@ -483,23 +483,15 @@ def reduce_data():
 
         label .lbl14
         NQMM = 0
-        if NQQA == NQST:
-            goto .lbl62
         if NQQA == NQND:
-            goto .lbl63
+            fort_write(file_IO4, format250, [NQMM, NQMM])
+            fort_write(file_IO2, format250, [NQMM, NQMM])
 
-        goto .lbl64
+        if NQQA == NQND or NQQA == NQST:
+            format251 = '(4HBLCK,1X,2I5)'
+            fort_write(file_IO4, format251, [NQMM, NQMM])
+            fort_write(file_IO2, format251, [NQMM, NQMM])
 
-        label .lbl63
-        fort_write(file_IO4, format250, [NQMM, NQMM])
-        fort_write(file_IO2, format250, [NQMM, NQMM])
-
-        label .lbl62
-        format251 = '(4HBLCK,1X,2I5)'
-        fort_write(file_IO4, format251, [NQMM, NQMM])
-        fort_write(file_IO2, format251, [NQMM, NQMM])
-
-        label .lbl64
         NQQA = xp.NQQ
 
         # find nr of CS involved
