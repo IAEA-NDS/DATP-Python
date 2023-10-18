@@ -304,7 +304,6 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
-@with_goto
 def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
