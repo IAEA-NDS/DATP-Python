@@ -328,7 +328,6 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
         for L in range(NON):  # 16
             if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
                 goto .lbl17
-        label .lbl16  # terminal label of loop
 
         goto .lbl26
 
