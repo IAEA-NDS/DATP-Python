@@ -197,6 +197,35 @@ def read_apriori(file_IO1):
     return NOD, LAB, ER, T
 
 
+def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T):
+    ITOT = 0
+    for K in range(NQM):
+        ITOT = ITOT + NOD[K]
+    ITOT = ITOT - 2*NQM
+
+    format264 = '(5HAPRI ,2I5)'
+    fort_write(file_IO4, format264, [ITOT, NQM])
+    fort_write(file_IO2, format264, [ITOT, NQM])
+
+    format3731 = "('cross section',i5,' number',i5,A16)"
+    format101 = '(2X,I4,2X,2E12.4)'
+    format109 = '(8x,2e10.4)'
+    format100 = '(2E14.6)' if should_test_output else '(2E10.4)'
+    format99 = '(A16)'  # original: (8A2)
+    for L in range(NQM):
+        NOR = NOD[L] - 1
+        NOR2 = NOR - 1
+        fort_write(file_IO4, format99, [LAB[L]])
+        fort_write(file_IO2, format99, [LAB[L]])
+        fort_write(None, format3731, [L+1, NOR2, LAB[L]])
+
+        for K in range(1, NOR):
+            fort_write(file_IO2, format101, [K, ER[L, K], T[L, K]])
+            fort_write(file_IO4, format100, [ER[L, K], T[L, K]])
+        fort_write(file_IO2, format109, [W, W])
+        fort_write(file_IO4, format100, [W, W])
+
+
 @with_goto
 def reduce_data():
 
@@ -214,42 +243,12 @@ def reduce_data():
     file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
     format250 = '(4HEDBL,1X,2I5)'
-    format99 = '(A16)'  # original: (8A2)
 
     copy_gma_controls(file_IO1, file_IO2, file_IO4)
     NOD, LAB, ER, T = read_apriori(file_IO1)
-    if not should_test_output:
-        format100 = '(2E10.4)'
-    else:
-        format100 = '(2E14.6)'
+    transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T)
 
     Q = np.zeros((NOM,), dtype=float)
-
-    # TRANSFER APRIORI TO OUTPUT FILE
-    ITOT = 0
-    for K in range(NQM):
-        ITOT = ITOT + NOD[K]
-    ITOT = ITOT - 2*NQM
-
-    format264 = '(5HAPRI ,2I5)'
-    fort_write(file_IO4, format264, [ITOT, NQM])
-    fort_write(file_IO2, format264, [ITOT, NQM])
-
-    format3731 = "('cross section',i5,' number',i5,A16)"
-    format101 = '(2X,I4,2X,2E12.4)'
-    format109 = '(8x,2e10.4)'
-    for L in range(NQM):
-        NOR = NOD[L] - 1
-        NOR2 = NOR - 1
-        fort_write(file_IO4, format99, [LAB[L]])
-        fort_write(file_IO2, format99, [LAB[L]])
-        fort_write(None, format3731, [L+1, NOR2, LAB[L]])
-
-        for K in range(1, NOR):
-            fort_write(file_IO2, format101, [K, ER[L, K], T[L, K]])
-            fort_write(file_IO4, format100, [ER[L, K], T[L, K]])
-        fort_write(file_IO2, format109, [W, W])
-        fort_write(file_IO4, format100, [W, W])
 
     # START OF REDUCTION AND TRANSFER
     while True:
