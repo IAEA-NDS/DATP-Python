@@ -350,8 +350,6 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
             continue
         Q[pymxm] = Q[pymxm] + T[pyM3, J]
 
-    label .lbl23  # terminal label of loop
-
     mxm1 = mxm - 1
     pymxm1 = mxm1 - 1
     E11 = (EQ[0] + EQ[1]) / 2.
