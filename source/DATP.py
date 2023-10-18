@@ -422,7 +422,6 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
-@with_goto
 def reduce_data():
 
     NQQA = NQST
