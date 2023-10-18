@@ -213,7 +213,6 @@ def reduce_data():
             ER[L, K-1] = EQ9
             T[L, K-1] = TQ9
 
-        label .lbl2
         NOD[L] = NOM
         goto .lbl4
 
