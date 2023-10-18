@@ -528,21 +528,17 @@ def reduce_data():
         for K in range(11):
             fort_write(file_IO2, format262, [xp.EPA[0:3, K], xp.NETG[K]])
             fort_write(file_IO4, format262, [xp.EPA[0:3, K], xp.NETG[K]])
-        if xp.NCS == 0:
-            goto .lbl82
-
-        # cross correlations
-        format263 = '(I5,20I3)'
-        format293 = '(10F5.1)'
-        for K in range(xp.NCS):  # 83
-            # NOTE: during flattening in fort_write first index should
-            #       change fastest
-            fort_write(file_IO4, format263, [xp.NCST[K], xp.NEC[:, :, K]])
-            fort_write(file_IO2, format263, [xp.NCST[K], xp.NEC[:, :, K]])
-            fort_write(file_IO4, format293, [xp.FCFC[0:10, K]])
-            fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
-
-        label .lbl82
+        if xp.NCS != 0:
+            # cross correlations
+            format263 = '(I5,20I3)'
+            format293 = '(10F5.1)'
+            for K in range(xp.NCS):  # 83
+                # NOTE: during flattening in fort_write first index should
+                #       change fastest
+                fort_write(file_IO4, format263, [xp.NCST[K], xp.NEC[:, :, K]])
+                fort_write(file_IO2, format263, [xp.NCST[K], xp.NEC[:, :, K]])
+                fort_write(file_IO4, format293, [xp.FCFC[0:10, K]])
+                fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
 
         if xp.NT == 6:
             goto .lbl1003
