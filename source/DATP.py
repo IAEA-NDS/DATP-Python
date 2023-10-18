@@ -663,12 +663,10 @@ def reduce_data():
                         xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
                         continue
 
-                    if xp.F[N, pyMAXF] <= 0.0:
-                        goto .lbl47
-                    xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
-                    continue
+                    if xp.F[N, pyMAXF] > 0.0:
+                        xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
+                        continue
 
-                    label .lbl47
                     xp.F[N, pyMAXF] = 0.
 
                 # OUTPUT
