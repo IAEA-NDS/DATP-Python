@@ -674,13 +674,10 @@ def reduce_data():
                     xp.F[N, pyMAXF] = 0.
 
                     label .lbl46
-                label .lbl39  # end of loop
 
                 # OUTPUT
                 fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, pyMAXF]])
                 fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, pyMAXF], DIF])
-
-        label .lbl40  # end of loop
 
         # end of data set
         fort_write(file_IO4, format200, [W, W, xp.F[0:12, pyMAXF]])
