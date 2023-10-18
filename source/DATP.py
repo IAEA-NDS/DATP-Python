@@ -171,7 +171,7 @@ def reduce_data():
         fort_write(file_IO2, format402, [MSEP])
         fort_write(file_IO4, format402, [MSEP])
         if MSEP[0] == 0:
-            goto .lbl407
+            continue
         goto .lbl400
 
         label .lbl401
@@ -186,13 +186,13 @@ def reduce_data():
         fort_write(file_IO2, format404, [AE, BS])
         fort_write(file_IO4, format404, [AE, BS])
         if AE == 0.0:
-            goto .lbl407
+            continue
         goto .lbl403
 
         label .lbl405
         if KCO1 == NHEL:
             goto .lbl406
-        goto .lbl407
+        continue
 
         # data set numbers for exclusion
         label .lbl406
@@ -204,7 +204,6 @@ def reduce_data():
         fort_write(file_IO2, format468, [None])
         fort_write(file_IO2, format408, NEXL)
 
-        label .lbl407
         label .lbl80
     label .lbl84  # terminal label of FOR loop
 
