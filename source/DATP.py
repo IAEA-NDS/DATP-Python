@@ -659,12 +659,10 @@ def reduce_data():
                 QQQ = AV / WTS
                 DIF = QQQ / Q[L]
                 for N in range(11):  # 39
-                    if xp.NETG[N] == 9:
-                        goto .lbl44
-                    xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
-                    goto .lbl46
+                    if xp.NETG[N] != 9:
+                        xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
+                        goto .lbl46
 
-                    label .lbl44
                     if xp.F[N, pyMAXF] <= 0.0:
                         goto .lbl47
                     xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
