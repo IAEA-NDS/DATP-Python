@@ -172,20 +172,16 @@ def reduce_data():
             goto .lbl400
 
         if KCO1 == NHFI and MC1 != 0:
+            # fission spectrum
+            label .lbl403
+            format404 = '(2E13.5)'
+            AE, BS = fort_read(file_IO1, format404, none_as=0.)
+            fort_write(file_IO2, format404, [AE, BS])
+            fort_write(file_IO4, format404, [AE, BS])
+            if AE == 0.0:
+                continue
             goto .lbl403
-        goto .lbl405
 
-        # fission spectrum
-        label .lbl403
-        format404 = '(2E13.5)'
-        AE, BS = fort_read(file_IO1, format404, none_as=0.)
-        fort_write(file_IO2, format404, [AE, BS])
-        fort_write(file_IO4, format404, [AE, BS])
-        if AE == 0.0:
-            continue
-        goto .lbl403
-
-        label .lbl405
         if KCO1 == NHEL:
             goto .lbl406
         continue
