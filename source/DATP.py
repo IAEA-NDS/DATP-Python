@@ -216,7 +216,6 @@ def reduce_data():
 
         if K == NOM:
             NOD[L] = NOM
-    label .lbl1   # terminal label of FOR loop
 
     # TRANSFER APRIORI TO OUTPUT FILE
     ITOT = 0
