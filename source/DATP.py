@@ -256,9 +256,10 @@ def reduce_data():
         #  Interpolation type (this is very system specific -
         # does not apply for other simultaneous evaluations
         INT = 1
-        if xp.NT in (1, 2, 5, 8):
-            if xp.NID[0] not in (2, 5, 10) and xp.NID[0] <= 10:
-                INT = 2
+        if (xp.NT in (1, 2, 5, 8) and
+                xp.NID[0] not in (2, 5, 10) and
+                xp.NID[0] <= 10):
+            INT = 2
 
         # CONSTRUCT APRIORI
         EQ = np.empty((200,), dtype=float)
