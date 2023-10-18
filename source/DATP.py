@@ -209,6 +209,7 @@ def reduce_data():
         for K in range(1, NOM+1):
             EQ9, TQ9 = fort_read(file_IO1, format100r)
             if EQ9 == 0:
+                NOD[L] = K-1
                 goto .lbl3
             ER[L, K-1] = EQ9
             T[L, K-1] = TQ9
@@ -218,7 +219,6 @@ def reduce_data():
 
         label .lbl3
 
-        NOD[L] = K-1
         label .lbl4
     label .lbl1   # terminal label of FOR loop
 
