@@ -329,7 +329,6 @@ def reduce_data():
             for L in range(NON):
                 if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
                     goto .lbl56
-            label .lbl55  # terminal label of loop
             goto .lbl58
 
             label .lbl56
