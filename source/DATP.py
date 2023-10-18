@@ -240,10 +240,8 @@ def reduce_data():
         for K in range(1, NOR):
             fort_write(file_IO2, format101, [K, ER[L, K], T[L, K]])
             fort_write(file_IO4, format100, [ER[L, K], T[L, K]])
-        label .lbl8  # terminal label of FOR loop
         fort_write(file_IO2, format109, [W, W])
         fort_write(file_IO4, format100, [W, W])
-    label .lbl7  # terminal label of FOR loop
 
     # START OF REDUCTION AND TRANSFER
     label .lbl500
