@@ -606,26 +606,21 @@ def reduce_data():
                     if INT == 1:
                         ADD = AR*xp.E[K] + BR
                         AD = xp.S[K] + Q[L] - ADD
-                        goto .lbl34
-                    if INT == 2:
+                    elif INT == 2:
                         ADD = QAR / (xp.E[K]**QBR)
                         AD = xp.S[K] * Q[L] / ADD
-                        goto .lbl34
 
-                if xp.E[K] != EQ[L]:
+                elif xp.E[K] < EQ[L]:
                     # left o energy grid point
                     if INT == 1:
                         ADD = AL * xp.E[K] + BL
                         AD = xp.S[K] + Q[L] - ADD
-                        goto .lbl34
-                    if INT == 2:
+                    elif INT == 2:
                         ADD = QAL / (xp.E[K]**QBL)
                         AD = xp.S[K] * Q[L] / ADD
-                        goto .lbl34
-
-                # same energy as grid point
-                AD = xp.S[K]
-                label .lbl34
+                else:
+                    # same energy as grid point
+                    AD = xp.S[K]
 
                 # check if difference is within requested limit of ULI*sigma
                 if ULI == 0:
