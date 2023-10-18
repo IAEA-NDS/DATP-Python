@@ -249,7 +249,7 @@ def reduce_data():
         # returned by DATRCL using the syntax expdata.varname
         xp = Bunch(DATRCL(file_ID3, 1, 1))
         if xp.NR == 9999:
-            goto .lbl160
+            break
         format3733 = "(' read data set  ',i7)"
         fort_write(None, format3733, [xp.NR])
 
@@ -801,7 +801,6 @@ def reduce_data():
         continue
 
     # DATA FILE COMPLETE
-    label .lbl160
     format256 = '(4HEND*,1X,2I5)'
     fort_write(file_IO4, format250, [NQMM, NQMM])
     fort_write(file_IO2, format250, [NQMM, NQMM])
