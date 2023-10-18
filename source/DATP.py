@@ -173,6 +173,30 @@ def copy_gma_controls(file_IO1, file_IO2, file_IO4):
             fort_write(file_IO2, format408, NEXL)
 
 
+def read_apriori(file_IO1):
+    ER = np.zeros((NQM, NOM), dtype=float)
+    T = np.zeros((NQM, NOM), dtype=float)
+    format99 = '(A16)'  # original: (8A2)
+    format100r = '(2E10.4)'
+    LAB = np.empty((NQM,), dtype=object)
+    NOD = np.zeros((35,), dtype=int)
+    for L in range(NQM):
+        LAB[L] = fort_read(file_IO1, format99)
+
+        for K in range(1, NOM+1):
+            EQ9, TQ9 = fort_read(file_IO1, format100r)
+            if EQ9 == 0:
+                NOD[L] = K-1
+                break
+            ER[L, K-1] = EQ9
+            T[L, K-1] = TQ9
+
+        if K == NOM:
+            NOD[L] = NOM
+
+    return NOD, LAB, ER, T
+
+
 @with_goto
 def reduce_data():
 
@@ -190,37 +214,16 @@ def reduce_data():
     file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
     format250 = '(4HEDBL,1X,2I5)'
+    format99 = '(A16)'  # original: (8A2)
 
     copy_gma_controls(file_IO1, file_IO2, file_IO4)
-
-    # CLEAR
-    Q = np.zeros((NOM,), dtype=float)
-    ER = np.zeros((NQM, NOM), dtype=float)
-    T = np.zeros((NQM, NOM), dtype=float)
-
-    # READ APRIORI
-    format99 = '(A16)'  # original: (8A2)
-    format100r = '(2E10.4)'
+    NOD, LAB, ER, T = read_apriori(file_IO1)
     if not should_test_output:
         format100 = '(2E10.4)'
     else:
         format100 = '(2E14.6)'
 
-    LAB = np.empty((NQM,), dtype=object)
-    NOD = np.zeros((35,), dtype=int)
-    for L in range(NQM):
-        LAB[L] = fort_read(file_IO1, format99)
-
-        for K in range(1, NOM+1):
-            EQ9, TQ9 = fort_read(file_IO1, format100r)
-            if EQ9 == 0:
-                NOD[L] = K-1
-                break
-            ER[L, K-1] = EQ9
-            T[L, K-1] = TQ9
-
-        if K == NOM:
-            NOD[L] = NOM
+    Q = np.zeros((NOM,), dtype=float)
 
     # TRANSFER APRIORI TO OUTPUT FILE
     ITOT = 0
