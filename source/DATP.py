@@ -190,8 +190,6 @@ def reduce_data():
             fort_write(file_IO2, format468, [None])
             fort_write(file_IO2, format408, NEXL)
 
-        continue
-
     # CLEAR
     Q = np.zeros((NOM,), dtype=float)
     ER = np.zeros((NQM, NOM), dtype=float)
