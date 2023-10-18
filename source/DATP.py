@@ -227,7 +227,9 @@ def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T):
 
 
 @with_goto
-def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q):
+def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
+    EQ = np.empty((200,), dtype=float)
+    Q = np.zeros((NOM,), dtype=float)
     # CS + CS SHAPE
     label .lbl11
     M1 = xp.NID[0]
@@ -250,11 +252,13 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q):
     mxm1 = mxm - 1
     format4611 = "(i6,'  cr. sec. apriori for interp. ')"
     fort_write(None, format4611, [mxm])
-    return E11, E22, mxm, mxm1
+    return E11, E22, EQ, Q, mxm, mxm1
 
 
 @with_goto
-def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q):
+def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
+    EQ = np.empty((200,), dtype=float)
+    Q = np.zeros((NOM,), dtype=float)
     # RATIO + RATIO SHAPE
     M1 = xp.NID[0]
     M2 = xp.NID[1]
@@ -297,11 +301,13 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q):
 
     format4612 = "(i6,'  ratio apriori for interp. ')"
     fort_write(None, format4612, [mxm])
-    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+    return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
 @with_goto
-def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q):
+def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
+    EQ = np.empty((200,), dtype=float)
+    Q = np.zeros((NOM,), dtype=float)
     # SUM AND SHAPE OF SUM
     M1 = xp.NID[0]
     pyM1 = M1 - 1
@@ -359,11 +365,13 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q):
 
     format4613 = "(i6,'  sum apriori for interp. ')"
     fort_write(None, format4613, [mxm])
-    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+    return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
 @with_goto
-def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q):
+def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
+    EQ = np.empty((200,), dtype=float)
+    Q = np.zeros((NOM,), dtype=float)
     #  RATIO OF CS VS. SUM + SHAPE
     M1 = xp.NID[0]
     pyM1 = M1 - 1
@@ -411,7 +419,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q):
 
     format4614 = "(i6,'  cr. sec. vs sum apriori for interp. ')"
     fort_write(None, format4614, [mxm])
-    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+    return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
 @with_goto
@@ -463,19 +471,17 @@ def reduce_data():
             INT = 2
 
         # CONSTRUCT APRIORI
-        EQ = np.empty((200,), dtype=float)
-        Q = np.zeros((NOM,), dtype=float)
 
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
         if xp.NT in (1, 2):
-            E11, E22, _, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q)
+            E11, E22, EQ, Q, _, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T)
         elif xp.NT in (3, 4):
-            E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q)
+            E11, E22, EQ, Q, _, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T)
         elif xp.NT in (5, 8):
-            E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q)
+            E11, E22, EQ, Q, _, mxm1, _, _, _, _, _, _ = deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T)
         elif xp.NT in (7, 9):
-            E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q)
+            E11, E22, EQ, Q, _, mxm1, _, _, _, _, _, _ = deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T)
         assert xp.NT >= 1 and xp.NT <= 9
 
         # REDUCTION
