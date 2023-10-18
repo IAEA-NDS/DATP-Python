@@ -602,7 +602,16 @@ def reduce_data():
                 WT = 1./xp.F[11, K]
                 WT = WT*WT
                 if xp.E[K] > EQ[L]:
-                    goto .lbl32
+                    # right of energy grid point
+                    if INT == 1:
+                        ADD = AR*xp.E[K] + BR
+                        AD = xp.S[K] + Q[L] - ADD
+                        goto .lbl34
+                    if INT == 2:
+                        ADD = QAR / (xp.E[K]**QBR)
+                        AD = xp.S[K] * Q[L] / ADD
+                        goto .lbl34
+
                 if xp.E[K] == EQ[L]:
                     goto .lbl33
 
@@ -613,17 +622,6 @@ def reduce_data():
                     goto .lbl34
                 if INT == 2:
                     ADD = QAL / (xp.E[K]**QBL)
-                    AD = xp.S[K] * Q[L] / ADD
-                    goto .lbl34
-
-                # right of energy grid point
-                label .lbl32
-                if INT == 1:
-                    ADD = AR*xp.E[K] + BR
-                    AD = xp.S[K] + Q[L] - ADD
-                    goto .lbl34
-                if INT == 2:
-                    ADD = QAR / (xp.E[K]**QBR)
                     AD = xp.S[K] * Q[L] / ADD
                     goto .lbl34
 
