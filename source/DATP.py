@@ -198,7 +198,6 @@ def reduce_data():
         label .lbl406
         format408 = '(16i5)'
         format468 = "('Data Sets to be Excluded')"
-        JNEX = MC1
         NEXL = fort_read(file_IO1, format408)
         fort_write(file_IO4, format408, NEXL)
         fort_write(file_IO2, format468, [None])
