@@ -195,7 +195,6 @@ def reduce_data():
         fort_write(file_IO2, format468, [None])
         fort_write(file_IO2, format408, NEXL)
 
-        label .lbl80
     label .lbl84  # terminal label of FOR loop
 
     # CLEAR
