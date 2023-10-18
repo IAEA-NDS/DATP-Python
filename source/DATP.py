@@ -183,17 +183,14 @@ def reduce_data():
             goto .lbl403
 
         if KCO1 == NHEL:
-            goto .lbl406
-        continue
+            format408 = '(16i5)'
+            format468 = "('Data Sets to be Excluded')"
+            NEXL = fort_read(file_IO1, format408)
+            fort_write(file_IO4, format408, NEXL)
+            fort_write(file_IO2, format468, [None])
+            fort_write(file_IO2, format408, NEXL)
 
-        # data set numbers for exclusion
-        label .lbl406
-        format408 = '(16i5)'
-        format468 = "('Data Sets to be Excluded')"
-        NEXL = fort_read(file_IO1, format408)
-        fort_write(file_IO4, format408, NEXL)
-        fort_write(file_IO2, format468, [None])
-        fort_write(file_IO2, format408, NEXL)
+        continue
 
     # CLEAR
     Q = np.zeros((NOM,), dtype=float)
