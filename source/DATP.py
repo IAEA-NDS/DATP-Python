@@ -683,7 +683,6 @@ def reduce_data():
                     xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + (1./xp.F[M, K])**2
 
                     label .lbl54
-                label .lbl38  # end of loop
 
                 NKOT = NKOT + 1
 
