@@ -325,13 +325,15 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
         etst1 = ER[pyM1, K] * 0.9999
         etst2 = ER[pyM1, K] * 1.0001
 
+        found = False
         for L in range(NON):  # 16
             if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                goto .lbl17
+                found = True
+                break
 
-        goto .lbl26
+        if not found:
+            goto .lbl26
 
-        label .lbl17
         if M3 == 0:
             goto .lbl18
 
