@@ -623,25 +623,22 @@ def reduce_data():
                     AD = xp.S[K]
 
                 # check if difference is within requested limit of ULI*sigma
-                if ULI == 0:
-                    goto .lbl510
-                T1X = 100.*(AD-Q[L])/Q[L]
-                T2X = T1X*T1X
-                TEST = np.sqrt(WT*T2X)
-                if TEST < ULI:
-                    goto .lbl510
-                F33 = xp.F[2, K] * xp.F[2, K]
-                F44 = 1./WT - F33
-                FNEW = T2X / (ULI*ULI)
-                F33N = FNEW - F44
-                xp.F[11, K] = np.sqrt(FNEW)
-                xp.F[2, K] = np.sqrt(F33N)
-                WT = 1./FNEW
+                if ULI != 0:
+                    T1X = 100.*(AD-Q[L])/Q[L]
+                    T2X = T1X*T1X
+                    TEST = np.sqrt(WT*T2X)
+                    if TEST >= ULI:
+                        F33 = xp.F[2, K] * xp.F[2, K]
+                        F44 = 1./WT - F33
+                        FNEW = T2X / (ULI*ULI)
+                        F33N = FNEW - F44
+                        xp.F[11, K] = np.sqrt(FNEW)
+                        xp.F[2, K] = np.sqrt(F33N)
+                        WT = 1./FNEW
 
-                format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
-                fort_write(file_IO2, format511, [ULI, TEST])
+                        format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
+                        fort_write(file_IO2, format511, [ULI, TEST])
 
-                label .lbl510
                 AV = AV + AD*WT
                 WTS = WTS + WT
 
