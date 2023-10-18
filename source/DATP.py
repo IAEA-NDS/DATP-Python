@@ -353,8 +353,6 @@ def reduce_data():
 
             label .lbl58
 
-        label .lbl21  # terminal label of loop
-
         pymxm = mxm - 1
         mxm1 = mxm - 1
         pymxm1 = mxm1 - 1
