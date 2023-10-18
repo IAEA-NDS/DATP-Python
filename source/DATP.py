@@ -248,8 +248,6 @@ def reduce_data():
     NOD, LAB, ER, T = read_apriori(file_IO1)
     transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T)
 
-    Q = np.zeros((NOM,), dtype=float)
-
     # START OF REDUCTION AND TRANSFER
     while True:
         # Bunch allows to access the dictionary elements
@@ -270,8 +268,7 @@ def reduce_data():
 
         # CONSTRUCT APRIORI
         EQ = np.empty((200,), dtype=float)
-
-        Q[:] = 0.
+        Q = np.zeros((NOM,), dtype=float)
 
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
