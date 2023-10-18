@@ -682,9 +682,6 @@ def reduce_data():
         for KL in range(xp.NCO):  # 6113
             fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
             fort_write(file_IO4, format6115, [xp.ECOR[KL, :(KL+1)]])
-        label .lbl6113  # end of loop
-
-        continue
 
     # DATA FILE COMPLETE
     format256 = '(4HEND*,1X,2I5)'
