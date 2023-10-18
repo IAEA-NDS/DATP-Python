@@ -661,17 +661,15 @@ def reduce_data():
                 for N in range(11):  # 39
                     if xp.NETG[N] != 9:
                         xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
-                        goto .lbl46
+                        continue
 
                     if xp.F[N, pyMAXF] <= 0.0:
                         goto .lbl47
                     xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
-                    goto .lbl46
+                    continue
 
                     label .lbl47
                     xp.F[N, pyMAXF] = 0.
-
-                    label .lbl46
 
                 # OUTPUT
                 fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, pyMAXF]])
