@@ -269,8 +269,7 @@ def reduce_data():
         # CONSTRUCT APRIORI
         EQ = np.empty((200,), dtype=float)
 
-        for K in range(NOM):
-            Q[K] = 0.
+        Q[:] = 0.
 
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
