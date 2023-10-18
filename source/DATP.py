@@ -160,21 +160,17 @@ def reduce_data():
         fort_write(file_IO2,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
         if KCO1 == NHMO and MC2 == 10:
+            # data set numbers selected for downweighting
+            label .lbl400
+            format402 = '16I5'
+            MSEP = np.empty((16,), dtype=int)
+            MSEP[:] = fort_read(file_IO1, format402)
+            fort_write(file_IO2, format402, [MSEP])
+            fort_write(file_IO4, format402, [MSEP])
+            if MSEP[0] == 0:
+                continue
             goto .lbl400
-        goto .lbl401
 
-        # data set numbers selected for downweighting
-        label .lbl400
-        format402 = '16I5'
-        MSEP = np.empty((16,), dtype=int)
-        MSEP[:] = fort_read(file_IO1, format402)
-        fort_write(file_IO2, format402, [MSEP])
-        fort_write(file_IO4, format402, [MSEP])
-        if MSEP[0] == 0:
-            continue
-        goto .lbl400
-
-        label .lbl401
         if KCO1 == NHFI and MC1 != 0:
             goto .lbl403
         goto .lbl405
