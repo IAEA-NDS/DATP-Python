@@ -154,7 +154,7 @@ def reduce_data():
             fort_read(file_IO1, format260, none_as=0.)
         fort_write(None, format483, [KCO1])
         if KCO1 == MTY:
-            break  # goto .lbl84
+            break
         fort_write(file_IO4,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
         fort_write(file_IO2,  format260,
@@ -194,8 +194,6 @@ def reduce_data():
         fort_write(file_IO4, format408, NEXL)
         fort_write(file_IO2, format468, [None])
         fort_write(file_IO2, format408, NEXL)
-
-    label .lbl84  # terminal label of FOR loop
 
     # CLEAR
     Q = np.zeros((NOM,), dtype=float)
