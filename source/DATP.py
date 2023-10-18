@@ -326,31 +326,26 @@ def reduce_data():
             # find matching energies
             etst1 = ER[pyM1, K] * 0.9999
             etst2 = ER[pyM1, K] * 1.0001
+            found = False
             for L in range(NON):
                 if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                    goto .lbl56
-            goto .lbl58
+                    found = True
+                    break
 
-            label .lbl56
+            if not found:
+                continue
+
             mxm = mxm + 1
             pymxm = mxm - 1
             EQ[pymxm] = ER[pyM1, K]
             if T[pyM2, L] == 0.:
-                goto .lbl4616
+                format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
+                fortK = K + 1
+                fortL = L + 1
+                fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
+                exit()
 
-            goto .lbl4617
-
-            label .lbl4616
-            format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
-            fortK = K + 1
-            fortL = L + 1
-            fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
-            exit()
-
-            label .lbl4617
             Q[pymxm] = T[pyM1, K] / T[pyM2, L]
-
-            label .lbl58
 
         pymxm = mxm - 1
         mxm1 = mxm - 1
