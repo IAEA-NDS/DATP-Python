@@ -246,11 +246,9 @@ def reduce_data():
     # START OF REDUCTION AND TRANSFER
     label .lbl500
 
-    # variable not used in DATP fortran code
-    NX = None
     # Bunch allows to access the dictionary elements
     # returned by DATRCL using the syntax expdata.varname
-    xp = Bunch(DATRCL(file_ID3, 1, NX, 1))
+    xp = Bunch(DATRCL(file_ID3, 1, 1))
     if xp.NR == 9999:
         goto .lbl160
     format3733 = "(' read data set  ',i7)"
@@ -818,7 +816,7 @@ def reduce_data():
 
 
 @with_goto
-def DATRCL(file_ID3, NZ: int, NAB: int, IBZ: int):
+def DATRCL(file_ID3, NZ: int, IBZ: int):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
