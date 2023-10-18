@@ -597,7 +597,7 @@ def reduce_data():
             # GRID VALUES
             for K in range(xp.NO):  # 35
                 if xp.E[K] < E1*(1.-1e-5) or xp.E[K] >= E2*(1.+1e-5):
-                    goto .lbl91
+                    continue
 
                 WT = 1./xp.F[11, K]
                 WT = WT*WT
@@ -686,8 +686,6 @@ def reduce_data():
                 label .lbl38  # end of loop
 
                 NKOT = NKOT + 1
-
-                label .lbl91
 
             label .lbl35  # end of loop
 
