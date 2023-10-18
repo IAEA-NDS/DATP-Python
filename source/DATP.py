@@ -576,7 +576,6 @@ def reduce_data():
             NKOT = 0
             for N in range(12):  # 133
                 xp.F[N, pyMAXF] = 0.
-            label .lbl133  # end loop
 
             if E1 > .03:
                 INT = 1
