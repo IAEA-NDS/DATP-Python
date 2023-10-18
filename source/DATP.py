@@ -330,23 +330,18 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
             if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
                 found = True
                 break
-
         if not found:
             continue
 
-        if M3 == 0:
-            goto .lbl18
+        if M3 != 0:
+            found = False
+            for J in range(NO3):  # 19
+                if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
+                    found = True
+                    break
+            if not found:
+                continue
 
-        found = False
-        for J in range(NO3):  # 19
-            if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
-                found = True
-                break
-
-        if not found:
-            continue
-
-        label .lbl18
         mxm = mxm + 1
         pymxm = mxm - 1
         EQ[pymxm] = ER[pyM1, K]
