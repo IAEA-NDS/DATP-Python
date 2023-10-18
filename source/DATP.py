@@ -301,6 +301,68 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q):
 
 
 @with_goto
+def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q):
+    # SUM AND SHAPE OF SUM
+    M1 = xp.NID[0]
+    pyM1 = M1 - 1
+    M2 = xp.NID[1]
+    pyM2 = M2 - 1
+    M3 = xp.NID[2]
+    pyM3 = M3 - 1
+    NO1 = NOD[pyM1]
+    NON = NOD[pyM2]
+    if M3 == 0:
+        goto .lbl22
+    NO3 = NOD[pyM3]
+
+    label .lbl22
+    mxm = 0
+    for K in range(NO1):  # 23
+        etst1 = ER[pyM1, K] * 0.9999
+        etst2 = ER[pyM1, K] * 1.0001
+
+        for L in range(NON):  # 16
+            if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
+                goto .lbl17
+        label .lbl16  # terminal label of loop
+
+        goto .lbl26
+
+        label .lbl17
+        if M3 == 0:
+            goto .lbl18
+
+        for J in range(NO3):  # 19
+            if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
+                goto .lbl18
+        label .lbl19  # terminal label of loop
+
+        goto .lbl26
+
+        label .lbl18
+        mxm = mxm + 1
+        pymxm = mxm - 1
+        EQ[pymxm] = ER[pyM1, K]
+        Q[pymxm] = T[pyM1, K] + T[pyM2, L]
+        if M3 == 0:
+            goto .lbl26
+        Q[pymxm] = Q[pymxm] + T[pyM3, J]
+
+        label .lbl26
+
+    label .lbl23  # terminal label of loop
+
+    mxm1 = mxm - 1
+    pymxm1 = mxm1 - 1
+    E11 = (EQ[0] + EQ[1]) / 2.
+    E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
+
+    format4613 = "(i6,'  sum apriori for interp. ')"
+    fort_write(None, format4613, [mxm])
+    return E11, E22, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
+
+
+@with_goto
 def reduce_data():
 
     NQQA = NQST
@@ -353,72 +415,13 @@ def reduce_data():
             E11, E22, mxm, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q)
             goto .lbl30
         if xp.NT in (5, 8):
-            goto .lbl13
+            E11, E22, mxm, mxm1, _, _, _, _, _, _ = deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q)
+            goto .lbl30
         if xp.NT == 6:
             goto .lbl14
         if xp.NT in (7, 9):
             goto .lbl15
         assert xp.NT >= 1 and xp.NT <= 9
-
-        # SUM AND SHAPE OF SUM
-        label .lbl13
-        M1 = xp.NID[0]
-        pyM1 = M1 - 1
-        M2 = xp.NID[1]
-        pyM2 = M2 - 1
-        M3 = xp.NID[2]
-        pyM3 = M3 - 1
-        NO1 = NOD[pyM1]
-        NON = NOD[pyM2]
-        if M3 == 0:
-            goto .lbl22
-        NO3 = NOD[pyM3]
-
-        label .lbl22
-        mxm = 0
-        for K in range(NO1):  # 23
-            etst1 = ER[pyM1, K] * 0.9999
-            etst2 = ER[pyM1, K] * 1.0001
-
-            for L in range(NON):  # 16
-                if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                    goto .lbl17
-            label .lbl16  # terminal label of loop
-
-            goto .lbl26
-
-            label .lbl17
-            if M3 == 0:
-                goto .lbl18
-
-            for J in range(NO3):  # 19
-                if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
-                    goto .lbl18
-            label .lbl19  # terminal label of loop
-
-            goto .lbl26
-
-            label .lbl18
-            mxm = mxm + 1
-            pymxm = mxm - 1
-            EQ[pymxm] = ER[pyM1, K]
-            Q[pymxm] = T[pyM1, K] + T[pyM2, L]
-            if M3 == 0:
-                goto .lbl26
-            Q[pymxm] = Q[pymxm] + T[pyM3, J]
-
-            label .lbl26
-
-        label .lbl23  # terminal label of loop
-
-        mxm1 = mxm - 1
-        pymxm1 = mxm1 - 1
-        E11 = (EQ[0] + EQ[1]) / 2.
-        E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
-
-        format4613 = "(i6,'  sum apriori for interp. ')"
-        fort_write(None, format4613, [mxm])
-        goto .lbl30
 
         #  RATIO OF CS VS. SUM + SHAPE
         label .lbl15
