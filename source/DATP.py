@@ -475,11 +475,11 @@ def reduce_data():
         # REDUCTION
 
         # FIND USEFUL DATA RANGE
-        if xp.E[0] > E22:
-            goto .lbl61
-        pyNO = xp.NO - 1
-        if xp.E[pyNO] < E11:
-            goto .lbl61
+        if xp.E[0] > E22 or xp.E[xp.NO-1] < E11:
+            # out of range
+            if NQQA != NQND and xp.NQQ == NQND:
+                NQQA = xp.NQQ
+            continue
 
         label .lbl14
         NQMM = 0
@@ -498,13 +498,6 @@ def reduce_data():
         format251 = '(4HBLCK,1X,2I5)'
         fort_write(file_IO4, format251, [NQMM, NQMM])
         fort_write(file_IO2, format251, [NQMM, NQMM])
-        goto .lbl64
-
-        # out of range
-        label .lbl61
-        if NQQA != NQND and xp.NQQ == NQND:
-            NQQA = xp.NQQ
-        continue
 
         label .lbl64
         NQQA = xp.NQQ
