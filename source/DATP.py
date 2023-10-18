@@ -498,10 +498,8 @@ def reduce_data():
         for MN in range(1, 5):  # 66
             pyMN = MN - 1
             if xp.NID[pyMN] == 0:
-                goto .lbl67
-        label .lbl66  # end of loop
+                break
 
-        label .lbl67
         NNN = MN - 1
         xp.NID[3] = 0
 
