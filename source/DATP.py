@@ -272,23 +272,15 @@ def reduce_data():
 
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
-        if xp.NT == 1:
+        if xp.NT in (1, 2):
             goto .lbl11
-        if xp.NT == 2:
-            goto .lbl11
-        if xp.NT == 3:
+        if xp.NT in (3, 4):
             goto .lbl12
-        if xp.NT == 4:
-            goto .lbl12
-        if xp.NT == 5:
+        if xp.NT in (5, 8):
             goto .lbl13
         if xp.NT == 6:
             goto .lbl14
-        if xp.NT == 7:
-            goto .lbl15
-        if xp.NT == 8:
-            goto .lbl13
-        if xp.NT == 9:
+        if xp.NT in (7, 9):
             goto .lbl15
         assert xp.NT >= 1 and xp.NT <= 9
 
