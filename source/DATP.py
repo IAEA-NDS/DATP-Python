@@ -653,36 +653,33 @@ def reduce_data():
                 NKOT = NKOT + 1
 
             AKOT = NKOT
-            if AV == 0.0:
-                goto .lbl42
+            if AV != 0.0:
+                # GRID VALUE AND OUT
+                EEE = EQ[L]
+                QQQ = AV / WTS
+                DIF = QQQ / Q[L]
+                for N in range(11):  # 39
+                    if xp.NETG[N] == 9:
+                        goto .lbl44
+                    xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
+                    goto .lbl46
 
-            # GRID VALUE AND OUT
-            EEE = EQ[L]
-            QQQ = AV / WTS
-            DIF = QQQ / Q[L]
-            for N in range(11):  # 39
-                if xp.NETG[N] == 9:
-                    goto .lbl44
-                xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
-                goto .lbl46
+                    label .lbl44
+                    if xp.F[N, pyMAXF] <= 0.0:
+                        goto .lbl47
+                    xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
+                    goto .lbl46
 
-                label .lbl44
-                if xp.F[N, pyMAXF] <= 0.0:
-                    goto .lbl47
-                xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
-                goto .lbl46
+                    label .lbl47
+                    xp.F[N, pyMAXF] = 0.
 
-                label .lbl47
-                xp.F[N, pyMAXF] = 0.
+                    label .lbl46
+                label .lbl39  # end of loop
 
-                label .lbl46
-            label .lbl39  # end of loop
+                # OUTPUT
+                fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, pyMAXF]])
+                fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, pyMAXF], DIF])
 
-            # OUTPUT
-            fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, pyMAXF]])
-            fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, pyMAXF], DIF])
-
-            label .lbl42
         label .lbl40  # end of loop
 
         # end of data set
