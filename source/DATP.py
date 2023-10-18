@@ -582,27 +582,17 @@ def reduce_data():
 
             # INTERPOLATION CONST.
             if INT == 1:
-                goto .lbl88
+                # LIN LIN
+                AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
+                BL = Q[L]-AL*EQ[L]
+                AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
+                BR = Q[L]-AR*EQ[L]
             if INT == 2:
-                goto .lbl89
-
-            # LIN LIN
-            label .lbl88
-            AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
-            BL = Q[L]-AL*EQ[L]
-            AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
-            BR = Q[L]-AR*EQ[L]
-            goto .lbl28
-
-            # LOG LOG
-            label .lbl89
-
-            QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
-            QAL = Q[L]*(EQ[L]**QBL)
-            QBR = (np.log(Q[L])-np.log(Q[L+1]))/(np.log(EQ[L+1])-np.log(EQ[L]))
-            QAR = Q[L]*(EQ[L]**QBR)
-
-            label .lbl28
+                # LOG LOG
+                QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
+                QAL = Q[L]*(EQ[L]**QBL)
+                QBR = (np.log(Q[L])-np.log(Q[L+1]))/(np.log(EQ[L+1])-np.log(EQ[L]))
+                QAR = Q[L]*(EQ[L]**QBR)
 
             # GRID VALUES
             for K in range(xp.NO):  # 35
