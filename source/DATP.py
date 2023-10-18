@@ -515,17 +515,11 @@ def reduce_data():
         fort_write(file_IO4, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
         fort_write(file_IO2, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
 
-        if xp.NT == 2 or xp.NT == 4:
-            goto .lbl81
-        if xp.NT == 8 or xp.NT == 9:
-            goto .lbl81
-
-        # normalization uncertainties
-        format261 = '(10F5.1,10I3)'
-        fort_write(file_IO4, format261, [xp.ENF[0:10], xp.NENF[0:10]])
-        fort_write(file_IO2, format261, [xp.ENF[0:10], xp.NENF[0:10]])
-
-        label .lbl81
+        if xp.NT not in (2, 4, 8, 9):
+            # normalization uncertainties
+            format261 = '(10F5.1,10I3)'
+            fort_write(file_IO4, format261, [xp.ENF[0:10], xp.NENF[0:10]])
+            fort_write(file_IO2, format261, [xp.ENF[0:10], xp.NENF[0:10]])
 
         # energy dep. unc. parameters
         format262 = '(3F5.2,I3)'
