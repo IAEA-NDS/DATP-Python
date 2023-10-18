@@ -227,6 +227,33 @@ def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T):
 
 
 @with_goto
+def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q):
+    # CS + CS SHAPE
+    label .lbl11
+    M1 = xp.NID[0]
+    pyM1 = M1 - 1
+    NON = NOD[pyM1]
+    NON1 = NON-1
+    # NOTE: M1-1 due to different start index
+    #       in Python (0) and Fortran (1)
+    pyM1 = M1 - 1
+    pyNON = NON - 1
+    pyNON1 = NON1 - 1
+
+    E11 = (ER[pyM1, 0] + ER[pyM1, 1]) / 2.
+    E22 = (ER[pyM1, pyNON] + ER[pyM1, pyNON1]) / 2.
+    for K in range(NON):
+        EQ[K] = ER[pyM1, K]
+        Q[K] = T[pyM1, K]
+    label .lbl20  # terminal label of loop
+    mxm = NON
+    mxm1 = mxm - 1
+    format4611 = "(i6,'  cr. sec. apriori for interp. ')"
+    fort_write(None, format4611, [mxm])
+    return E11, E22, mxm, mxm1
+
+
+@with_goto
 def reduce_data():
 
     NQQA = NQST
@@ -273,7 +300,8 @@ def reduce_data():
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
         if xp.NT in (1, 2):
-            goto .lbl11
+            E11, E22, mxm, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T, EQ, Q)
+            goto .lbl30
         if xp.NT in (3, 4):
             goto .lbl12
         if xp.NT in (5, 8):
@@ -283,30 +311,6 @@ def reduce_data():
         if xp.NT in (7, 9):
             goto .lbl15
         assert xp.NT >= 1 and xp.NT <= 9
-
-        # CS + CS SHAPE
-        label .lbl11
-        M1 = xp.NID[0]
-        pyM1 = M1 - 1
-        NON = NOD[pyM1]
-        NON1 = NON-1
-        # NOTE: M1-1 due to different start index
-        #       in Python (0) and Fortran (1)
-        pyM1 = M1 - 1
-        pyNON = NON - 1
-        pyNON1 = NON1 - 1
-
-        E11 = (ER[pyM1, 0] + ER[pyM1, 1]) / 2.
-        E22 = (ER[pyM1, pyNON] + ER[pyM1, pyNON1]) / 2.
-        for K in range(NON):
-            EQ[K] = ER[pyM1, K]
-            Q[K] = T[pyM1, K]
-        label .lbl20  # terminal label of loop
-        mxm = NON
-        mxm1 = mxm - 1
-        format4611 = "(i6,'  cr. sec. apriori for interp. ')"
-        fort_write(None, format4611, [mxm])
-        goto .lbl30
 
         # RATIO + RATIO SHAPE
         label .lbl12
