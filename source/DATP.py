@@ -474,22 +474,20 @@ def reduce_data():
             E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T, EQ, Q)
         elif xp.NT in (5, 8):
             E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T, EQ, Q)
-        elif xp.NT == 6:
-            goto .lbl14
         elif xp.NT in (7, 9):
             E11, E22, _, mxm1, _, _, _, _, _, _ = deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T, EQ, Q)
         assert xp.NT >= 1 and xp.NT <= 9
 
         # REDUCTION
 
-        # FIND USEFUL DATA RANGE
-        if xp.E[0] > E22 or xp.E[xp.NO-1] < E11:
-            # out of range
-            if NQQA != NQND and xp.NQQ == NQND:
-                NQQA = xp.NQQ
-            continue
+        if xp.NT != 6:
+            # FIND USEFUL DATA RANGE
+            if xp.E[0] > E22 or xp.E[xp.NO-1] < E11:
+                # out of range
+                if NQQA != NQND and xp.NQQ == NQND:
+                    NQQA = xp.NQQ
+                continue
 
-        label .lbl14
         NQMM = 0
         if NQQA == NQND:
             fort_write(file_IO4, format250, [NQMM, NQMM])
