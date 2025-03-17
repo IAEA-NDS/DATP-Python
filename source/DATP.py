@@ -1,3 +1,8 @@
+# for tracking function calls
+import functools
+import atexit
+import inspect
+
 # helpful for tentative fortran to python conversion
 from goto import with_goto
 from fortranformat import FortranRecordReader
@@ -226,6 +231,38 @@ def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T):
         fort_write(file_IO4, format100, [W, W])
 
 
+# DEBUG: This function is only used during debugging/modernization
+#        to ensure that it is indeed called and bad changes in the
+#        function will impact test results.
+def must_be_called(func):
+
+    def get_current_function():
+        caller_frame = inspect.stack()[1]
+        caller_function_name = caller_frame.function
+        caller_function = caller_frame.frame.f_globals[caller_function_name]
+        return caller_function
+
+    def check_called():
+        for func in this_decorator.registered_funcs:
+            if not func.called:
+                raise ValueError(
+                    f'function {func.__name__} was not called'
+                )
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        wrapper.called = True
+        return func(*args, **kwargs)
+    wrapper.called = False
+
+    this_decorator = get_current_function()
+    if not hasattr(this_decorator, "registered_funcs"):
+        this_decorator.registered_funcs = set()
+    this_decorator.registered_funcs.add(wrapper)
+    this_decorator.check_called = check_called
+    return wrapper
+
+
+@must_be_called
 @with_goto
 def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
@@ -255,6 +292,7 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1
 
 
+@must_be_called
 @with_goto
 def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
@@ -304,6 +342,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
+@must_be_called
 def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
@@ -359,6 +398,7 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
+@must_be_called
 @with_goto
 def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
@@ -413,6 +453,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     return E11, E22, EQ, Q, mxm, mxm1, M1, M2, pyM1, pyM2, NO1, NON
 
 
+@must_be_called
 def reduce_data():
 
     NQQA = NQST
@@ -690,6 +731,7 @@ def reduce_data():
     file_IO4.close()
 
 
+@must_be_called
 @with_goto
 def DATRCL(file_ID3, NZ: int, IBZ: int):
 
@@ -845,9 +887,5 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
 
 
 
-
+atexit.register(must_be_called.check_called)
 reduce_data()
-
-
-
-
