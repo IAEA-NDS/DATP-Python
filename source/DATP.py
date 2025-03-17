@@ -4,7 +4,6 @@ import atexit
 import inspect
 
 # helpful for tentative fortran to python conversion
-from goto import with_goto
 from fortranformat import FortranRecordReader
 from fortranformat import FortranRecordWriter
 # other python packages
