@@ -1,0 +1,41 @@
+name: datp
+channels:
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bzip2=1.0.8=h4bc722e_7
+  - ca-certificates=2025.1.31=hbcca054_0
+  - fortranformat=2.0.0=pyhd8ed1ab_0
+  - libblas=3.9.0=31_h59b9bed_openblas
+  - libcblas=3.9.0=31_he106b2a_openblas
+  - libffi=3.2.1=he1b5a44_1007
+  - libgcc=14.2.0=h767d61c_2
+  - libgcc-ng=14.2.0=h69a702a_2
+  - libgfortran=14.2.0=h69a702a_2
+  - libgfortran5=14.2.0=hf1ad2bd_2
+  - libgomp=14.2.0=h767d61c_2
+  - liblapack=3.9.0=31_h7ac8fdf_openblas
+  - liblzma=5.6.4=hb9d3cd8_0
+  - liblzma-devel=5.6.4=hb9d3cd8_0
+  - libopenblas=0.3.29=pthreads_h94d23a6_0
+  - libstdcxx=14.2.0=h8f9b012_2
+  - libstdcxx-ng=14.2.0=h4852527_2
+  - libzlib=1.2.13=h4ab18f5_6
+  - ncurses=6.5=h2d0b736_3
+  - numpy=1.21.6=py37h976b520_0
+  - openssl=1.0.2u=h516909a_0
+  - pip=24.0=pyhd8ed1ab_0
+  - python=3.7.0=hd21baee_1006
+  - python_abi=3.7=2_cp37m
+  - readline=7.0=hf8c457e_1001
+  - setuptools=69.0.3=pyhd8ed1ab_0
+  - sqlite=3.28.0=h8b20d00_0
+  - tk=8.6.13=noxft_h4845f30_101
+  - wheel=0.42.0=pyhd8ed1ab_0
+  - xz=5.6.4=hbcc6ac9_0
+  - xz-gpl-tools=5.6.4=hbcc6ac9_0
+  - xz-tools=5.6.4=hb9d3cd8_0
+  - zlib=1.2.13=h4ab18f5_6
+  - pip:
+      - goto-statement==1.2
