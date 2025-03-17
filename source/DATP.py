@@ -290,7 +290,6 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
 
 
 @must_be_called
-@with_goto
 def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
