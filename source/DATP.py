@@ -726,7 +726,6 @@ def reduce_data():
 
 
 @must_be_called
-@with_goto
 def DATRCL(file_ID3, NZ: int, IBZ: int):
 
     # variables with local scope
@@ -743,27 +742,21 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     SES = 0.
 
     if NZ == 5:
-        goto .lbl5030
-    goto .lbl5031
+        for K in range(1,1000):
+            NXY[K] = 0
 
-    label .lbl5030
-    for K in range(1,1000):
-        NXY[K] = 0
-
-    label .lbl5031
     NBQZ = 1
     if NBQZ == 1: NQQ = NES
     if IBZ == 2: NQQ = NEB
 
     # data set identification
-    label .lbl10
     # original string
     # format100 = '(2I4,12A2,14A2,10A2)'
-
     format100 = '(2I4, A24, A28, A20)'
-    NR, NY, NQT, NAU, NREF = fort_read(file_ID3, format100)
-    if NR == 0:
-        goto .lbl10
+    NR = 0
+    while NR == 0:
+        NR, NY, NQT, NAU, NREF = fort_read(file_ID3, format100)
+
     if NR == 9999:
         return {'NR': NR}
     format103 = '(4I2,I3,I5,5I3)'
@@ -781,18 +774,14 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     ENF = None
     NENF = None
     SES = 0.
-    if NT == 2 or NT == 4:
-        goto .lbl20
-    if NT == 8 or NT == 9:
-        goto .lbl20
-    format107 = '(10F5.1, 10I3)'
-    ENF, NENF = unflatten(fort_read(file_ID3, format107), [[10], [10]])
 
-    for K in range(10):
-        SES = SES + ENF[K]*ENF[K]
+    if (not (NT == 2 or NT == 4)) and (not (NT == 8 or NT == 9)):
+        format107 = '(10F5.1, 10I3)'
+        ENF, NENF = unflatten(fort_read(file_ID3, format107), [[10], [10]])
+        for K in range(10):
+            SES = SES + ENF[K]*ENF[K]
 
     # ENERGY DEPENDENT UNCERTAINTY CORRELATIONS PARAMETERS AND TAGS
-    label .lbl20
     format110 = '(3F5.2)'
     EPA = np.empty((3,11), dtype=float)
     for i in range(11):
