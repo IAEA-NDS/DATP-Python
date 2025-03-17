@@ -263,12 +263,10 @@ def must_be_called(func):
 
 
 @must_be_called
-@with_goto
 def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # CS + CS SHAPE
-    label .lbl11
     M1 = xp.NID[0]
     pyM1 = M1 - 1
     NON = NOD[pyM1]
@@ -284,7 +282,6 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     for K in range(NON):
         EQ[K] = ER[pyM1, K]
         Q[K] = T[pyM1, K]
-    label .lbl20  # terminal label of loop
     mxm = NON
     mxm1 = mxm - 1
     format4611 = "(i6,'  cr. sec. apriori for interp. ')"
