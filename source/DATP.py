@@ -395,7 +395,6 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
 
 
 @must_be_called
-@with_goto
 def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
@@ -412,32 +411,31 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     mxm = 0
     pymxm = mxm - 1
 
-    for K in range(NO1):  # 27
+    for K in range(NO1):
         etst1 = ER[pyM1, K] * 0.9999
         etst2 = ER[pyM1, K] * 1.0001
-        for L in range(NON):  # 76
+        found = False
+        for L in range(NON):
             if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
-                goto .lbl77
-        label .lbl76  # end loop
+                found = True
+                break
 
-        goto .lbl71
+        if not found:
+            continue
 
-        label .lbl77
-        for J in range(NO3):  # 79
+        found = False
+        for J in range(NO3):
             if ER[pyM3, J] > etst1 and ER[pyM3, J] < etst2:
-                goto .lbl78
-        label .lbl79
+                found = True
+                break
 
-        goto .lbl71
+        if not found:
+            continue
 
-        label .lbl78
         mxm = mxm + 1
         pymxm = mxm - 1
         EQ[pymxm] = ER[pyM1, K]
         Q[pymxm] = T[pyM1, K] / (T[pyM2, L] + T[pyM3, J])
-
-        label .lbl71
-    label .lbl27  # end of loop
 
     mxm1 = mxm - 1
     pymxm1 = mxm1 - 1
