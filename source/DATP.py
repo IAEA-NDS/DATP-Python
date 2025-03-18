@@ -31,17 +31,17 @@ from constants import (
 
 
 @must_be_called
-def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
+def deal_with_CS_and_CS_SHAPE(xp, NOD, prior_energy_mesh, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # CS + CS SHAPE
     M1 = xp.NID[0] - 1
     NON = NOD[M1]
     NON1 = NON-1
-    E11 = (ER[M1, 0] + ER[M1, 1]) / 2.
-    E22 = (ER[M1, NON-1] + ER[M1, NON1-1]) / 2.
+    E11 = (prior_energy_mesh[M1, 0] + prior_energy_mesh[M1, 1]) / 2.
+    E22 = (prior_energy_mesh[M1, NON-1] + prior_energy_mesh[M1, NON1-1]) / 2.
     for K in range(NON):
-        EQ[K] = ER[M1, K]
+        EQ[K] = prior_energy_mesh[M1, K]
         Q[K] = T[M1, K]
     format4611 = "(i6,'  cr. sec. apriori for interp. ')"
     fort_write(None, format4611, [NON-1])
@@ -49,7 +49,7 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
 
 
 @must_be_called
-def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
+def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, prior_energy_mesh, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # RATIO + RATIO SHAPE
@@ -61,10 +61,10 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
 
     for K in range(NO1):
         # find matching energies
-        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(prior_energy_mesh[M2,:NON], prior_energy_mesh[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
-        EQ[mxm] = ER[M1, K]
+        EQ[mxm] = prior_energy_mesh[M1, K]
         if T[M2, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
             fort_write(None, format4618, [M1-1, K+1, M2-1, L+1, EQ[mxm]])
@@ -82,7 +82,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
 
 
 @must_be_called
-def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
+def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, prior_energy_mesh, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # SUM AND SHAPE OF SUM
@@ -97,16 +97,20 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     mxm = 0
     for K in range(NO1):  # 23
 
-        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(
+            prior_energy_mesh[M2,:NON], prior_energy_mesh[M1, K:K+1], atol=1e-8, rtol=1e-4
+        ).item()
         if L == -1:  # not found
             continue
 
         if M3 != -1:
-            J = find_indices_with_tol(ER[M3,:NO3], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+            J = find_indices_with_tol(
+                prior_energy_mesh[M3,:NO3], prior_energy_mesh[M1, K:K+1], atol=1e-8, rtol=1e-4
+            ).item()
             if J == -1:  # not found
                 continue
 
-        EQ[mxm] = ER[M1, K]
+        EQ[mxm] = prior_energy_mesh[M1, K]
         Q[mxm] = T[M1, K] + T[M2, L]
         if M3 != -1:
             Q[mxm] = Q[mxm] + T[M3, J]
@@ -122,7 +126,7 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
 
 
 @must_be_called
-def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
+def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, prior_energy_mesh, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     #  RATIO OF CS VS. SUM + SHAPE
@@ -137,16 +141,20 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
 
     for K in range(NO1):
 
-        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(
+            prior_energy_mesh[M2,:NON], prior_energy_mesh[M1, K:K+1], atol=1e-8, rtol=1e-4
+        ).item()
         if L == -1:  # not found
             continue
 
         if M3 != -1:
-            J = find_indices_with_tol(ER[M3,:NO3], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+            J = find_indices_with_tol(
+                prior_energy_mesh[M3,:NO3], prior_energy_mesh[M1, K:K+1], atol=1e-8, rtol=1e-4
+            ).item()
             if J == -1:  # not found
                 continue
 
-        EQ[mxm] = ER[M1, K]
+        EQ[mxm] = prior_energy_mesh[M1, K]
         Q[mxm] = T[M1, K] / (T[M2, L] + T[M3, J])
         mxm += 1
 
@@ -186,8 +194,10 @@ def reduce_data():
         format290 = '(2E14.6,12F12.7,F9.5)'
 
     copy_gma_controls(file_IO1, file_IO2, file_IO4)
-    NOD, LAB, ER, T = read_apriori(file_IO1)
-    transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T)
+    NOD, LAB, prior_energy_mesh, T = read_apriori(file_IO1)
+    transfer_apriori_to_output_file(
+        file_IO2, file_IO4, NOD, LAB, prior_energy_mesh, T
+    )
 
     # START OF REDUCTION AND TRANSFER
     while True:
@@ -212,13 +222,21 @@ def reduce_data():
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
         if xp.NT in (1, 2):
-            E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T)
+            E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
+                xp, NOD, prior_energy_mesh, T
+            )
         elif xp.NT in (3, 4):
-            E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T)
+            E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
+                xp, NOD, prior_energy_mesh, T
+            )
         elif xp.NT in (5, 8):
-            E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T)
+            E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
+                xp, NOD, prior_energy_mesh, T
+            )
         elif xp.NT in (7, 9):
-            E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T)
+            E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
+                xp, NOD, prior_energy_mesh, T
+            )
         assert xp.NT >= 1 and xp.NT <= 9
 
         # REDUCTION
