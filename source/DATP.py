@@ -356,20 +356,19 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
             if J == -1:  # not found
                 continue
 
-        mxm = mxm + 1
+        mxm += 1 
         EQ[mxm-1] = ER[M1-1, K]
         Q[mxm-1] = T[M1-1, K] + T[M2-1, L]
         if M3 == 0:
             continue
         Q[mxm-1] = Q[mxm-1] + T[M3-1, J]
 
-    mxm1 = mxm - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[mxm-1] + EQ[mxm1-1]) / 2.
+    E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
 
     format4613 = "(i6,'  sum apriori for interp. ')"
     fort_write(None, format4613, [mxm])
-    return E11, E22, EQ, Q, mxm1
+    return E11, E22, EQ, Q, mxm-1
 
 
 @must_be_called
