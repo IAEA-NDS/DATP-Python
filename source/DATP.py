@@ -32,13 +32,13 @@ from constants import (
 
 @must_be_called
 def deal_with_CS_and_CS_SHAPE(
-    xp, NOD, prior_energy_mesh, prior_cross_section
+    xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # CS + CS SHAPE
     M1 = xp.NID[0] - 1
-    NON = NOD[M1]
+    NON = prior_number_points[M1]
     NON1 = NON-1
     E11 = (prior_energy_mesh[M1, 0] + prior_energy_mesh[M1, 1]) / 2.
     E22 = (prior_energy_mesh[M1, NON-1] + prior_energy_mesh[M1, NON1-1]) / 2.
@@ -52,15 +52,15 @@ def deal_with_CS_and_CS_SHAPE(
 
 @must_be_called
 def deal_with_RATIO_and_RATIO_SHAPE(
-    xp, NOD, prior_energy_mesh, prior_cross_section
+    xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # RATIO + RATIO SHAPE
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
-    NO1 = NOD[M1]
-    NON = NOD[M2]
+    NO1 = prior_number_points[M1]
+    NON = prior_number_points[M2]
     mxm = 0
 
     for K in range(NO1):
@@ -87,7 +87,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(
 
 @must_be_called
 def deal_with_SUM_and_SHAPE_OF_SUM(
-    xp, NOD, prior_energy_mesh, prior_cross_section
+    xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
@@ -95,10 +95,10 @@ def deal_with_SUM_and_SHAPE_OF_SUM(
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
     M3 = xp.NID[2] - 1
-    NO1 = NOD[M1]
-    NON = NOD[M2]
+    NO1 = prior_number_points[M1]
+    NON = prior_number_points[M2]
     if M3 != -1:
-        NO3 = NOD[M3]
+        NO3 = prior_number_points[M3]
 
     mxm = 0
     for K in range(NO1):  # 23
@@ -133,7 +133,7 @@ def deal_with_SUM_and_SHAPE_OF_SUM(
 
 @must_be_called
 def deal_with_CS_VS_SUM_PLUS_SHAPE(
-    xp, NOD, prior_energy_mesh, prior_cross_section
+    xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
@@ -141,9 +141,9 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
     M3 = xp.NID[2] - 1
-    NO1 = NOD[M1]
-    NON = NOD[M2]
-    NO3 = NOD[M3]
+    NO1 = prior_number_points[M1]
+    NON = prior_number_points[M2]
+    NO3 = prior_number_points[M3]
     mxm = 0
     pymxm = mxm - 1
 
@@ -205,9 +205,9 @@ def reduce_data():
         format290 = '(2E14.6,12F12.7,F9.5)'
 
     copy_gma_controls(file_IO1, file_IO2, file_IO4)
-    NOD, LAB, prior_energy_mesh, prior_cross_section = read_apriori(file_IO1)
+    prior_number_points, LAB, prior_energy_mesh, prior_cross_section = read_apriori(file_IO1)
     transfer_apriori_to_output_file(
-        file_IO2, file_IO4, NOD, LAB, prior_energy_mesh, prior_cross_section
+        file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
     )
 
     # START OF REDUCTION AND TRANSFER
@@ -234,19 +234,19 @@ def reduce_data():
         #       by if-else statements
         if xp.NT in (1, 2):
             E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
-                xp, NOD, prior_energy_mesh, prior_cross_section
+                xp, prior_number_points, prior_energy_mesh, prior_cross_section
             )
         elif xp.NT in (3, 4):
             E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
-                xp, NOD, prior_energy_mesh, prior_cross_section
+                xp, prior_number_points, prior_energy_mesh, prior_cross_section
             )
         elif xp.NT in (5, 8):
             E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
-                xp, NOD, prior_energy_mesh, prior_cross_section
+                xp, prior_number_points, prior_energy_mesh, prior_cross_section
             )
         elif xp.NT in (7, 9):
             E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
-                xp, NOD, prior_energy_mesh, prior_cross_section
+                xp, prior_number_points, prior_energy_mesh, prior_cross_section
             )
         assert xp.NT >= 1 and xp.NT <= 9
 

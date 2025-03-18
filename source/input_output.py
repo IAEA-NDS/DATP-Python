@@ -66,30 +66,30 @@ def read_apriori(file_IO1):
     format99 = '(A16)'  # original: (8A2)
     format100r = '(2E10.4)'
     LAB = np.empty((NQM,), dtype=object)
-    NOD = np.zeros((35,), dtype=int)
+    prior_number_points = np.zeros((35,), dtype=int)
     for L in range(NQM):
         LAB[L] = fort_read(file_IO1, format99)
 
         for K in range(1, NOM+1):
             EQ9, TQ9 = fort_read(file_IO1, format100r)
             if EQ9 == 0:
-                NOD[L] = K-1
+                prior_number_points[L] = K-1
                 break
             prior_energy_mesh[L, K-1] = EQ9
             prior_cross_section[L, K-1] = TQ9
 
         if K == NOM:
-            NOD[L] = NOM
+            prior_number_points[L] = NOM
 
-    return NOD, LAB, prior_energy_mesh, prior_cross_section
+    return prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 
 
 def transfer_apriori_to_output_file(
-    file_IO2, file_IO4, NOD, LAB, prior_energy_mesh, prior_cross_section
+    file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 ):
     ITOT = 0
     for K in range(NQM):
-        ITOT = ITOT + NOD[K]
+        ITOT = ITOT + prior_number_points[K]
     ITOT = ITOT - 2*NQM
 
     format264 = '(5HAPRI ,2I5)'
@@ -102,7 +102,7 @@ def transfer_apriori_to_output_file(
     format100 = '(2E14.6)' if SHOULD_TEST_OUTPUT else '(2E10.4)'
     format99 = '(A16)'  # original: (8A2)
     for L in range(NQM):
-        NOR = NOD[L] - 1
+        NOR = prior_number_points[L] - 1
         NOR2 = NOR - 1
         fort_write(file_IO4, format99, [LAB[L]])
         fort_write(file_IO2, format99, [LAB[L]])
