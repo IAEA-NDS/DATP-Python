@@ -303,25 +303,24 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # RATIO + RATIO SHAPE
-    M1 = xp.NID[0]
-    M2 = xp.NID[1]
-    NO1 = NOD[M1-1]
-    NON = NOD[M2-1]
+    M1 = xp.NID[0] - 1
+    M2 = xp.NID[1] - 1
+    NO1 = NOD[M1]
     mxm = 0
 
     for K in range(NO1):
         # find matching energies
-        L = find_indices_with_tol(ER[M2-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(ER[M2,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
-        mxm += 1
-        EQ[mxm-1] = ER[M1-1, K]
-        if T[M2-1, L] == 0.:
+        EQ[mxm] = ER[M1, K]
+        if T[M2, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
-            fort_write(None, format4618, [M1, K+1, M2, L+1, EQ[mxm-1]])
+            fort_write(None, format4618, [M1-1, K+1, M2-1, L+1, EQ[mxm]])
             exit()
 
-        Q[mxm-1] = T[M1-1, K] / T[M2-1, L]
+        Q[mxm] = T[M1, K] / T[M2, L]
+        mxm += 1
 
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
