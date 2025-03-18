@@ -271,11 +271,8 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     NON1 = NON-1
     # NOTE: M1-1 due to different start index
     #       in Python (0) and Fortran (1)
-    pyNON = NON - 1
-    pyNON1 = NON1 - 1
-
     E11 = (ER[M1, 0] + ER[M1, 1]) / 2.
-    E22 = (ER[M1, pyNON] + ER[M1, pyNON1]) / 2.
+    E22 = (ER[M1, NON-1] + ER[M1, NON1-1]) / 2.
     for K in range(NON):
         EQ[K] = ER[M1, K]
         Q[K] = T[M1, K]
