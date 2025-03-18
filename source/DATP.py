@@ -315,9 +315,8 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
         Q[mxm-1] = T[M1-1, K] / T[M2-1, L]
 
     mxm1 = mxm - 1
-    pymxm1 = mxm1 - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[mxm-1] + EQ[pymxm1]) / 2.
+    E22 = (EQ[mxm-1] + EQ[mxm1-1]) / 2.
 
     format4612 = "(i6,'  ratio apriori for interp. ')"
     fort_write(None, format4612, [mxm])
