@@ -394,15 +394,13 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
             if J == -1:  # not found
                 continue
 
-        mxm = mxm + 1
-        pymxm = mxm - 1
-        EQ[pymxm] = ER[M1, K]
-        Q[pymxm] = T[M1, K] / (T[M2, L] + T[M3, J])
+        EQ[mxm] = ER[M1, K]
+        Q[mxm] = T[M1, K] / (T[M2, L] + T[M3, J])
+        mxm += 1
 
     mxm1 = mxm - 1
-    pymxm1 = mxm1 - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
+    E22 = (EQ[pymxm] + EQ[mxm1-1]) / 2.
 
     format4614 = "(i6,'  cr. sec. vs sum apriori for interp. ')"
     fort_write(None, format4614, [mxm])
