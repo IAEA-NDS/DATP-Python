@@ -286,9 +286,8 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     # RATIO + RATIO SHAPE
     M1 = xp.NID[0]
     M2 = xp.NID[1]
-    pyM2 = M2 - 1
     NO1 = NOD[M1-1]
-    NON = NOD[pyM2]
+    NON = NOD[M2-1]
     mxm = 0
 
     for K in range(NO1):
@@ -297,7 +296,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
         etst2 = ER[M1-1, K] * 1.0001
         found = False
         for L in range(NON):
-            if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
+            if ER[M2-1, L] > etst1 and ER[M2-1, L] < etst2:
                 found = True
                 break
 
@@ -307,14 +306,14 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
         mxm = mxm + 1
         pymxm = mxm - 1
         EQ[pymxm] = ER[M1-1, K]
-        if T[pyM2, L] == 0.:
+        if T[M2-1, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
             fortK = K + 1
             fortL = L + 1
             fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
             exit()
 
-        Q[pymxm] = T[M1-1, K] / T[pyM2, L]
+        Q[pymxm] = T[M1-1, K] / T[M2-1, L]
 
     pymxm = mxm - 1
     mxm1 = mxm - 1
