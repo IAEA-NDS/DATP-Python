@@ -62,7 +62,7 @@ def copy_gma_controls(file_IO1, file_IO2, file_IO4):
 
 def read_apriori(file_IO1):
     prior_energy_mesh = np.zeros((NQM, NOM), dtype=float)
-    T = np.zeros((NQM, NOM), dtype=float)
+    prior_cross_section = np.zeros((NQM, NOM), dtype=float)
     format99 = '(A16)'  # original: (8A2)
     format100r = '(2E10.4)'
     LAB = np.empty((NQM,), dtype=object)
@@ -76,15 +76,17 @@ def read_apriori(file_IO1):
                 NOD[L] = K-1
                 break
             prior_energy_mesh[L, K-1] = EQ9
-            T[L, K-1] = TQ9
+            prior_cross_section[L, K-1] = TQ9
 
         if K == NOM:
             NOD[L] = NOM
 
-    return NOD, LAB, prior_energy_mesh, T
+    return NOD, LAB, prior_energy_mesh, prior_cross_section
 
 
-def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, prior_energy_mesh, T):
+def transfer_apriori_to_output_file(
+    file_IO2, file_IO4, NOD, LAB, prior_energy_mesh, prior_cross_section
+):
     ITOT = 0
     for K in range(NQM):
         ITOT = ITOT + NOD[K]
@@ -107,8 +109,8 @@ def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, prior_energy_m
         fort_write(None, format3731, [L+1, NOR2, LAB[L]])
 
         for K in range(1, NOR):
-            fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], T[L, K]])
-            fort_write(file_IO4, format100, [prior_energy_mesh[L, K], T[L, K]])
+            fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], prior_cross_section[L, K]])
+            fort_write(file_IO4, format100, [prior_energy_mesh[L, K], prior_cross_section[L, K]])
         fort_write(file_IO2, format109, [0, 0])
         fort_write(file_IO4, format100, [0, 0])
 
