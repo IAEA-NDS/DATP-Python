@@ -269,18 +269,14 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     M1 = xp.NID[0] - 1
     NON = NOD[M1]
     NON1 = NON-1
-    # NOTE: M1-1 due to different start index
-    #       in Python (0) and Fortran (1)
     E11 = (ER[M1, 0] + ER[M1, 1]) / 2.
     E22 = (ER[M1, NON-1] + ER[M1, NON1-1]) / 2.
     for K in range(NON):
         EQ[K] = ER[M1, K]
         Q[K] = T[M1, K]
-    mxm = NON
-    mxm1 = mxm - 1
     format4611 = "(i6,'  cr. sec. apriori for interp. ')"
-    fort_write(None, format4611, [mxm])
-    return E11, E22, EQ, Q, mxm1
+    fort_write(None, format4611, [NON-1])
+    return E11, E22, EQ, Q, NON-1
 
 
 @must_be_called
