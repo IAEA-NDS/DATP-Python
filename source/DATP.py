@@ -356,12 +356,12 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
             if J == -1:  # not found
                 continue
 
+        EQ[mxm] = ER[M1-1, K]
+        Q[mxm] = T[M1-1, K] + T[M2-1, L]
+        if M3 != 0:
+            Q[mxm] = Q[mxm] + T[M3-1, J]
+
         mxm += 1 
-        EQ[mxm-1] = ER[M1-1, K]
-        Q[mxm-1] = T[M1-1, K] + T[M2-1, L]
-        if M3 == 0:
-            continue
-        Q[mxm-1] = Q[mxm-1] + T[M3-1, J]
 
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
