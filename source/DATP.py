@@ -306,11 +306,12 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
     NO1 = NOD[M1]
+    NON = NOD[M2]
     mxm = 0
 
     for K in range(NO1):
         # find matching energies
-        L = find_indices_with_tol(ER[M2,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
         EQ[mxm] = ER[M1, K]
@@ -339,18 +340,19 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     M2 = xp.NID[1] - 1
     M3 = xp.NID[2] - 1
     NO1 = NOD[M1]
+    NON = NOD[M2]
     if M3 != -1:
         NO3 = NOD[M3]
 
     mxm = 0
     for K in range(NO1):  # 23
 
-        L = find_indices_with_tol(ER[M2,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
 
         if M3 != -1:
-            J = find_indices_with_tol(ER[M3,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+            J = find_indices_with_tol(ER[M3,:NO3], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
             if J == -1:  # not found
                 continue
 
