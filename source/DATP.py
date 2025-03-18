@@ -336,30 +336,29 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     # SUM AND SHAPE OF SUM
-    M1 = xp.NID[0]
-    M2 = xp.NID[1]
-    M3 = xp.NID[2]
-    NO1 = NOD[M1-1]
-    NON = NOD[M2-1]
-    if M3 != 0:
-        NO3 = NOD[M3-1]
+    M1 = xp.NID[0] - 1
+    M2 = xp.NID[1] - 1
+    M3 = xp.NID[2] - 1
+    NO1 = NOD[M1]
+    if M3 != -1:
+        NO3 = NOD[M3]
 
     mxm = 0
     for K in range(NO1):  # 23
 
-        L = find_indices_with_tol(ER[M2-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        L = find_indices_with_tol(ER[M2,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
 
-        if M3 != 0:
-            J = find_indices_with_tol(ER[M3-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        if M3 != -1:
+            J = find_indices_with_tol(ER[M3,:], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
             if J == -1:  # not found
                 continue
 
-        EQ[mxm] = ER[M1-1, K]
-        Q[mxm] = T[M1-1, K] + T[M2-1, L]
-        if M3 != 0:
-            Q[mxm] = Q[mxm] + T[M3-1, J]
+        EQ[mxm] = ER[M1, K]
+        Q[mxm] = T[M1, K] + T[M2, L]
+        if M3 != -1:
+            Q[mxm] = Q[mxm] + T[M3, J]
 
         mxm += 1 
 
