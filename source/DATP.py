@@ -357,17 +357,15 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
                 continue
 
         mxm = mxm + 1
-        pymxm = mxm - 1
-        EQ[pymxm] = ER[M1-1, K]
-        Q[pymxm] = T[M1-1, K] + T[M2-1, L]
+        EQ[mxm-1] = ER[M1-1, K]
+        Q[mxm-1] = T[M1-1, K] + T[M2-1, L]
         if M3 == 0:
             continue
-        Q[pymxm] = Q[pymxm] + T[M3-1, J]
+        Q[mxm-1] = Q[mxm-1] + T[M3-1, J]
 
     mxm1 = mxm - 1
-    pymxm1 = mxm1 - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[pymxm] + EQ[pymxm1]) / 2.
+    E22 = (EQ[mxm-1] + EQ[mxm1-1]) / 2.
 
     format4613 = "(i6,'  sum apriori for interp. ')"
     fort_write(None, format4613, [mxm])
