@@ -307,9 +307,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
         EQ[mxm-1] = ER[M1-1, K]
         if T[M2-1, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
-            fortK = K + 1
-            fortL = L + 1
-            fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[mxm-1]])
+            fort_write(None, format4618, [M1, K+1, M2, L+1, EQ[mxm-1]])
             exit()
 
         Q[mxm-1] = T[M1-1, K] / T[M2-1, L]
