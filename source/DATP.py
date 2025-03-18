@@ -314,7 +314,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
         L = find_indices_with_tol(ER[M2-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
         if L == -1:  # not found
             continue
-        mxm = mxm + 1
+        mxm += 1
         EQ[mxm-1] = ER[M1-1, K]
         if T[M2-1, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
@@ -323,13 +323,12 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
 
         Q[mxm-1] = T[M1-1, K] / T[M2-1, L]
 
-    mxm1 = mxm - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[mxm-1] + EQ[mxm1-1]) / 2.
+    E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
 
     format4612 = "(i6,'  ratio apriori for interp. ')"
     fort_write(None, format4612, [mxm])
-    return E11, E22, EQ, Q, mxm1
+    return E11, E22, EQ, Q, mxm-1
 
 
 @must_be_called
