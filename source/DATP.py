@@ -346,24 +346,14 @@ def deal_with_SUM_and_SHAPE_OF_SUM(xp, NOD, ER, T):
 
     mxm = 0
     for K in range(NO1):  # 23
-        etst1 = ER[M1-1, K] * 0.9999
-        etst2 = ER[M1-1, K] * 1.0001
 
-        found = False
-        for L in range(NON):  # 16
-            if ER[M2-1, L] > etst1 and ER[M2-1, L] < etst2:
-                found = True
-                break
-        if not found:
+        L = find_indices_with_tol(ER[M2-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        if L == -1:  # not found
             continue
 
         if M3 != 0:
-            found = False
-            for J in range(NO3):  # 19
-                if ER[M3-1, J] > etst1 and ER[M3-1, J] < etst2:
-                    found = True
-                    break
-            if not found:
+            J = find_indices_with_tol(ER[M3-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+            if J == -1:  # not found
                 continue
 
         mxm = mxm + 1
