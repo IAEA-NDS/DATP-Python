@@ -384,25 +384,15 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     pymxm = mxm - 1
 
     for K in range(NO1):
-        etst1 = ER[M1, K] * 0.9999
-        etst2 = ER[M1, K] * 1.0001
-        found = False
-        for L in range(NON):
-            if ER[M2, L] > etst1 and ER[M2, L] < etst2:
-                found = True
-                break
 
-        if not found:
+        L = find_indices_with_tol(ER[M2,:NON], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        if L == -1:  # not found
             continue
 
-        found = False
-        for J in range(NO3):
-            if ER[M3, J] > etst1 and ER[M3, J] < etst2:
-                found = True
-                break
-
-        if not found:
-            continue
+        if M3 != -1:
+            J = find_indices_with_tol(ER[M3,:NO3], ER[M1, K:K+1], atol=1e-8, rtol=1e-4).item()
+            if J == -1:  # not found
+                continue
 
         mxm = mxm + 1
         pymxm = mxm - 1
