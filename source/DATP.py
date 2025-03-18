@@ -285,7 +285,7 @@ def deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T):
     mxm1 = mxm - 1
     format4611 = "(i6,'  cr. sec. apriori for interp. ')"
     fort_write(None, format4611, [mxm])
-    return E11, E22, EQ, Q, mxm, mxm1
+    return E11, E22, EQ, Q, mxm1
 
 
 @must_be_called
@@ -499,7 +499,7 @@ def reduce_data():
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
         if xp.NT in (1, 2):
-            E11, E22, EQ, Q, _, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T)
+            E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(xp, NOD, ER, T)
         elif xp.NT in (3, 4):
             E11, E22, EQ, Q, _, mxm1, _, _, _, _, _, _ = deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T)
         elif xp.NT in (5, 8):
