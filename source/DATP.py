@@ -21,19 +21,6 @@ except KeyError:
 def debugout(debugstr):
     print('DEBUG: ' + str(debugstr))
 
-# classes goto and label are soley
-# defined to suppress linting messages
-# goto and label statements are handled
-# by the goto package
-
-
-class goto:
-    dummy = 0
-
-
-class label:
-    dummy = 0
-
 
 class Bunch(object):
     def __init__(self, adict):
