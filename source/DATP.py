@@ -144,7 +144,6 @@ MTY = '  '
 
 # global vars
 MAXF = 900
-pyMAXF = MAXF - 1  # helper variable for Python indexing
 NOM = 200
 NQM = 33  # number of apriori tables in DAT.INP (excluding FIS*)
 W = 0.
@@ -543,8 +542,8 @@ def reduce_data():
             # fission spectrum average data set
             fort_write(file_IO2, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
             fort_write(file_IO4, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-            fort_write(file_IO2, format200, [W, W, xp.F[0:12, pyMAXF]])
-            fort_write(file_IO4, format200, [W, W, xp.F[0:12, pyMAXF]])
+            fort_write(file_IO2, format200, [W, W, xp.F[0:12, MAXF-1]])
+            fort_write(file_IO4, format200, [W, W, xp.F[0:12, MAXF-1]])
             continue
 
         # GET GRID VALUES  - try at all apriori energies to find data
@@ -566,7 +565,7 @@ def reduce_data():
             WTS = 0.
             NKOT = 0
             for N in range(12):  # 133
-                xp.F[N, pyMAXF] = 0.
+                xp.F[N, MAXF-1] = 0.
 
             if E1 > .03:
                 INT = 1
@@ -637,9 +636,9 @@ def reduce_data():
                 # average for all other uncertainties
                 for M in range(11):  # 38
                     if xp.NETG[M] != 9:
-                        xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + xp.F[M, K]
+                        xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + xp.F[M, K]
                     elif xp.F[M, K] != 0.0:
-                        xp.F[M, pyMAXF] = xp.F[M, pyMAXF] + (1./xp.F[M, K])**2
+                        xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + (1./xp.F[M, K])**2
 
                 NKOT = NKOT + 1
 
@@ -651,19 +650,19 @@ def reduce_data():
                 DIF = QQQ / Q[L]
                 for N in range(11):  # 39
                     if xp.NETG[N] != 9:
-                        xp.F[N, pyMAXF] = xp.F[N, pyMAXF] / AKOT
-                    elif xp.F[N, pyMAXF] > 0.0:
-                        xp.F[N, pyMAXF] = 1. / np.sqrt(xp.F[N, pyMAXF])
+                        xp.F[N, MAXF-1] = xp.F[N, MAXF-1] / AKOT
+                    elif xp.F[N, MAXF-1] > 0.0:
+                        xp.F[N, MAXF-1] = 1. / np.sqrt(xp.F[N, MAXF-1])
                     else:
-                        xp.F[N, pyMAXF] = 0.
+                        xp.F[N, MAXF-1] = 0.
 
                 # OUTPUT
-                fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, pyMAXF]])
-                fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, pyMAXF], DIF])
+                fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
+                fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, MAXF-1], DIF])
 
         # end of data set
-        fort_write(file_IO4, format200, [W, W, xp.F[0:12, pyMAXF]])
-        fort_write(file_IO2, format200, [W, W, xp.F[0:12, pyMAXF]])
+        fort_write(file_IO4, format200, [W, W, xp.F[0:12, MAXF-1]])
+        fort_write(file_IO2, format200, [W, W, xp.F[0:12, MAXF-1]])
 
         if xp.NCO == 0:
             continue
