@@ -1,7 +1,9 @@
 import numpy as np
+import math
 from helpers import (
     fort_read,
     fort_write,
+    unflatten,
 )
 from constants import (
     NQM,
@@ -10,6 +12,7 @@ from constants import (
     NHMO,
     NHFI,
     MTY,
+    MAXF,
     SHOULD_TEST_OUTPUT,
 )
 
@@ -108,3 +111,145 @@ def transfer_apriori_to_output_file(file_IO2, file_IO4, NOD, LAB, ER, T):
             fort_write(file_IO4, format100, [ER[L, K], T[L, K]])
         fort_write(file_IO2, format109, [0, 0])
         fort_write(file_IO4, format100, [0, 0])
+
+
+def DATRCL(file_ID3, NZ: int, IBZ: int):
+
+    # variables with local scope
+    NAU: str; NREF: str; NQT: str
+    NCOM: str; NQQ: str; NXQT: str
+    NXAU: str; ICC: str; NES: str; NEB: str
+
+    ICC = 'C '
+    NES = 'ES'
+    NEB = 'EB'
+
+    # this declaration is not present in Fortran code
+    # but assumed to be implicitly done
+    SES = 0.
+
+    if NZ == 5:
+        for K in range(1,1000):
+            NXY[K] = 0
+
+    NBQZ = 1
+    if NBQZ == 1: NQQ = NES
+    if IBZ == 2: NQQ = NEB
+
+    # data set identification
+    # original string
+    # format100 = '(2I4,12A2,14A2,10A2)'
+    format100 = '(2I4, A24, A28, A20)'
+    NR = 0
+    while NR == 0:
+        NR, NY, NQT, NAU, NREF = fort_read(file_ID3, format100)
+
+    if NR == 9999:
+        return {'NR': NR}
+    format103 = '(4I2,I3,I5,5I3)'
+    NQ, NT, NCO, NCS, NCCO, NO, NID = unflatten(
+            fort_read(file_ID3, format103), [6, [5]])
+
+    # COMMENTS
+    # original: (40A2)
+    format106 = '(A80)'
+    NCOM = []
+    for i in range(NCCO):
+        NCOM.append(fort_read(file_ID3, format106))
+
+    # NORMALIZATION UNCERTAINTIES
+    ENF = None
+    NENF = None
+    SES = 0.
+
+    if (not (NT == 2 or NT == 4)) and (not (NT == 8 or NT == 9)):
+        format107 = '(10F5.1, 10I3)'
+        ENF, NENF = unflatten(fort_read(file_ID3, format107), [[10], [10]])
+        for K in range(10):
+            SES = SES + ENF[K]*ENF[K]
+
+    # ENERGY DEPENDENT UNCERTAINTY CORRELATIONS PARAMETERS AND TAGS
+    format110 = '(3F5.2)'
+    EPA = np.empty((3,11), dtype=float)
+    for i in range(11):
+        EPA[:,i] = fort_read(file_ID3, format110)
+
+    for k in range(11):
+        absum = EPA[0,k] + EPA[1,k]
+        if absum > 1.0:
+            EPA[1,k] = 1.0 - EPA[0,k]
+
+    format111 = '(11I3)'
+    NETG = fort_read(file_ID3, format111)
+
+    # DATA
+    E = np.empty((NO,), dtype=float)
+    S = np.empty((NO,), dtype=float)
+    F = np.zeros((12, MAXF), dtype=float)
+    format114 = '(2E10.4,12F5.1)'
+    for K in range(NO):
+        E[K], S[K], F[:,K] = unflatten(
+                fort_read(file_ID3, format114), [2, [12]])
+        SSS = 0.
+        for M in range(2, 11):
+            SSS = SSS + F[M, K]*F[M, K]
+
+        F[11, K] = np.sqrt(SES+SSS)
+
+    # CORRELATIONS WITH PRECEDING DATA SETS
+
+    # line in fortran code not required here
+    # if no cross-correlations present,
+    # respective arrays will be empty
+    #if NCS == 0: goto .lbl29
+    NCST = np.zeros((NCS,), dtype=int)
+    NEC = np.zeros((2,10,NCS), dtype=int)
+    FCFC = np.zeros((10,NCS), dtype=float)
+    for K in range(NCS):
+        format116 = '(I5,20I2)'
+        tmp = fort_read(file_ID3, format116)
+        # ISSUE: there are not always 20 I2 numbers
+        #        in the GMDATA file but sometimes less
+        tmp = [x for x in tmp if x is not None]
+        tmp2 = np.zeros((20,), dtype=int)
+        tmp2[:(len(tmp)-1)] = tmp[1:]
+        NCST[K] = tmp[0]
+        NEC[0, :, K] = tmp2[:10]
+        NEC[1, :, K] = tmp2[10:]
+
+        format452 = '(10F5.1)'
+        tmp = fort_read(file_ID3, format452, none_as=0.)
+        if np.any([math.isnan(x) for x in tmp]):
+            raise ValueError
+
+        FCFC[:, K] = tmp
+        for ji in range(10):
+            if FCFC[ji, K] > 1.0:
+                FCFC[ji, K] = 1.0
+            if FCFC[ji, K] < -1.0:
+                FCFC[ji, K] = -1.0
+
+    # CORRELATION MATRIX INPUT
+    ECOR = np.zeros((NCO, NCO), dtype=float)
+    format117 = '(10F8.5)'
+    for L in range(NCO):
+        num_el_read = 0
+        num_el_desired = L + 1
+        res = []
+        while num_el_read < num_el_desired:
+            tmp = fort_read(file_ID3, format117)
+            tmp = [x for x in tmp if x is not None]
+            res += tmp
+            num_el_read += len(tmp)
+        ECOR[L, :(L+1)] = res
+
+    format118 = '(A2)'
+    NQQ = fort_read(file_ID3, format118)
+    assert len(NQQ) == 1
+    NQQ = NQQ[0]
+
+    return({'NR': NR, 'NY': NY, 'NQT': NQT, 'NAU': NAU, 'NREF': NREF,
+            'NQ': NQ, 'NT': NT, 'NCO': NCO, 'NCS': NCS, 'NCCO': NCCO, 'NO': NO, 'NID': NID,
+            'NCOM': NCOM, 'ENF': ENF, 'NENF': NENF, 'SES': SES, 'EPA': EPA,
+            'NETG': NETG, 'E': E, 'S': S, 'F': F,
+            'NCST': NCST, 'NEC': NEC, 'NQQ': NQQ, 'FCFC': FCFC, 'ECOR': ECOR})
