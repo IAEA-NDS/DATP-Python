@@ -311,17 +311,9 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
 
     for K in range(NO1):
         # find matching energies
-        etst1 = ER[M1-1, K] * 0.9999
-        etst2 = ER[M1-1, K] * 1.0001
-        found = False
-        for L in range(NON):
-            if ER[M2-1, L] > etst1 and ER[M2-1, L] < etst2:
-                found = True
-                break
-
-        if not found:
+        L = find_indices_with_tol(ER[M2-1,:], ER[M1-1, K:K+1], atol=1e-8, rtol=1e-4).item()
+        if L == -1:  # not found
             continue
-
         mxm = mxm + 1
         EQ[mxm-1] = ER[M1-1, K]
         if T[M2-1, L] == 0.:
