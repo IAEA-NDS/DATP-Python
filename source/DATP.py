@@ -286,16 +286,15 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
     # RATIO + RATIO SHAPE
     M1 = xp.NID[0]
     M2 = xp.NID[1]
-    pyM1 = M1 - 1
     pyM2 = M2 - 1
-    NO1 = NOD[pyM1]
+    NO1 = NOD[M1-1]
     NON = NOD[pyM2]
     mxm = 0
 
     for K in range(NO1):
         # find matching energies
-        etst1 = ER[pyM1, K] * 0.9999
-        etst2 = ER[pyM1, K] * 1.0001
+        etst1 = ER[M1-1, K] * 0.9999
+        etst2 = ER[M1-1, K] * 1.0001
         found = False
         for L in range(NON):
             if ER[pyM2, L] > etst1 and ER[pyM2, L] < etst2:
@@ -307,7 +306,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
 
         mxm = mxm + 1
         pymxm = mxm - 1
-        EQ[pymxm] = ER[pyM1, K]
+        EQ[pymxm] = ER[M1-1, K]
         if T[pyM2, L] == 0.:
             format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
             fortK = K + 1
@@ -315,7 +314,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(xp, NOD, ER, T):
             fort_write(None, format4618, [M1, fortK, M2, fortL, EQ[pymxm]])
             exit()
 
-        Q[pymxm] = T[pyM1, K] / T[pyM2, L]
+        Q[pymxm] = T[M1-1, K] / T[pyM2, L]
 
     pymxm = mxm - 1
     mxm1 = mxm - 1
