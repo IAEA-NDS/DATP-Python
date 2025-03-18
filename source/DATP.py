@@ -374,21 +374,21 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((NOM,), dtype=float)
     #  RATIO OF CS VS. SUM + SHAPE
-    M1 = xp.NID[0]
-    M2 = xp.NID[1]
-    M3 = xp.NID[2]
-    NO1 = NOD[M1-1]
-    NON = NOD[M2-1]
-    NO3 = NOD[M3-1]
+    M1 = xp.NID[0] - 1
+    M2 = xp.NID[1] - 1
+    M3 = xp.NID[2] - 1
+    NO1 = NOD[M1]
+    NON = NOD[M2]
+    NO3 = NOD[M3]
     mxm = 0
     pymxm = mxm - 1
 
     for K in range(NO1):
-        etst1 = ER[M1-1, K] * 0.9999
-        etst2 = ER[M1-1, K] * 1.0001
+        etst1 = ER[M1, K] * 0.9999
+        etst2 = ER[M1, K] * 1.0001
         found = False
         for L in range(NON):
-            if ER[M2-1, L] > etst1 and ER[M2-1, L] < etst2:
+            if ER[M2, L] > etst1 and ER[M2, L] < etst2:
                 found = True
                 break
 
@@ -397,7 +397,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
 
         found = False
         for J in range(NO3):
-            if ER[M3-1, J] > etst1 and ER[M3-1, J] < etst2:
+            if ER[M3, J] > etst1 and ER[M3, J] < etst2:
                 found = True
                 break
 
@@ -406,8 +406,8 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(xp, NOD, ER, T):
 
         mxm = mxm + 1
         pymxm = mxm - 1
-        EQ[pymxm] = ER[M1-1, K]
-        Q[pymxm] = T[M1-1, K] / (T[M2-1, L] + T[M3-1, J])
+        EQ[pymxm] = ER[M1, K]
+        Q[pymxm] = T[M1, K] / (T[M2, L] + T[M3, J])
 
     mxm1 = mxm - 1
     pymxm1 = mxm1 - 1
