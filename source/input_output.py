@@ -11,7 +11,6 @@ from constants import (
     NHEL,
     NHMO,
     NHFI,
-    MTY,
     MAXF,
     SHOULD_TEST_OUTPUT,
 )
@@ -24,8 +23,11 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
         KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8 = \
             fort_read(prior_file_handle, format260, none_as=0.)
         fort_write(None, format483, [KCO1])
-        if KCO1 == MTY:
+
+        # exit loop if nothing more to read
+        if KCO1.strip() == '':
             break
+
         fort_write(gma_file_handle,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
         fort_write(file_IO2,  format260,

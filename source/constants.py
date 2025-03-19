@@ -6,7 +6,6 @@ NHEL = 'EL'
 NQST = 'ST'
 NHMO = 'MO'
 NHFI = 'FI'
-MTY = '  '
 
 # global vars
 MAXF = 900
