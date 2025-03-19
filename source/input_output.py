@@ -79,17 +79,16 @@ def read_apriori(prior_file_handle):
             break
 
         LAB[L] = cur_label
-        for K in range(1, MAX_NUM_POINTS+1):
+        num_points = 0
+        for K in range(MAX_NUM_POINTS):
             EQ9, TQ9 = fort_read(prior_file_handle, format100r)
             if EQ9 == 0:
-                prior_number_points[L] = K-1
                 break
-            prior_energy_mesh[L, K-1] = EQ9
-            prior_cross_section[L, K-1] = TQ9
+            prior_energy_mesh[L, K] = EQ9
+            prior_cross_section[L, K] = TQ9
+            num_points += 1
 
-        if K == MAX_NUM_POINTS:
-            prior_number_points[L] = MAX_NUM_POINTS
-
+        prior_number_points[L] = num_points
         num_reactions += 1
 
     # shrink arrays to real data size
