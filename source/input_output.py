@@ -17,7 +17,7 @@ from constants import (
 )
 
 
-def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
+def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
     for K in range(10):
         format260 = '(A2,A2,A1,8I5)'
         format483 = "(' reading  ', a2)"
@@ -26,7 +26,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
         fort_write(None, format483, [KCO1])
         if KCO1 == MTY:
             break
-        fort_write(file_IO4,  format260,
+        fort_write(gma_file_handle,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
         fort_write(file_IO2,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
@@ -37,7 +37,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
                 MSEP = np.empty((16,), dtype=int)
                 MSEP[:] = fort_read(prior_file_handle, format402)
                 fort_write(file_IO2, format402, [MSEP])
-                fort_write(file_IO4, format402, [MSEP])
+                fort_write(gma_file_handle, format402, [MSEP])
                 if MSEP[0] == 0:
                     break
 
@@ -47,7 +47,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
                 format404 = '(2E13.5)'
                 AE, BS = fort_read(prior_file_handle, format404, none_as=0.)
                 fort_write(file_IO2, format404, [AE, BS])
-                fort_write(file_IO4, format404, [AE, BS])
+                fort_write(gma_file_handle, format404, [AE, BS])
                 if AE == 0.0:
                     break
 
@@ -55,7 +55,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
             format408 = '(16i5)'
             format468 = "('Data Sets to be Excluded')"
             NEXL = fort_read(prior_file_handle, format408)
-            fort_write(file_IO4, format408, NEXL)
+            fort_write(gma_file_handle, format408, NEXL)
             fort_write(file_IO2, format468, [None])
             fort_write(file_IO2, format408, NEXL)
 
@@ -86,7 +86,7 @@ def read_apriori(prior_file_handle):
 
 def transfer_apriori_to_output_file(
 
-    file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
+    file_IO2, gma_file_handle, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 ):
     ITOT = 0
     for K in range(NQM):
@@ -94,7 +94,7 @@ def transfer_apriori_to_output_file(
     ITOT = ITOT - 2*NQM
 
     format264 = '(5HAPRI ,2I5)'
-    fort_write(file_IO4, format264, [ITOT, NQM])
+    fort_write(gma_file_handle, format264, [ITOT, NQM])
     fort_write(file_IO2, format264, [ITOT, NQM])
 
     format3731 = "('cross section',i5,' number',i5,A16)"
@@ -105,15 +105,15 @@ def transfer_apriori_to_output_file(
     for L in range(NQM):
         NOR = prior_number_points[L] - 1
         NOR2 = NOR - 1
-        fort_write(file_IO4, format99, [LAB[L]])
+        fort_write(gma_file_handle, format99, [LAB[L]])
         fort_write(file_IO2, format99, [LAB[L]])
         fort_write(None, format3731, [L+1, NOR2, LAB[L]])
 
         for K in range(1, NOR):
             fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], prior_cross_section[L, K]])
-            fort_write(file_IO4, format100, [prior_energy_mesh[L, K], prior_cross_section[L, K]])
+            fort_write(gma_file_handle, format100, [prior_energy_mesh[L, K], prior_cross_section[L, K]])
         fort_write(file_IO2, format109, [0, 0])
-        fort_write(file_IO4, format100, [0, 0])
+        fort_write(gma_file_handle, format100, [0, 0])
 
 
 def DATRCL(expdata_file_handle, NZ: int, IBZ: int):

@@ -191,7 +191,7 @@ def reduce_data():
     # OPEN(12,FILE='GMDATA.CRD')
     expdata_file_handle = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
     # OPEN(13,FILE='DAT.RES')
-    file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
+    gma_file_handle = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
     format250 = '(4HEDBL,1X,2I5)'
     # NOTE: format200 and format290 will be used
@@ -203,10 +203,10 @@ def reduce_data():
         format200 = '(2E14.6,12F12.7)'
         format290 = '(2E14.6,12F12.7,F9.5)'
 
-    copy_gma_controls(prior_file_handle, file_IO2, file_IO4)
+    copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
     prior_number_points, LAB, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
     transfer_apriori_to_output_file(
-        file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
+        file_IO2, gma_file_handle, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
     )
 
     # START OF REDUCTION AND TRANSFER
@@ -261,12 +261,12 @@ def reduce_data():
 
         NQMM = 0
         if NQQA == NQND:
-            fort_write(file_IO4, format250, [NQMM, NQMM])
+            fort_write(gma_file_handle, format250, [NQMM, NQMM])
             fort_write(file_IO2, format250, [NQMM, NQMM])
 
         if NQQA == NQND or NQQA == NQST:
             format251 = '(4HBLCK,1X,2I5)'
-            fort_write(file_IO4, format251, [NQMM, NQMM])
+            fort_write(gma_file_handle, format251, [NQMM, NQMM])
             fort_write(file_IO2, format251, [NQMM, NQMM])
 
         NQQA = xp.NQQ
@@ -285,17 +285,17 @@ def reduce_data():
             xp.NID[3] = 1
 
         format253 = '(5HDATA ,9I5)'
-        fort_write(file_IO4, format253, [xp.NR, xp.NT, xp.NCO, NNN, xp.NID[0:4]])
+        fort_write(gma_file_handle, format253, [xp.NR, xp.NT, xp.NCO, NNN, xp.NID[0:4]])
         fort_write(file_IO2, format253, [xp.NR, xp.NT, xp.NCO, NNN, xp.NID[0:4]])
 
         format254 = '(3I5,A28,8X,A20)'
-        fort_write(file_IO4, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
+        fort_write(gma_file_handle, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
         fort_write(file_IO2, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
 
         if xp.NT not in (2, 4, 8, 9):
             # normalization uncertainties
             format261 = '(10F5.1,10I3)'
-            fort_write(file_IO4, format261, [xp.ENF[0:10], xp.NENF[0:10]])
+            fort_write(gma_file_handle, format261, [xp.ENF[0:10], xp.NENF[0:10]])
             fort_write(file_IO2, format261, [xp.ENF[0:10], xp.NENF[0:10]])
 
         # energy dep. unc. parameters
@@ -304,7 +304,7 @@ def reduce_data():
         #       of the fortran code
         for K in range(11):
             fort_write(file_IO2, format262, [xp.EPA[0:3, K], xp.NETG[K]])
-            fort_write(file_IO4, format262, [xp.EPA[0:3, K], xp.NETG[K]])
+            fort_write(gma_file_handle, format262, [xp.EPA[0:3, K], xp.NETG[K]])
         if xp.NCS != 0:
             # cross correlations
             format263 = '(I5,20I3)'
@@ -312,17 +312,17 @@ def reduce_data():
             for K in range(xp.NCS):  # 83
                 # NOTE: during flattening in fort_write first index should
                 #       change fastest
-                fort_write(file_IO4, format263, [xp.NCST[K], xp.NEC[:, :, K]])
+                fort_write(gma_file_handle, format263, [xp.NCST[K], xp.NEC[:, :, K]])
                 fort_write(file_IO2, format263, [xp.NCST[K], xp.NEC[:, :, K]])
-                fort_write(file_IO4, format293, [xp.FCFC[0:10, K]])
+                fort_write(gma_file_handle, format293, [xp.FCFC[0:10, K]])
                 fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
 
         if xp.NT == 6:
             # fission spectrum average data set
             fort_write(file_IO2, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-            fort_write(file_IO4, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
+            fort_write(gma_file_handle, format200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
             fort_write(file_IO2, format200, [0, 0, xp.F[0:12, MAXF-1]])
-            fort_write(file_IO4, format200, [0, 0, xp.F[0:12, MAXF-1]])
+            fort_write(gma_file_handle, format200, [0, 0, xp.F[0:12, MAXF-1]])
             continue
 
         # GET GRID VALUES  - try at all apriori energies to find data
@@ -436,11 +436,11 @@ def reduce_data():
                         xp.F[N, MAXF-1] = 0.
 
                 # OUTPUT
-                fort_write(file_IO4, format200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
+                fort_write(gma_file_handle, format200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
                 fort_write(file_IO2, format290, [EEE, QQQ, xp.F[0:12, MAXF-1], DIF])
 
         # end of data set
-        fort_write(file_IO4, format200, [0, 0, xp.F[0:12, MAXF-1]])
+        fort_write(gma_file_handle, format200, [0, 0, xp.F[0:12, MAXF-1]])
         fort_write(file_IO2, format200, [0, 0, xp.F[0:12, MAXF-1]])
 
         if xp.NCO == 0:
@@ -450,19 +450,19 @@ def reduce_data():
         format6115 = '(10F8.5)'
         for KL in range(xp.NCO):  # 6113
             fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
-            fort_write(file_IO4, format6115, [xp.ECOR[KL, :(KL+1)]])
+            fort_write(gma_file_handle, format6115, [xp.ECOR[KL, :(KL+1)]])
 
     # DATA FILE COMPLETE
     format256 = '(4HEND*,1X,2I5)'
-    fort_write(file_IO4, format250, [NQMM, NQMM])
+    fort_write(gma_file_handle, format250, [NQMM, NQMM])
     fort_write(file_IO2, format250, [NQMM, NQMM])
-    fort_write(file_IO4, format256, [NQMM, NQMM])
+    fort_write(gma_file_handle, format256, [NQMM, NQMM])
     fort_write(file_IO2, format256, [NQMM, NQMM])
 
     prior_file_handle.close()
     file_IO2.close()
     expdata_file_handle.close()
-    file_IO4.close()
+    gma_file_handle.close()
 
 
 atexit.register(must_be_called.check_called)
