@@ -185,7 +185,7 @@ def reduce_data():
 
     basedir = '.'
     # OPEN(14,FILE='DAT.INP')
-    file_IO1 = open(os.path.join(basedir, 'DAT.INP'), 'r')
+    prior_file_handle = open(os.path.join(basedir, 'DAT.INP'), 'r')
     # OPEN(15,FILE='DAT.LST')
     file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
     # OPEN(12,FILE='GMDATA.CRD')
@@ -204,8 +204,8 @@ def reduce_data():
         format200 = '(2E14.6,12F12.7)'
         format290 = '(2E14.6,12F12.7,F9.5)'
 
-    copy_gma_controls(file_IO1, file_IO2, file_IO4)
-    prior_number_points, LAB, prior_energy_mesh, prior_cross_section = read_apriori(file_IO1)
+    copy_gma_controls(prior_file_handle, file_IO2, file_IO4)
+    prior_number_points, LAB, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
     transfer_apriori_to_output_file(
         file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
     )
@@ -460,7 +460,7 @@ def reduce_data():
     fort_write(file_IO4, format256, [NQMM, NQMM])
     fort_write(file_IO2, format256, [NQMM, NQMM])
 
-    file_IO1.close()
+    prior_file_handle.close()
     file_IO2.close()
     file_IO3.close()
     file_IO4.close()

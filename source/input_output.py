@@ -17,12 +17,12 @@ from constants import (
 )
 
 
-def copy_gma_controls(file_IO1, file_IO2, file_IO4):
+def copy_gma_controls(prior_file_handle, file_IO2, file_IO4):
     for K in range(10):
         format260 = '(A2,A2,A1,8I5)'
         format483 = "(' reading  ', a2)"
         KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8 = \
-            fort_read(file_IO1, format260, none_as=0.)
+            fort_read(prior_file_handle, format260, none_as=0.)
         fort_write(None, format483, [KCO1])
         if KCO1 == MTY:
             break
@@ -35,7 +35,7 @@ def copy_gma_controls(file_IO1, file_IO2, file_IO4):
             while True:
                 format402 = '16I5'
                 MSEP = np.empty((16,), dtype=int)
-                MSEP[:] = fort_read(file_IO1, format402)
+                MSEP[:] = fort_read(prior_file_handle, format402)
                 fort_write(file_IO2, format402, [MSEP])
                 fort_write(file_IO4, format402, [MSEP])
                 if MSEP[0] == 0:
@@ -45,7 +45,7 @@ def copy_gma_controls(file_IO1, file_IO2, file_IO4):
             # fission spectrum
             while True:
                 format404 = '(2E13.5)'
-                AE, BS = fort_read(file_IO1, format404, none_as=0.)
+                AE, BS = fort_read(prior_file_handle, format404, none_as=0.)
                 fort_write(file_IO2, format404, [AE, BS])
                 fort_write(file_IO4, format404, [AE, BS])
                 if AE == 0.0:
@@ -54,13 +54,13 @@ def copy_gma_controls(file_IO1, file_IO2, file_IO4):
         elif KCO1 == NHEL:
             format408 = '(16i5)'
             format468 = "('Data Sets to be Excluded')"
-            NEXL = fort_read(file_IO1, format408)
+            NEXL = fort_read(prior_file_handle, format408)
             fort_write(file_IO4, format408, NEXL)
             fort_write(file_IO2, format468, [None])
             fort_write(file_IO2, format408, NEXL)
 
 
-def read_apriori(file_IO1):
+def read_apriori(prior_file_handle):
     prior_energy_mesh = np.zeros((NQM, NOM), dtype=float)
     prior_cross_section = np.zeros((NQM, NOM), dtype=float)
     format99 = '(A16)'  # original: (8A2)
@@ -68,10 +68,10 @@ def read_apriori(file_IO1):
     LAB = np.empty((NQM,), dtype=object)
     prior_number_points = np.zeros((35,), dtype=int)
     for L in range(NQM):
-        LAB[L] = fort_read(file_IO1, format99)
+        LAB[L] = fort_read(prior_file_handle, format99)
 
         for K in range(1, NOM+1):
-            EQ9, TQ9 = fort_read(file_IO1, format100r)
+            EQ9, TQ9 = fort_read(prior_file_handle, format100r)
             if EQ9 == 0:
                 prior_number_points[L] = K-1
                 break
@@ -85,6 +85,7 @@ def read_apriori(file_IO1):
 
 
 def transfer_apriori_to_output_file(
+
     file_IO2, file_IO4, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 ):
     ITOT = 0
