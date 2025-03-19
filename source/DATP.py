@@ -21,7 +21,7 @@ from helpers import (
     find_indices_with_tol,
 )
 from constants import (
-    NQND,
+    END_DATA_BLOCK_INDICATION_STRING,
     NQST,
     NOM,
     MAXF,
@@ -255,16 +255,17 @@ def reduce_data():
             # FIND USEFUL DATA RANGE
             if xp.E[0] > E22 or xp.E[xp.NO-1] < E11:
                 # out of range
-                if NQQA != NQND and xp.NQQ == NQND:
+                if (NQQA != END_DATA_BLOCK_INDICATION_STRING
+                        and xp.NQQ == END_DATA_BLOCK_INDICATION_STRING):
                     NQQA = xp.NQQ
                 continue
 
         NQMM = 0
-        if NQQA == NQND:
+        if NQQA == END_DATA_BLOCK_INDICATION_STRING:
             fort_write(gma_file_handle, format250, [NQMM, NQMM])
             fort_write(file_IO2, format250, [NQMM, NQMM])
 
-        if NQQA == NQND or NQQA == NQST:
+        if NQQA == END_DATA_BLOCK_INDICATION_STRING or NQQA == NQST:
             format251 = '(4HBLCK,1X,2I5)'
             fort_write(gma_file_handle, format251, [NQMM, NQMM])
             fort_write(file_IO2, format251, [NQMM, NQMM])

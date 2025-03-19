@@ -8,9 +8,10 @@ from helpers import (
 from constants import (
     NQM,
     NOM,
-    NHEL,
-    NHMO,
-    NHFI,
+    END_DATA_BLOCK_INDICATION_STRING,
+    ELIMINATION_BLOCK_INDICATION_STRING,
+    DOWNWEIGHT_BLOCK_INDICATION_STRING,
+    FISSION_SPECTRUM_BLOCK_INDICATION_STRING,
     MAXF,
     SHOULD_TEST_OUTPUT,
 )
@@ -32,7 +33,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
         fort_write(file_IO2,  format260,
                    [KCO1, KCO2, KCO3, MC1, MC2, MC3, MC4, MC5, MC6, MC7, MC8])
-        if KCO1 == NHMO and MC2 == 10:
+        if KCO1 == DOWNWEIGHT_BLOCK_INDICATION_STRING and MC2 == 10:
             # data set numbers selected for downweighting
             while True:
                 format402 = '16I5'
@@ -43,7 +44,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
                 if MSEP[0] == 0:
                     break
 
-        elif KCO1 == NHFI and MC1 != 0:
+        elif KCO1 == FISSION_SPECTRUM_BLOCK_INDICATION_STRING and MC1 != 0:
             # fission spectrum
             while True:
                 format404 = '(2E13.5)'
@@ -53,7 +54,7 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
                 if AE == 0.0:
                     break
 
-        elif KCO1 == NHEL:
+        elif KCO1 == ELIMINATION_BLOCK_INDICATION_STRING:
             format408 = '(16i5)'
             format468 = "('Data Sets to be Excluded')"
             NEXL = fort_read(prior_file_handle, format408)
@@ -127,7 +128,7 @@ def DATRCL(expdata_file_handle, NZ: int, IBZ: int):
 
     ICC = 'C '
     NES = 'ES'
-    NEB = 'EB'
+    NEB = END_DATA_BLOCK_INDICATION_STRING
 
     # this declaration is not present in Fortran code
     # but assumed to be implicitly done
