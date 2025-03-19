@@ -73,9 +73,9 @@ def read_apriori(prior_file_handle):
 
     num_reactions = 0
     for L in range(MAX_NUM_REACTIONS):
-        cur_label = fort_read(prior_file_handle, format99)
+        cur_label = fort_read(prior_file_handle, format99)[0]
         # exit loop if no more prior reactions to read
-        if cur_label[0].strip() == '':
+        if cur_label.strip() == '':
             break
 
         LAB[L] = cur_label
