@@ -189,8 +189,7 @@ def reduce_data():
     # OPEN(15,FILE='DAT.LST')
     file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
     # OPEN(12,FILE='GMDATA.CRD')
-    file_IO3 = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
-    file_ID3 = file_IO3
+    expdata_file_handle = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
     # OPEN(13,FILE='DAT.RES')
     file_IO4 = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
@@ -214,7 +213,7 @@ def reduce_data():
     while True:
         # Bunch allows to access the dictionary elements
         # returned by DATRCL using the syntax expdata.varname
-        xp = Bunch(DATRCL(file_ID3, 1, 1))
+        xp = Bunch(DATRCL(expdata_file_handle, 1, 1))
         if xp.NR == 9999:
             break
         format3733 = "(' read data set  ',i7)"
@@ -462,7 +461,7 @@ def reduce_data():
 
     prior_file_handle.close()
     file_IO2.close()
-    file_IO3.close()
+    expdata_file_handle.close()
     file_IO4.close()
 
 

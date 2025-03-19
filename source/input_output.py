@@ -116,7 +116,7 @@ def transfer_apriori_to_output_file(
         fort_write(file_IO4, format100, [0, 0])
 
 
-def DATRCL(file_ID3, NZ: int, IBZ: int):
+def DATRCL(expdata_file_handle, NZ: int, IBZ: int):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
@@ -145,20 +145,20 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     format100 = '(2I4, A24, A28, A20)'
     NR = 0
     while NR == 0:
-        NR, NY, NQT, NAU, NREF = fort_read(file_ID3, format100)
+        NR, NY, NQT, NAU, NREF = fort_read(expdata_file_handle, format100)
 
     if NR == 9999:
         return {'NR': NR}
     format103 = '(4I2,I3,I5,5I3)'
     NQ, NT, NCO, NCS, NCCO, NO, NID = unflatten(
-            fort_read(file_ID3, format103), [6, [5]])
+            fort_read(expdata_file_handle, format103), [6, [5]])
 
     # COMMENTS
     # original: (40A2)
     format106 = '(A80)'
     NCOM = []
     for i in range(NCCO):
-        NCOM.append(fort_read(file_ID3, format106))
+        NCOM.append(fort_read(expdata_file_handle, format106))
 
     # NORMALIZATION UNCERTAINTIES
     ENF = None
@@ -167,7 +167,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
 
     if (not (NT == 2 or NT == 4)) and (not (NT == 8 or NT == 9)):
         format107 = '(10F5.1, 10I3)'
-        ENF, NENF = unflatten(fort_read(file_ID3, format107), [[10], [10]])
+        ENF, NENF = unflatten(fort_read(expdata_file_handle, format107), [[10], [10]])
         for K in range(10):
             SES = SES + ENF[K]*ENF[K]
 
@@ -175,7 +175,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     format110 = '(3F5.2)'
     EPA = np.empty((3,11), dtype=float)
     for i in range(11):
-        EPA[:,i] = fort_read(file_ID3, format110)
+        EPA[:,i] = fort_read(expdata_file_handle, format110)
 
     for k in range(11):
         absum = EPA[0,k] + EPA[1,k]
@@ -183,7 +183,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
             EPA[1,k] = 1.0 - EPA[0,k]
 
     format111 = '(11I3)'
-    NETG = fort_read(file_ID3, format111)
+    NETG = fort_read(expdata_file_handle, format111)
 
     # DATA
     E = np.empty((NO,), dtype=float)
@@ -192,7 +192,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     format114 = '(2E10.4,12F5.1)'
     for K in range(NO):
         E[K], S[K], F[:,K] = unflatten(
-                fort_read(file_ID3, format114), [2, [12]])
+                fort_read(expdata_file_handle, format114), [2, [12]])
         SSS = 0.
         for M in range(2, 11):
             SSS = SSS + F[M, K]*F[M, K]
@@ -210,7 +210,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
     FCFC = np.zeros((10,NCS), dtype=float)
     for K in range(NCS):
         format116 = '(I5,20I2)'
-        tmp = fort_read(file_ID3, format116)
+        tmp = fort_read(expdata_file_handle, format116)
         # ISSUE: there are not always 20 I2 numbers
         #        in the GMDATA file but sometimes less
         tmp = [x for x in tmp if x is not None]
@@ -221,7 +221,7 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
         NEC[1, :, K] = tmp2[10:]
 
         format452 = '(10F5.1)'
-        tmp = fort_read(file_ID3, format452, none_as=0.)
+        tmp = fort_read(expdata_file_handle, format452, none_as=0.)
         if np.any([math.isnan(x) for x in tmp]):
             raise ValueError
 
@@ -240,14 +240,14 @@ def DATRCL(file_ID3, NZ: int, IBZ: int):
         num_el_desired = L + 1
         res = []
         while num_el_read < num_el_desired:
-            tmp = fort_read(file_ID3, format117)
+            tmp = fort_read(expdata_file_handle, format117)
             tmp = [x for x in tmp if x is not None]
             res += tmp
             num_el_read += len(tmp)
         ECOR[L, :(L+1)] = res
 
     format118 = '(A2)'
-    NQQ = fort_read(file_ID3, format118)
+    NQQ = fort_read(expdata_file_handle, format118)
     assert len(NQQ) == 1
     NQQ = NQQ[0]
 
