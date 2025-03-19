@@ -7,7 +7,7 @@ from helpers import (
 )
 from constants import (
     MAX_NUM_REACTIONS,
-    NOM,
+    MAX_NUM_POINTS,
     END_DATA_BLOCK_INDICATION_STRING,
     ELIMINATION_BLOCK_INDICATION_STRING,
     DOWNWEIGHT_BLOCK_INDICATION_STRING,
@@ -64,8 +64,8 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
 
 
 def read_apriori(prior_file_handle):
-    prior_energy_mesh = np.zeros((MAX_NUM_REACTIONS, NOM), dtype=float)
-    prior_cross_section = np.zeros((MAX_NUM_REACTIONS, NOM), dtype=float)
+    prior_energy_mesh = np.zeros((MAX_NUM_REACTIONS, MAX_NUM_POINTS), dtype=float)
+    prior_cross_section = np.zeros((MAX_NUM_REACTIONS, MAX_NUM_POINTS), dtype=float)
     format99 = '(A16)'  # original: (8A2)
     format100r = '(2E10.4)'
     LAB = np.empty((MAX_NUM_REACTIONS,), dtype=object)
@@ -79,7 +79,7 @@ def read_apriori(prior_file_handle):
             break
 
         LAB[L] = cur_label
-        for K in range(1, NOM+1):
+        for K in range(1, MAX_NUM_POINTS+1):
             EQ9, TQ9 = fort_read(prior_file_handle, format100r)
             if EQ9 == 0:
                 prior_number_points[L] = K-1
@@ -87,8 +87,8 @@ def read_apriori(prior_file_handle):
             prior_energy_mesh[L, K-1] = EQ9
             prior_cross_section[L, K-1] = TQ9
 
-        if K == NOM:
-            prior_number_points[L] = NOM
+        if K == MAX_NUM_POINTS:
+            prior_number_points[L] = MAX_NUM_POINTS
 
         num_reactions += 1
 

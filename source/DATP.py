@@ -23,7 +23,7 @@ from helpers import (
 from constants import (
     END_DATA_BLOCK_INDICATION_STRING,
     NQST,
-    NOM,
+    MAX_NUM_POINTS,
     MAXF,
     ULI,
     SHOULD_TEST_OUTPUT,
@@ -35,7 +35,7 @@ def deal_with_CS_and_CS_SHAPE(
     xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
-    Q = np.zeros((NOM,), dtype=float)
+    Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # CS + CS SHAPE
     M1 = xp.NID[0] - 1
     NON = prior_number_points[M1]
@@ -55,7 +55,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(
     xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
-    Q = np.zeros((NOM,), dtype=float)
+    Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # RATIO + RATIO SHAPE
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
@@ -90,7 +90,7 @@ def deal_with_SUM_and_SHAPE_OF_SUM(
     xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
-    Q = np.zeros((NOM,), dtype=float)
+    Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # SUM AND SHAPE OF SUM
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
@@ -136,7 +136,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
     xp, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
-    Q = np.zeros((NOM,), dtype=float)
+    Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     #  RATIO OF CS VS. SUM + SHAPE
     M1 = xp.NID[0] - 1
     M2 = xp.NID[1] - 1
