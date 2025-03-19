@@ -6,7 +6,7 @@ from helpers import (
     unflatten,
 )
 from constants import (
-    NQM,
+    MAX_NUM_REACTIONS,
     NOM,
     END_DATA_BLOCK_INDICATION_STRING,
     ELIMINATION_BLOCK_INDICATION_STRING,
@@ -64,15 +64,21 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
 
 
 def read_apriori(prior_file_handle):
-    prior_energy_mesh = np.zeros((NQM, NOM), dtype=float)
-    prior_cross_section = np.zeros((NQM, NOM), dtype=float)
+    prior_energy_mesh = np.zeros((MAX_NUM_REACTIONS, NOM), dtype=float)
+    prior_cross_section = np.zeros((MAX_NUM_REACTIONS, NOM), dtype=float)
     format99 = '(A16)'  # original: (8A2)
     format100r = '(2E10.4)'
-    LAB = np.empty((NQM,), dtype=object)
+    LAB = np.empty((MAX_NUM_REACTIONS,), dtype=object)
     prior_number_points = np.zeros((35,), dtype=int)
-    for L in range(NQM):
-        LAB[L] = fort_read(prior_file_handle, format99)
 
+    num_reactions = 0
+    for L in range(MAX_NUM_REACTIONS):
+        cur_label = fort_read(prior_file_handle, format99)
+        # exit loop if no more prior reactions to read
+        if cur_label[0].strip() == '':
+            break
+
+        LAB[L] = cur_label
         for K in range(1, NOM+1):
             EQ9, TQ9 = fort_read(prior_file_handle, format100r)
             if EQ9 == 0:
@@ -84,6 +90,13 @@ def read_apriori(prior_file_handle):
         if K == NOM:
             prior_number_points[L] = NOM
 
+        num_reactions += 1
+
+    # shrink arrays to real data size
+    prior_number_points = prior_number_points[:num_reactions]
+    prior_energy_mesh = prior_energy_mesh[:num_reactions,:]
+    prior_cross_section = prior_cross_section[:num_reactions,:]
+
     return prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 
 
@@ -91,21 +104,22 @@ def transfer_apriori_to_output_file(
 
     file_IO2, gma_file_handle, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
 ):
+    num_reactions = prior_number_points.shape[0]
     ITOT = 0
-    for K in range(NQM):
+    for K in range(num_reactions):
         ITOT = ITOT + prior_number_points[K]
-    ITOT = ITOT - 2*NQM
+    ITOT = ITOT - 2*num_reactions
 
     format264 = '(5HAPRI ,2I5)'
-    fort_write(gma_file_handle, format264, [ITOT, NQM])
-    fort_write(file_IO2, format264, [ITOT, NQM])
+    fort_write(gma_file_handle, format264, [ITOT, num_reactions])
+    fort_write(file_IO2, format264, [ITOT, num_reactions])
 
     format3731 = "('cross section',i5,' number',i5,A16)"
     format101 = '(2X,I4,2X,2E12.4)'
     format109 = '(8x,2e10.4)'
     format100 = '(2E14.6)' if SHOULD_TEST_OUTPUT else '(2E10.4)'
     format99 = '(A16)'  # original: (8A2)
-    for L in range(NQM):
+    for L in range(num_reactions):
         NOR = prior_number_points[L] - 1
         NOR2 = NOR - 1
         fort_write(gma_file_handle, format99, [LAB[L]])

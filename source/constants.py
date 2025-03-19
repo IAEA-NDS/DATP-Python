@@ -10,7 +10,8 @@ FISSION_SPECTRUM_BLOCK_INDICATION_STRING = 'FI'
 # global vars
 MAXF = 900
 NOM = 200
-NQM = 33  # number of apriori tables in DAT.INP (excluding FIS*)
+
+MAX_NUM_REACTIONS = 1000
 
 # LIMIT OF DIF/UNC FOR OUTLIERS?
 ULI = 3.0
