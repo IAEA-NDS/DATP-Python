@@ -27,7 +27,9 @@ from .constants import (
     MAX_NUM_POINTS,
     MAXF,
     ULI,
+    NQMM,
     FORMAT200,
+    FORMAT250,
     FORMAT290,
 )
 
@@ -197,8 +199,6 @@ def reduce_data():
 
     gmadb_writer = GMADatabaseWriter(gma_file_handle, file_IO2)
 
-    format250 = '(4HEDBL,1X,2I5)'
-
     copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
     prior_number_points, prior_label, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
     transfer_apriori_to_output_file(
@@ -256,10 +256,9 @@ def reduce_data():
                     NQQA = xp.NQQ
                 continue
 
-        NQMM = 0
         if NQQA == END_DATA_BLOCK_INDICATION_STRING:
-            fort_write(gma_file_handle, format250, [NQMM, NQMM])
-            fort_write(file_IO2, format250, [NQMM, NQMM])
+            fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
+            fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
 
         if NQQA == END_DATA_BLOCK_INDICATION_STRING or NQQA == NQST:
             format251 = '(4HBLCK,1X,2I5)'
@@ -408,11 +407,7 @@ def reduce_data():
             fort_write(gma_file_handle, format6115, [xp.ECOR[KL, :(KL+1)]])
 
     # DATA FILE COMPLETE
-    format256 = '(4HEND*,1X,2I5)'
-    fort_write(gma_file_handle, format250, [NQMM, NQMM])
-    fort_write(file_IO2, format250, [NQMM, NQMM])
-    fort_write(gma_file_handle, format256, [NQMM, NQMM])
-    fort_write(file_IO2, format256, [NQMM, NQMM])
+    gmadb_writer.write_trailer()
 
     prior_file_handle.close()
     file_IO2.close()

@@ -16,6 +16,8 @@ MAX_NUM_REACTIONS = 1000
 # LIMIT OF DIF/UNC FOR OUTLIERS?
 ULI = 3.0
 
+NQMM = 0
+
 # Enables output with more precision to facilitate testing
 try:
     SHOULD_TEST_OUTPUT = (os.environ['TEST_DATP'] == 'yes')
@@ -29,3 +31,5 @@ if not SHOULD_TEST_OUTPUT:
 else:
     FORMAT200 = '(2E14.6,12F12.7)'
     FORMAT290 = '(2E14.6,12F12.7,F9.5)'
+
+FORMAT250 = '(4HEDBL,1X,2I5)'

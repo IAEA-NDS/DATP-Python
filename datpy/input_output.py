@@ -13,9 +13,10 @@ from .constants import (
     DOWNWEIGHT_BLOCK_INDICATION_STRING,
     FISSION_SPECTRUM_BLOCK_INDICATION_STRING,
     MAXF,
-
+    NQMM,
     SHOULD_TEST_OUTPUT,
     FORMAT200,
+    FORMAT250,
 )
 
 
@@ -334,3 +335,12 @@ class GMADatabaseWriter:
             fort_write(gma_file_handle, FORMAT200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
             fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
             fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+
+    def write_trailer(self): 
+        gma_file_handle = self._file_handle
+        file_IO2 = self._file_IO2
+        format256 = '(4HEND*,1X,2I5)'
+        fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
+        fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
+        fort_write(gma_file_handle, format256, [NQMM, NQMM])
+        fort_write(file_IO2, format256, [NQMM, NQMM])
