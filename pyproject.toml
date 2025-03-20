@@ -2,6 +2,11 @@
 name = "datpy"
 version = "0.1"
 
+dependencies = [
+  "fortranformat",
+  "numpy",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
