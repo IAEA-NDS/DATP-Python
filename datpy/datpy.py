@@ -204,9 +204,9 @@ def reduce_data():
         format290 = '(2E14.6,12F12.7,F9.5)'
 
     copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
-    prior_number_points, LAB, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
+    prior_number_points, prior_label, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
     transfer_apriori_to_output_file(
-        file_IO2, gma_file_handle, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
+        file_IO2, gma_file_handle, prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
     )
 
     # START OF REDUCTION AND TRANSFER

@@ -66,11 +66,11 @@ def copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle):
 def read_apriori(prior_file_handle):
     prior_energy_mesh = np.zeros((MAX_NUM_REACTIONS, MAX_NUM_POINTS), dtype=float)
     prior_cross_section = np.zeros((MAX_NUM_REACTIONS, MAX_NUM_POINTS), dtype=float)
-    format99 = '(A16)'  # original: (8A2)
-    format100r = '(2E10.4)'
-    LAB = np.empty((MAX_NUM_REACTIONS,), dtype=object)
+    prior_label = np.empty((MAX_NUM_REACTIONS,), dtype=object)
     prior_number_points = np.zeros((35,), dtype=int)
 
+    format99 = '(A16)'  # original: (8A2)
+    format100r = '(2E10.4)'
     num_reactions = 0
     for L in range(MAX_NUM_REACTIONS):
         cur_label = fort_read(prior_file_handle, format99)[0]
@@ -78,7 +78,7 @@ def read_apriori(prior_file_handle):
         if cur_label.strip() == '':
             break
 
-        LAB[L] = cur_label
+        prior_label[L] = cur_label
         num_points = 0
         for K in range(MAX_NUM_POINTS):
             EQ9, TQ9 = fort_read(prior_file_handle, format100r)
@@ -95,13 +95,14 @@ def read_apriori(prior_file_handle):
     prior_number_points = prior_number_points[:num_reactions]
     prior_energy_mesh = prior_energy_mesh[:num_reactions,:]
     prior_cross_section = prior_cross_section[:num_reactions,:]
+    prior_label = prior_label[:num_reactions]
 
-    return prior_number_points, LAB, prior_energy_mesh, prior_cross_section
+    return prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
 
 
 def transfer_apriori_to_output_file(
 
-    file_IO2, gma_file_handle, prior_number_points, LAB, prior_energy_mesh, prior_cross_section
+    file_IO2, gma_file_handle, prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
 ):
     num_reactions = prior_number_points.shape[0]
     ITOT = 0
@@ -121,9 +122,9 @@ def transfer_apriori_to_output_file(
     for L in range(num_reactions):
         NOR = prior_number_points[L] - 1
         NOR2 = NOR - 1
-        fort_write(gma_file_handle, format99, [LAB[L]])
-        fort_write(file_IO2, format99, [LAB[L]])
-        fort_write(None, format3731, [L+1, NOR2, LAB[L]])
+        fort_write(gma_file_handle, format99, [prior_label[L]])
+        fort_write(file_IO2, format99, [prior_label[L]])
+        fort_write(None, format3731, [L+1, NOR2, prior_label[L]])
 
         for K in range(1, NOR):
             fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], prior_cross_section[L, K]])
