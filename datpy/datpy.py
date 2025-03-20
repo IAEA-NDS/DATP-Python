@@ -467,5 +467,7 @@ def reduce_data():
 
 
 if __name__ == '__main__':
-    atexit.register(must_be_called.check_called)
+    # TODO: remove @must_be_called decorators and exit hook
+    #       once not required anymore for debugging
+    # atexit.register(must_be_called.check_called)
     reduce_data()
