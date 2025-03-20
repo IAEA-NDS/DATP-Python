@@ -351,6 +351,19 @@ class GMADatabaseWriter:
             fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, k]])
             fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, k], DIF])
 
+        # end of data set
+        fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+        fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+
+        if xp.NCO == 0:
+            return
+
+        format6114 = '(1X,10F8.5)'
+        format6115 = '(10F8.5)'
+        for KL in range(xp.NCO):  # 6113
+            fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
+            fort_write(gma_file_handle, format6115, [xp.ECOR[KL, :(KL+1)]])
+
     def write_datablock_header(self):
         gma_file_handle = self._file_handle
         file_IO2 = self._file_IO2

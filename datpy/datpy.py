@@ -185,6 +185,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 def reduce_dataset(
     xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
 ):
+    xp = deepcopy(xp)
     new_xp = deepcopy(xp)
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
@@ -314,6 +315,7 @@ def reduce_dataset(
                 new_xp.DIF = []
             new_xp.DIF.append(DIF)
 
+    new_xp.F[0:12, MAXF-1] = xp.F[0:12, MAXF-1]
     return new_xp
 
 
@@ -405,18 +407,6 @@ def reduce_data():
 
         gmadb_writer.write_dataset(new_xp)
 
-        # end of data set
-        fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
-        fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
-
-        if xp.NCO == 0:
-            continue
-
-        format6114 = '(1X,10F8.5)'
-        format6115 = '(10F8.5)'
-        for KL in range(xp.NCO):  # 6113
-            fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
-            fort_write(gma_file_handle, format6115, [xp.ECOR[KL, :(KL+1)]])
 
     # DATA FILE COMPLETE
     gmadb_writer.write_trailer()
