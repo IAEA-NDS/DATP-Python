@@ -11,7 +11,7 @@ from .input_output import (
     copy_gma_controls,
     read_apriori,
     transfer_apriori_to_output_file,
-    DATRCL,
+    read_dataset,
 )
 
 # helper functions
@@ -213,7 +213,7 @@ def reduce_data():
     while True:
         # Bunch allows to access the dictionary elements
         # returned by DATRCL using the syntax expdata.varname
-        xp = Bunch(DATRCL(expdata_file_handle, 1, 1))
+        xp = Bunch(read_dataset(expdata_file_handle, 1, 1))
         if xp.NR == 9999:
             break
         format3733 = "(' read data set  ',i7)"

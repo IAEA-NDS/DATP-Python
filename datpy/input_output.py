@@ -133,7 +133,7 @@ def transfer_apriori_to_output_file(
         fort_write(gma_file_handle, format100, [0, 0])
 
 
-def DATRCL(expdata_file_handle, NZ: int, IBZ: int):
+def read_dataset(expdata_file_handle, NZ: int, IBZ: int):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
