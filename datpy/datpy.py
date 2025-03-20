@@ -182,8 +182,16 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 
 
 def reduce_dataset(
-    xp, E11, E22, EQ, Q, mxm1, interp_type, gma_file_handle, file_IO2
+    xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
 ):
+    #  Interpolation type (this is very system specific -
+    # does not apply for other simultaneous evaluations
+    interp_type = 'lin-lin'
+    if (xp.NT in (1, 2, 5, 8) and
+            xp.NID[0] not in (2, 5, 10) and
+            xp.NID[0] <= 10):
+        interp_type = 'log-log'
+
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
         E2 = (EQ[L] + EQ[L+1]) / 2.
@@ -327,14 +335,6 @@ def reduce_data():
         format3733 = "(' read data set  ',i7)"
         fort_write(None, format3733, [xp.NR])
 
-        #  Interpolation type (this is very system specific -
-        # does not apply for other simultaneous evaluations
-        interp_type = 'lin-lin'
-        if (xp.NT in (1, 2, 5, 8) and
-                xp.NID[0] not in (2, 5, 10) and
-                xp.NID[0] <= 10):
-            interp_type = 'log-log'
-
         # CONSTRUCT APRIORI
 
         # NOTE: computed goto of fortran replaced
@@ -391,7 +391,7 @@ def reduce_data():
         fort_write(file_IO2, format5173, [None])
 
         reduce_dataset(
-            xp, E11, E22, EQ, Q, mxm1, interp_type, gma_file_handle, file_IO2
+            xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
         )
 
         # end of data set
