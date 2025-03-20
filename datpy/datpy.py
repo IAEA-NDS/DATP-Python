@@ -216,11 +216,11 @@ def reduce_data():
 
         #  Interpolation type (this is very system specific -
         # does not apply for other simultaneous evaluations
-        INT = 'lin-lin'
+        interp_type = 'lin-lin'
         if (xp.NT in (1, 2, 5, 8) and
                 xp.NID[0] not in (2, 5, 10) and
                 xp.NID[0] <= 10):
-            INT = 'log-log'
+            interp_type = 'log-log'
 
         # CONSTRUCT APRIORI
 
@@ -300,16 +300,16 @@ def reduce_data():
                 xp.F[N, MAXF-1] = 0.
 
             if E1 > .03:
-                INT = 'lin-lin'
+                interp_type = 'lin-lin'
 
             # INTERPOLATION CONST.
-            if INT == 'lin-lin':
+            if interp_type == 'lin-lin':
                 # LIN LIN
                 AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
                 BL = Q[L]-AL*EQ[L]
                 AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
                 BR = Q[L]-AR*EQ[L]
-            if INT == 'log-log':
+            if interp_type == 'log-log':
                 # LOG LOG
                 QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
                 QAL = Q[L]*(EQ[L]**QBL)
@@ -325,19 +325,19 @@ def reduce_data():
                 WT = WT*WT
                 if xp.E[K] > EQ[L]:
                     # right of energy grid point
-                    if INT == 'lin-lin':
+                    if interp_type == 'lin-lin':
                         ADD = AR*xp.E[K] + BR
                         AD = xp.S[K] + Q[L] - ADD
-                    elif INT == 'log-log':
+                    elif interp_type == 'log-log':
                         ADD = QAR / (xp.E[K]**QBR)
                         AD = xp.S[K] * Q[L] / ADD
 
                 elif xp.E[K] < EQ[L]:
                     # left o energy grid point
-                    if INT == 'lin-lin':
+                    if interp_type == 'lin-lin':
                         ADD = AL * xp.E[K] + BL
                         AD = xp.S[K] + Q[L] - ADD
-                    elif INT == 'log-log':
+                    elif interp_type == 'log-log':
                         ADD = QAL / (xp.E[K]**QBL)
                         AD = xp.S[K] * Q[L] / ADD
                 else:
