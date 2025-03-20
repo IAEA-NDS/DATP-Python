@@ -192,6 +192,7 @@ def reduce_dataset(
             xp.NID[0] <= 10):
         interp_type = 'log-log'
 
+    # GET GRID VALUES  - try at all apriori energies to find data
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
         E2 = (EQ[L] + EQ[L+1]) / 2.
@@ -384,11 +385,6 @@ def reduce_data():
         # no reduction necessary for fission spectrum average data set
         if xp.NT == 6:
             continue
-
-        # GET GRID VALUES  - try at all apriori energies to find data
-
-        format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
-        fort_write(file_IO2, format5173, [None])
 
         reduce_dataset(
             xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2

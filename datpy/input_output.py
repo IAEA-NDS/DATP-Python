@@ -338,6 +338,11 @@ class GMADatabaseWriter:
             fort_write(gma_file_handle, FORMAT200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
             fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
             fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+            return
+
+        # write out more for data types different from NT==6
+        format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
+        fort_write(file_IO2, format5173, [None])
 
     def write_datablock_header(self):
         gma_file_handle = self._file_handle
