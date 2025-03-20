@@ -23,7 +23,6 @@ from .helpers import (
 )
 from .constants import (
     END_DATA_BLOCK_INDICATION_STRING,
-    NQST,
     MAX_NUM_POINTS,
     MAXF,
     ULI,
@@ -185,7 +184,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 @must_be_called
 def reduce_data():
 
-    NQQA = NQST
+    datablock_encountered = False
 
     basedir = '.'
     # OPEN(14,FILE='DAT.INP')
@@ -256,16 +255,20 @@ def reduce_data():
                     NQQA = xp.NQQ
                 continue
 
-        if NQQA == END_DATA_BLOCK_INDICATION_STRING:
-            fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
-            fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
+        if datablock_encountered:
+            if NQQA == END_DATA_BLOCK_INDICATION_STRING:
+                fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
+                fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
 
-        if NQQA == END_DATA_BLOCK_INDICATION_STRING or NQQA == NQST:
+        if (not datablock_encountered or
+                NQQA == END_DATA_BLOCK_INDICATION_STRING):
+            datablock_encountered = True
             format251 = '(4HBLCK,1X,2I5)'
             fort_write(gma_file_handle, format251, [NQMM, NQMM])
             fort_write(file_IO2, format251, [NQMM, NQMM])
 
         NQQA = xp.NQQ
+        datablock_encountered = True
 
         xp.NID[3] = 0
 
