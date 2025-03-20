@@ -3,6 +3,7 @@ import atexit
 from .debug import must_be_called
 
 # other python packages
+from copy import deepcopy
 import os
 import numpy as np
 
@@ -184,6 +185,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 def reduce_dataset(
     xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
 ):
+    new_xp = deepcopy(xp)
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
     interp_type = 'lin-lin'
@@ -193,6 +195,10 @@ def reduce_dataset(
         interp_type = 'log-log'
 
     # GET GRID VALUES  - try at all apriori energies to find data
+    new_xp.NO = 0
+    new_xp.E = np.zeros(mxm1-1, dtype=float)
+    new_xp.S = np.zeros(mxm1-1, dtype=float)
+
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
         E2 = (EQ[L] + EQ[L+1]) / 2.
@@ -299,8 +305,16 @@ def reduce_dataset(
                     xp.F[N, MAXF-1] = 0.
 
             # OUTPUT
-            fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
-            fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, MAXF-1], DIF])
+            new_xp.E[new_xp.NO] = EEE
+            new_xp.S[new_xp.NO] = QQQ
+            new_xp.F[0:12, new_xp.NO] = xp.F[0:12, MAXF-1]
+            new_xp.NO += 1
+
+            if not hasattr(new_xp, 'DIF'):
+                new_xp.DIF = []
+            new_xp.DIF.append(DIF)
+
+    return new_xp
 
 
 @must_be_called
@@ -380,15 +394,16 @@ def reduce_data():
         NQQA = xp.NQQ
         datablock_encountered = True
 
-        gmadb_writer.write_dataset(xp)
-
         # no reduction necessary for fission spectrum average data set
         if xp.NT == 6:
+            gmadb_writer.write_dataset(xp)
             continue
 
-        reduce_dataset(
+        new_xp = reduce_dataset(
             xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
         )
+
+        gmadb_writer.write_dataset(new_xp)
 
         # end of data set
         fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])

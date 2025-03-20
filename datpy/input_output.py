@@ -17,6 +17,7 @@ from .constants import (
     SHOULD_TEST_OUTPUT,
     FORMAT200,
     FORMAT250,
+    FORMAT290,
 )
 
 
@@ -343,6 +344,12 @@ class GMADatabaseWriter:
         # write out more for data types different from NT==6
         format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
         fort_write(file_IO2, format5173, [None])
+        for k in range(xp.NO):
+            EEE = xp.E[k]
+            QQQ = xp.S[k]
+            DIF = xp.DIF[k]
+            fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, k]])
+            fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, k], DIF])
 
     def write_datablock_header(self):
         gma_file_handle = self._file_handle
