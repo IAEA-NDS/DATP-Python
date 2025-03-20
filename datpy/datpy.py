@@ -397,15 +397,12 @@ def reduce_data():
         datablock_encountered = True
 
         # no reduction necessary for fission spectrum average data set
-        if xp.NT == 6:
-            gmadb_writer.write_dataset(xp)
-            continue
+        if xp.NT != 6:
+            xp = reduce_dataset(
+                xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+            )
 
-        new_xp = reduce_dataset(
-            xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
-        )
-
-        gmadb_writer.write_dataset(new_xp)
+        gmadb_writer.write_dataset(xp)
 
 
     # DATA FILE COMPLETE
