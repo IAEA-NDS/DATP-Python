@@ -21,3 +21,11 @@ try:
     SHOULD_TEST_OUTPUT = (os.environ['TEST_DATP'] == 'yes')
 except KeyError:
     SHOULD_TEST_OUTPUT = False
+
+
+if not SHOULD_TEST_OUTPUT:
+    FORMAT200 = '(2E10.4,12F5.1)'
+    FORMAT290 = '(2E10.4,12F5.1,F7.3)'
+else:
+    FORMAT200 = '(2E14.6,12F12.7)'
+    FORMAT290 = '(2E14.6,12F12.7,F9.5)'
