@@ -336,6 +336,19 @@ class GMADatabaseWriter:
             fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
             fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
 
+    def write_datablock_header(self):
+        gma_file_handle = self._file_handle
+        file_IO2 = self._file_IO2
+        format251 = '(4HBLCK,1X,2I5)'
+        fort_write(gma_file_handle, format251, [NQMM, NQMM])
+        fort_write(file_IO2, format251, [NQMM, NQMM])
+
+    def write_datablock_trailer(self):
+        gma_file_handle = self._file_handle
+        file_IO2 = self._file_IO2
+        fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
+        fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
+
     def write_trailer(self): 
         gma_file_handle = self._file_handle
         file_IO2 = self._file_IO2
