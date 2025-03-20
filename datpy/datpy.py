@@ -266,12 +266,6 @@ def reduce_data():
         NQQA = xp.NQQ
         datablock_encountered = True
 
-        xp.NID[3] = 0
-
-        # special marker for thermal constants
-        if xp.NR >= 910 and xp.NR <= 934:
-            xp.NID[3] = 1
-
         gmadb_writer.write_dataset(xp)
 
         # no reduction necessary for fission spectrum average data set

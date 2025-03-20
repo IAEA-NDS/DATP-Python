@@ -271,6 +271,9 @@ def read_dataset(expdata_file_handle, NZ: int, IBZ: int):
     assert len(NQQ) == 1
     NQQ = NQQ[0]
 
+    # special marker for thermal constants
+    NID[3] = 1 if NR >= 910 and NR <= 934 else 0
+
     return({'NR': NR, 'NY': NY, 'NQT': NQT, 'NAU': NAU, 'NREF': NREF,
             'NQ': NQ, 'NT': NT, 'NCO': NCO, 'NCS': NCS, 'NCCO': NCCO, 'NO': NO, 'NID': NID,
             'NCOM': NCOM, 'ENF': ENF, 'NENF': NENF, 'SES': SES, 'EPA': EPA,
