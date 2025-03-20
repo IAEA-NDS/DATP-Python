@@ -4,8 +4,8 @@ test_name='test_001'
 
 testpath=`pwd`
 fortran_src="https://raw.githubusercontent.com/gschnabel/DATP-Fortran/1bc1bd87d7fef967c8718fe88417320e98cae908/DATP.FOR"
-python_src="$testpath/../../source/DATP.py"
 numdiff_exe="${NUMDIFF_EXE-numdiff}"
+export PYTHONPATH="$(pwd)/../.."
 
 # check if numdiff exiss
 which $numdiff_exe > /dev/null
@@ -65,7 +65,7 @@ mkdir python
 cd python
 cp $testpath/input/* .
 export TEST_DATP=yes
-python $python_src > output
+python -m datpy.datpy > output
 
 # compare the output files
 cd $testpath/result

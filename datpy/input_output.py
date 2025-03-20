@@ -1,11 +1,11 @@
 import numpy as np
 import math
-from helpers import (
+from .helpers import (
     fort_read,
     fort_write,
     unflatten,
 )
-from constants import (
+from .constants import (
     MAX_NUM_REACTIONS,
     MAX_NUM_POINTS,
     END_DATA_BLOCK_INDICATION_STRING,

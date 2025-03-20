@@ -1,13 +1,13 @@
 # for tracking function calls
 import atexit
-from debug import must_be_called
+from .debug import must_be_called
 
 # other python packages
 import os
 import numpy as np
 
 # input/output
-from input_output import (
+from .input_output import (
     copy_gma_controls,
     read_apriori,
     transfer_apriori_to_output_file,
@@ -15,12 +15,12 @@ from input_output import (
 )
 
 # helper functions
-from helpers import (
+from .helpers import (
     fort_write,
     Bunch,
     find_indices_with_tol,
 )
-from constants import (
+from .constants import (
     END_DATA_BLOCK_INDICATION_STRING,
     NQST,
     MAX_NUM_POINTS,
@@ -466,5 +466,6 @@ def reduce_data():
     gma_file_handle.close()
 
 
-atexit.register(must_be_called.check_called)
-reduce_data()
+if __name__ == '__main__':
+    atexit.register(must_be_called.check_called)
+    reduce_data()
