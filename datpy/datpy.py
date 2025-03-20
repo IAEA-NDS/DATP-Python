@@ -181,6 +181,119 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
     return E11, E22, EQ, Q, mxm1
 
 
+def reduce_dataset(
+    xp, E11, E22, EQ, Q, mxm1, interp_type, gma_file_handle, file_IO2
+):
+    for L in range(1, mxm1):  # 40
+        E1 = (EQ[L-1] + EQ[L]) / 2.
+        E2 = (EQ[L] + EQ[L+1]) / 2.
+        E11 = 0.6 * EQ[L]
+        E22 = 1.4 * EQ[L]
+        if E1 < E11:
+            E1 = E11
+        if E2 > E22:
+            E2 = E22
+
+        AV = 0.
+        WTS = 0.
+        NKOT = 0
+        for N in range(12):  # 133
+            xp.F[N, MAXF-1] = 0.
+
+        if E1 > .03:
+            interp_type = 'lin-lin'
+
+        # INTERPOLATION CONST.
+        if interp_type == 'lin-lin':
+            # LIN LIN
+            AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
+            BL = Q[L]-AL*EQ[L]
+            AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
+            BR = Q[L]-AR*EQ[L]
+        if interp_type == 'log-log':
+            # LOG LOG
+            QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
+            QAL = Q[L]*(EQ[L]**QBL)
+            QBR = (np.log(Q[L])-np.log(Q[L+1]))/(np.log(EQ[L+1])-np.log(EQ[L]))
+            QAR = Q[L]*(EQ[L]**QBR)
+
+        # GRID VALUES
+        for K in range(xp.NO):  # 35
+            if xp.E[K] < E1*(1.-1e-5) or xp.E[K] >= E2*(1.+1e-5):
+                continue
+
+            WT = 1./xp.F[11, K]
+            WT = WT*WT
+            if xp.E[K] > EQ[L]:
+                # right of energy grid point
+                if interp_type == 'lin-lin':
+                    ADD = AR*xp.E[K] + BR
+                    AD = xp.S[K] + Q[L] - ADD
+                elif interp_type == 'log-log':
+                    ADD = QAR / (xp.E[K]**QBR)
+                    AD = xp.S[K] * Q[L] / ADD
+
+            elif xp.E[K] < EQ[L]:
+                # left o energy grid point
+                if interp_type == 'lin-lin':
+                    ADD = AL * xp.E[K] + BL
+                    AD = xp.S[K] + Q[L] - ADD
+                elif interp_type == 'log-log':
+                    ADD = QAL / (xp.E[K]**QBL)
+                    AD = xp.S[K] * Q[L] / ADD
+            else:
+                # same energy as grid point
+                AD = xp.S[K]
+
+            # check if difference is within requested limit of ULI*sigma
+            if ULI != 0:
+                T1X = 100.*(AD-Q[L])/Q[L]
+                T2X = T1X*T1X
+                TEST = np.sqrt(WT*T2X)
+                if TEST >= ULI:
+                    F33 = xp.F[2, K] * xp.F[2, K]
+                    F44 = 1./WT - F33
+                    FNEW = T2X / (ULI*ULI)
+                    F33N = FNEW - F44
+                    xp.F[11, K] = np.sqrt(FNEW)
+                    xp.F[2, K] = np.sqrt(F33N)
+                    WT = 1./FNEW
+
+                    format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
+                    fort_write(file_IO2, format511, [ULI, TEST])
+
+            AV = AV + AD*WT
+            WTS = WTS + WT
+
+            # statistical uncertainty reduces if more than one value contributes,
+            # average for all other uncertainties
+            for M in range(11):  # 38
+                if xp.NETG[M] != 9:
+                    xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + xp.F[M, K]
+                elif xp.F[M, K] != 0.0:
+                    xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + (1./xp.F[M, K])**2
+
+            NKOT = NKOT + 1
+
+        AKOT = NKOT
+        if AV != 0.0:
+            # GRID VALUE AND OUT
+            EEE = EQ[L]
+            QQQ = AV / WTS
+            DIF = QQQ / Q[L]
+            for N in range(11):  # 39
+                if xp.NETG[N] != 9:
+                    xp.F[N, MAXF-1] = xp.F[N, MAXF-1] / AKOT
+                elif xp.F[N, MAXF-1] > 0.0:
+                    xp.F[N, MAXF-1] = 1. / np.sqrt(xp.F[N, MAXF-1])
+                else:
+                    xp.F[N, MAXF-1] = 0.
+
+            # OUTPUT
+            fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
+            fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, MAXF-1], DIF])
+
+
 @must_be_called
 def reduce_data():
 
@@ -277,114 +390,9 @@ def reduce_data():
         format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
         fort_write(file_IO2, format5173, [None])
 
-        for L in range(1, mxm1):  # 40
-            E1 = (EQ[L-1] + EQ[L]) / 2.
-            E2 = (EQ[L] + EQ[L+1]) / 2.
-            E11 = 0.6 * EQ[L]
-            E22 = 1.4 * EQ[L]
-            if E1 < E11:
-                E1 = E11
-            if E2 > E22:
-                E2 = E22
-
-            AV = 0.
-            WTS = 0.
-            NKOT = 0
-            for N in range(12):  # 133
-                xp.F[N, MAXF-1] = 0.
-
-            if E1 > .03:
-                interp_type = 'lin-lin'
-
-            # INTERPOLATION CONST.
-            if interp_type == 'lin-lin':
-                # LIN LIN
-                AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
-                BL = Q[L]-AL*EQ[L]
-                AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
-                BR = Q[L]-AR*EQ[L]
-            if interp_type == 'log-log':
-                # LOG LOG
-                QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
-                QAL = Q[L]*(EQ[L]**QBL)
-                QBR = (np.log(Q[L])-np.log(Q[L+1]))/(np.log(EQ[L+1])-np.log(EQ[L]))
-                QAR = Q[L]*(EQ[L]**QBR)
-
-            # GRID VALUES
-            for K in range(xp.NO):  # 35
-                if xp.E[K] < E1*(1.-1e-5) or xp.E[K] >= E2*(1.+1e-5):
-                    continue
-
-                WT = 1./xp.F[11, K]
-                WT = WT*WT
-                if xp.E[K] > EQ[L]:
-                    # right of energy grid point
-                    if interp_type == 'lin-lin':
-                        ADD = AR*xp.E[K] + BR
-                        AD = xp.S[K] + Q[L] - ADD
-                    elif interp_type == 'log-log':
-                        ADD = QAR / (xp.E[K]**QBR)
-                        AD = xp.S[K] * Q[L] / ADD
-
-                elif xp.E[K] < EQ[L]:
-                    # left o energy grid point
-                    if interp_type == 'lin-lin':
-                        ADD = AL * xp.E[K] + BL
-                        AD = xp.S[K] + Q[L] - ADD
-                    elif interp_type == 'log-log':
-                        ADD = QAL / (xp.E[K]**QBL)
-                        AD = xp.S[K] * Q[L] / ADD
-                else:
-                    # same energy as grid point
-                    AD = xp.S[K]
-
-                # check if difference is within requested limit of ULI*sigma
-                if ULI != 0:
-                    T1X = 100.*(AD-Q[L])/Q[L]
-                    T2X = T1X*T1X
-                    TEST = np.sqrt(WT*T2X)
-                    if TEST >= ULI:
-                        F33 = xp.F[2, K] * xp.F[2, K]
-                        F44 = 1./WT - F33
-                        FNEW = T2X / (ULI*ULI)
-                        F33N = FNEW - F44
-                        xp.F[11, K] = np.sqrt(FNEW)
-                        xp.F[2, K] = np.sqrt(F33N)
-                        WT = 1./FNEW
-
-                        format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
-                        fort_write(file_IO2, format511, [ULI, TEST])
-
-                AV = AV + AD*WT
-                WTS = WTS + WT
-
-                # statistical uncertainty reduces if more than one value contributes,
-                # average for all other uncertainties
-                for M in range(11):  # 38
-                    if xp.NETG[M] != 9:
-                        xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + xp.F[M, K]
-                    elif xp.F[M, K] != 0.0:
-                        xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + (1./xp.F[M, K])**2
-
-                NKOT = NKOT + 1
-
-            AKOT = NKOT
-            if AV != 0.0:
-                # GRID VALUE AND OUT
-                EEE = EQ[L]
-                QQQ = AV / WTS
-                DIF = QQQ / Q[L]
-                for N in range(11):  # 39
-                    if xp.NETG[N] != 9:
-                        xp.F[N, MAXF-1] = xp.F[N, MAXF-1] / AKOT
-                    elif xp.F[N, MAXF-1] > 0.0:
-                        xp.F[N, MAXF-1] = 1. / np.sqrt(xp.F[N, MAXF-1])
-                    else:
-                        xp.F[N, MAXF-1] = 0.
-
-                # OUTPUT
-                fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, MAXF-1]])
-                fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, MAXF-1], DIF])
+        reduce_dataset(
+            xp, E11, E22, EQ, Q, mxm1, interp_type, gma_file_handle, file_IO2
+        )
 
         # end of data set
         fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
