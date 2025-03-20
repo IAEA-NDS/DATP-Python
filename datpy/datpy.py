@@ -216,11 +216,11 @@ def reduce_data():
 
         #  Interpolation type (this is very system specific -
         # does not apply for other simultaneous evaluations
-        INT = 1
+        INT = 'lin-lin'
         if (xp.NT in (1, 2, 5, 8) and
                 xp.NID[0] not in (2, 5, 10) and
                 xp.NID[0] <= 10):
-            INT = 2
+            INT = 'log-log'
 
         # CONSTRUCT APRIORI
 
@@ -300,16 +300,16 @@ def reduce_data():
                 xp.F[N, MAXF-1] = 0.
 
             if E1 > .03:
-                INT = 1
+                INT = 'lin-lin'
 
             # INTERPOLATION CONST.
-            if INT == 1:
+            if INT == 'lin-lin':
                 # LIN LIN
                 AL = (Q[L-1]-Q[L])/(EQ[L-1]-EQ[L])
                 BL = Q[L]-AL*EQ[L]
                 AR = (Q[L]-Q[L+1])/(EQ[L]-EQ[L+1])
                 BR = Q[L]-AR*EQ[L]
-            if INT == 2:
+            if INT == 'log-log':
                 # LOG LOG
                 QBL = (np.log(Q[L-1])-np.log(Q[L]))/(np.log(EQ[L])-np.log(EQ[L-1]))
                 QAL = Q[L]*(EQ[L]**QBL)
@@ -325,19 +325,19 @@ def reduce_data():
                 WT = WT*WT
                 if xp.E[K] > EQ[L]:
                     # right of energy grid point
-                    if INT == 1:
+                    if INT == 'lin-lin':
                         ADD = AR*xp.E[K] + BR
                         AD = xp.S[K] + Q[L] - ADD
-                    elif INT == 2:
+                    elif INT == 'log-log':
                         ADD = QAR / (xp.E[K]**QBR)
                         AD = xp.S[K] * Q[L] / ADD
 
                 elif xp.E[K] < EQ[L]:
                     # left o energy grid point
-                    if INT == 1:
+                    if INT == 'lin-lin':
                         ADD = AL * xp.E[K] + BL
                         AD = xp.S[K] + Q[L] - ADD
-                    elif INT == 2:
+                    elif INT == 'log-log':
                         ADD = QAL / (xp.E[K]**QBL)
                         AD = xp.S[K] * Q[L] / ADD
                 else:
