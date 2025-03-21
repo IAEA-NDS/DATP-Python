@@ -13,13 +13,13 @@ from .input_output import (
     read_apriori,
     transfer_apriori_to_output_file,
     read_dataset,
+    read_datablocks,
     GMADatabaseWriter
 )
 
 # helper functions
 from .helpers import (
     fort_write,
-    Bunch,
     find_indices_with_tol,
 )
 from .constants import (
@@ -341,27 +341,7 @@ def reduce_data():
     )
 
     # read datablocks
-    datablocks = []
-    datasets = []
-    while True:
-        dataset, datablock_complete = read_dataset(expdata_file_handle)
-        dataset = Bunch(dataset)
-        if dataset.dataset_id == 9999:
-            break
-
-        format3733 = "(' read data set  ',i7)"
-        fort_write(None, format3733, [dataset.dataset_id])
-        datasets.append(dataset)
-
-        if datablock_complete:
-            datablocks.append(datasets)
-            datasets = []
-
-    if len(datasets) > 0:
-        raise ValueError(
-            'Encountered incomplete datablock at end of file. '
-            'Termination suffix {END_DATA_BLOCK_INDICATION_STRING} missing'
-        )
+    datablocks = read_datablocks(expdata_file_handle)
 
     # perform dataset reduction
     reduced_datablocks = []

@@ -4,6 +4,7 @@ from .helpers import (
     fort_read,
     fort_write,
     unflatten,
+    Bunch,
 )
 from .constants import (
     MAX_NUM_REACTIONS,
@@ -297,6 +298,31 @@ def read_dataset(expdata_file_handle):
     }
 
     return dataset, datablock_complete
+
+
+def read_datablocks(expdata_file_handle):
+    datablocks = []
+    datasets = []
+    while True:
+        dataset, datablock_complete = read_dataset(expdata_file_handle)
+        dataset = Bunch(dataset)
+        if dataset.dataset_id == 9999:
+            break
+
+        format3733 = "(' read data set  ',i7)"
+        fort_write(None, format3733, [dataset.dataset_id])
+        datasets.append(dataset)
+
+        if datablock_complete:
+            datablocks.append(datasets)
+            datasets = []
+
+    if len(datasets) > 0:
+        raise ValueError(
+            'Encountered incomplete datablock at end of file. '
+            'Termination suffix {END_DATA_BLOCK_INDICATION_STRING} missing'
+        )
+    return datablocks
 
 
 class GMADatabaseWriter:
