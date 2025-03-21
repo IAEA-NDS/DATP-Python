@@ -142,9 +142,8 @@ def read_dataset(expdata_file_handle):
     # variables with local scope
     NAU: str; NREF: str; NQT: str
     NCOM: str; NQQ: str; NXQT: str
-    NXAU: str; ICC: str; NES: str; NEB: str
+    NXAU: str; NES: str; NEB: str
 
-    ICC = 'C '
     NES = 'ES'
     NEB = END_DATA_BLOCK_INDICATION_STRING
 
