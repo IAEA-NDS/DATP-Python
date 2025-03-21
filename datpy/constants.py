@@ -16,8 +16,6 @@ MAX_NUM_REACTIONS = 1000
 # LIMIT OF DIF/UNC FOR OUTLIERS?
 ULI = 3.0
 
-NQMM = 0
-
 # Enables output with more precision to facilitate testing
 try:
     SHOULD_TEST_OUTPUT = (os.environ['TEST_DATP'] == 'yes')
