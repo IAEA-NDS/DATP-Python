@@ -9,6 +9,7 @@ from .constants import (
     MAX_NUM_REACTIONS,
     MAX_NUM_POINTS,
     END_DATA_BLOCK_INDICATION_STRING,
+    END_DATASET_INDICATION_STRING,
     ELIMINATION_BLOCK_INDICATION_STRING,
     DOWNWEIGHT_BLOCK_INDICATION_STRING,
     FISSION_SPECTRUM_BLOCK_INDICATION_STRING,
@@ -141,15 +142,11 @@ def read_dataset(expdata_file_handle):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
-    NCOM: str; NQQ: str; NXQT: str
-    NXAU: str; NES: str;
-
-    NES = 'ES'
+    NCOM: str; NXQT: str; NXAU: str
 
     # this declaration is not present in Fortran code
     # but assumed to be implicitly done
     SES = 0.
-    NQQ = NES
 
     # data set identification
     # original string
@@ -160,7 +157,10 @@ def read_dataset(expdata_file_handle):
         NR, NY, NQT, NAU, NREF = fort_read(expdata_file_handle, format100)
 
     if NR == 9999:
-        return {'dataset_id': NR}
+        dataset = {'dataset_id': NR}
+        datablock_complete = True
+        return dataset, datablock_complete
+
     format103 = '(4I2,I3,I5,5I3)'
     NQ, NT, NCO, NCS, NCCO, NO, NID = unflatten(
             fort_read(expdata_file_handle, format103), [6, [5]])
@@ -258,15 +258,17 @@ def read_dataset(expdata_file_handle):
             num_el_read += len(tmp)
         ECOR[L, :(L+1)] = res
 
-    format118 = '(A2)'
-    NQQ = fort_read(expdata_file_handle, format118)
-    assert len(NQQ) == 1
-    NQQ = NQQ[0]
-
     # special marker for thermal constants
     NID[3] = 1 if NR >= 910 and NR <= 934 else 0
 
-    return({
+    # read datablock/dataset termination indicator
+    format118 = '(A2)'
+    end_indicator = fort_read(expdata_file_handle, format118)[0]
+    if end_indicator not in (END_DATASET_INDICATION_STRING, END_DATA_BLOCK_INDICATION_STRING):
+        raise ValueError('Expected End-of-Datablock or End-of-Dataset indicator')
+    datablock_complete = (end_indicator == END_DATA_BLOCK_INDICATION_STRING)
+
+    dataset = {
         'dataset_id': NR,
         'year': NY,
         'quantity_name': NQT,
@@ -290,10 +292,11 @@ def read_dataset(expdata_file_handle):
         'NCST': NCST,
         'NCST_size': NCS, 
         'NEC': NEC,
-        'NQQ': NQQ,
         'FCFC': FCFC,
         'cormat': ECOR
-    })
+    }
+
+    return dataset, datablock_complete
 
 
 class GMADatabaseWriter:

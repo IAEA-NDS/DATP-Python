@@ -343,10 +343,12 @@ def reduce_data():
     )
 
     # START OF REDUCTION AND TRANSFER
+    in_datablock = False
     while True:
         # Bunch allows to access the dictionary elements
         # returned by DATRCL using the syntax expdata.varname
-        dataset = Bunch(read_dataset(expdata_file_handle))
+        dataset, datablock_complete = read_dataset(expdata_file_handle)
+        dataset = Bunch(dataset)
         if dataset.dataset_id == 9999:
             break
         format3733 = "(' read data set  ',i7)"
@@ -380,21 +382,16 @@ def reduce_data():
             # FIND USEFUL DATA RANGE
             if dataset.energies[0] > E22 or dataset.energies[dataset.NO-1] < E11:
                 # out of range
-                if (NQQA != END_DATA_BLOCK_INDICATION_STRING
-                        and dataset.NQQ == END_DATA_BLOCK_INDICATION_STRING):
-                    NQQA = dataset.NQQ
                 continue
 
-        if datablock_encountered:
-            if NQQA == END_DATA_BLOCK_INDICATION_STRING:
-                gmadb_writer.write_datablock_trailer()
+        if datablock_encountered and not in_datablock:
+            gmadb_writer.write_datablock_trailer()
 
-        if (not datablock_encountered or
-                NQQA == END_DATA_BLOCK_INDICATION_STRING):
+        if not datablock_encountered or not in_datablock:
             gmadb_writer.write_datablock_header()
 
-        NQQA = dataset.NQQ
         datablock_encountered = True
+        in_datablock = not datablock_complete
 
         # no reduction necessary for fission spectrum average data set
         if dataset.quantity_type != 6:
@@ -403,7 +400,6 @@ def reduce_data():
             )
 
         gmadb_writer.write_dataset(dataset)
-
 
     # DATA FILE COMPLETE
     gmadb_writer.write_trailer()
