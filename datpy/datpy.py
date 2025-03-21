@@ -322,8 +322,6 @@ def reduce_dataset(
 @must_be_called
 def reduce_data():
 
-    datablock_encountered = False
-
     basedir = '.'
     # OPEN(14,FILE='DAT.INP')
     prior_file_handle = open(os.path.join(basedir, 'DAT.INP'), 'r')
@@ -342,66 +340,82 @@ def reduce_data():
         file_IO2, gma_file_handle, prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
     )
 
-    # START OF REDUCTION AND TRANSFER
-    in_datablock = False
+    # read datablocks
+    datablocks = []
+    datasets = []
     while True:
-        # Bunch allows to access the dictionary elements
-        # returned by DATRCL using the syntax expdata.varname
         dataset, datablock_complete = read_dataset(expdata_file_handle)
         dataset = Bunch(dataset)
         if dataset.dataset_id == 9999:
             break
+
         format3733 = "(' read data set  ',i7)"
         fort_write(None, format3733, [dataset.dataset_id])
+        datasets.append(dataset)
 
-        # CONSTRUCT APRIORI
+        if datablock_complete:
+            datablocks.append(datasets)
+            datasets = []
 
-        # NOTE: computed goto of fortran replaced
-        #       by if-else statements
-        if dataset.quantity_type in (1, 2):
-            E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
-                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-            )
-        elif dataset.quantity_type in (3, 4):
-            E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
-                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-            )
-        elif dataset.quantity_type in (5, 8):
-            E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
-                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-            )
-        elif dataset.quantity_type in (7, 9):
-            E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
-                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-            )
-        assert dataset.quantity_type >= 1 and dataset.quantity_type <= 9
+    if len(datasets) > 0:
+        raise ValueError(
+            'Encountered incomplete datablock at end of file. '
+            'Termination suffix {END_DATA_BLOCK_INDICATION_STRING} missing'
+        )
 
-        # REDUCTION
+    # perform dataset reduction
+    reduced_datablocks = []
+    for datablock in datablocks:
+        reduced_datasets = []
+        for dataset in datablock:
+            # CONSTRUCT APRIORI
 
-        if dataset.quantity_type != 6:
-            # FIND USEFUL DATA RANGE
-            if dataset.energies[0] > E22 or dataset.energies[dataset.NO-1] < E11:
-                # out of range
-                continue
+            # NOTE: computed goto of fortran replaced
+            #       by if-else statements
+            if dataset.quantity_type in (1, 2):
+                E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
+                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
+                )
+            elif dataset.quantity_type in (3, 4):
+                E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
+                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
+                )
+            elif dataset.quantity_type in (5, 8):
+                E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
+                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
+                )
+            elif dataset.quantity_type in (7, 9):
+                E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
+                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
+                )
+            assert dataset.quantity_type >= 1 and dataset.quantity_type <= 9
 
-        if datablock_encountered and not in_datablock:
-            gmadb_writer.write_datablock_trailer()
+            # REDUCTION
 
-        if not datablock_encountered or not in_datablock:
-            gmadb_writer.write_datablock_header()
+            if dataset.quantity_type != 6:
+                # skip datasets whose energies are byeond limits
+                if dataset.energies[0] > E22 or dataset.energies[dataset.NO-1] < E11:
+                    continue
 
-        datablock_encountered = True
-        in_datablock = not datablock_complete
+            if dataset.quantity_type != 6:
+                reduced_dataset = reduce_dataset(
+                    dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+                )
+            else:
+                # no reduction necessary for fission spectrum average dataset
+                reduced_dataset = deepcopy(dataset)
 
-        # no reduction necessary for fission spectrum average data set
-        if dataset.quantity_type != 6:
-            dataset = reduce_dataset(
-                dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
-            )
+            reduced_datasets.append(reduced_dataset)
 
-        gmadb_writer.write_dataset(dataset)
+        if len(reduced_datasets) > 0:
+            reduced_datablocks.append(reduced_datasets)
 
-    # DATA FILE COMPLETE
+    # Produce the GMA Database file
+    for datablock in reduced_datablocks:
+        gmadb_writer.write_datablock_header()
+        for dataset in datablock:
+            gmadb_writer.write_dataset(dataset)
+        gmadb_writer.write_datablock_trailer()
     gmadb_writer.write_trailer()
 
     prior_file_handle.close()

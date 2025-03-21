@@ -398,7 +398,5 @@ class GMADatabaseWriter:
         gma_file_handle = self._file_handle
         file_IO2 = self._file_IO2
         format256 = '(4HEND*,1X,2I5)'
-        fort_write(gma_file_handle, FORMAT250, [NQMM, NQMM])
-        fort_write(file_IO2, FORMAT250, [NQMM, NQMM])
         fort_write(gma_file_handle, format256, [NQMM, NQMM])
         fort_write(file_IO2, format256, [NQMM, NQMM])
