@@ -150,9 +150,7 @@ def read_dataset(expdata_file_handle):
     # this declaration is not present in Fortran code
     # but assumed to be implicitly done
     SES = 0.
-
-    NBQZ = 1
-    if NBQZ == 1: NQQ = NES
+    NQQ = NES
 
     # data set identification
     # original string
