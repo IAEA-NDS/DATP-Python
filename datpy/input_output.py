@@ -98,18 +98,20 @@ def read_apriori(prior_file_handle):
         num_reactions += 1
 
     # shrink arrays to real data size
-    prior_number_points = prior_number_points[:num_reactions]
-    prior_energy_mesh = prior_energy_mesh[:num_reactions,:]
-    prior_cross_section = prior_cross_section[:num_reactions,:]
-    prior_label = prior_label[:num_reactions]
+    return {
+        'number_points': prior_number_points[:num_reactions],
+        'energy_mesh': prior_energy_mesh[:num_reactions,:],
+        'cross_section': prior_cross_section[:num_reactions,:],
+        'label': prior_label[:num_reactions],
+    }
 
-    return prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
 
+def transfer_apriori_to_output_file( file_IO2, gma_file_handle, reaction_prior):
+    prior_label =  reaction_prior['label']
+    prior_number_points = reaction_prior['number_points']
+    prior_energy_mesh = reaction_prior['energy_mesh']
+    prior_cross_section = reaction_prior['cross_section']
 
-def transfer_apriori_to_output_file(
-
-    file_IO2, gma_file_handle, prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
-):
     num_reactions = prior_number_points.shape[0]
     ITOT = 0
     for K in range(num_reactions):

@@ -183,7 +183,7 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 
 
 def reduce_dataset(
-    dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+    dataset, E11, E22, EQ, Q, mxm1, file_IO2
 ):
     dataset = deepcopy(dataset)
     new_dataset = deepcopy(dataset)
@@ -319,31 +319,11 @@ def reduce_dataset(
     return new_dataset
 
 
-@must_be_called
-def reduce_data():
+def reduce_datablocks(datablocks, reaction_prior, file_IO2):
+    prior_number_points = reaction_prior['number_points']
+    prior_energy_mesh = reaction_prior['energy_mesh']
+    prior_cross_section = reaction_prior['cross_section']
 
-    basedir = '.'
-    # OPEN(14,FILE='DAT.INP')
-    prior_file_handle = open(os.path.join(basedir, 'DAT.INP'), 'r')
-    # OPEN(15,FILE='DAT.LST')
-    file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
-    # OPEN(12,FILE='GMDATA.CRD')
-    expdata_file_handle = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
-    # OPEN(13,FILE='DAT.RES')
-    gma_file_handle = open(os.path.join(basedir, 'DAT.RES'), 'w')
-
-    gmadb_writer = GMADatabaseWriter(gma_file_handle, file_IO2)
-
-    copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
-    prior_number_points, prior_label, prior_energy_mesh, prior_cross_section = read_apriori(prior_file_handle)
-    transfer_apriori_to_output_file(
-        file_IO2, gma_file_handle, prior_number_points, prior_label, prior_energy_mesh, prior_cross_section
-    )
-
-    # read datablocks
-    datablocks = read_datablocks(expdata_file_handle)
-
-    # perform dataset reduction
     reduced_datablocks = []
     for datablock in datablocks:
         reduced_datasets = []
@@ -379,7 +359,7 @@ def reduce_data():
 
             if dataset.quantity_type != 6:
                 reduced_dataset = reduce_dataset(
-                    dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+                    dataset, E11, E22, EQ, Q, mxm1, file_IO2
                 )
             else:
                 # no reduction necessary for fission spectrum average dataset
@@ -389,6 +369,32 @@ def reduce_data():
 
         if len(reduced_datasets) > 0:
             reduced_datablocks.append(reduced_datasets)
+
+    return reduced_datablocks
+
+
+@must_be_called
+def reduce_data():
+
+    basedir = '.'
+    # OPEN(14,FILE='DAT.INP')
+    prior_file_handle = open(os.path.join(basedir, 'DAT.INP'), 'r')
+    # OPEN(15,FILE='DAT.LST')
+    file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
+    # OPEN(12,FILE='GMDATA.CRD')
+    expdata_file_handle = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
+    # OPEN(13,FILE='DAT.RES')
+    gma_file_handle = open(os.path.join(basedir, 'DAT.RES'), 'w')
+
+    gmadb_writer = GMADatabaseWriter(gma_file_handle, file_IO2)
+
+    copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
+    reaction_prior = read_apriori(prior_file_handle)
+    transfer_apriori_to_output_file(file_IO2, gma_file_handle, reaction_prior)
+
+    # read datablocks
+    datablocks = read_datablocks(expdata_file_handle)
+    reduced_datablocks = reduce_datablocks(datablocks, reaction_prior, file_IO2)
 
     # Produce the GMA Database file
     for datablock in reduced_datablocks:
