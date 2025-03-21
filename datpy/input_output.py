@@ -289,80 +289,81 @@ class GMADatabaseWriter:
         self._file_handle = file_handle
         self._file_IO2 = file_IO2
 
-    def write_dataset(self, xp):
+    def write_dataset(self, dataset):
         gma_file_handle = self._file_handle
         file_IO2 = self._file_IO2
+        ds = dataset
 
         # find nr of CS involved
         for MN in range(1, 5):  # 66
             pyMN = MN - 1
-            if xp.NID[pyMN] == 0:
+            if ds.NID[pyMN] == 0:
                 break
         NNN = MN - 1
 
         format253 = '(5HDATA ,9I5)'
-        fort_write(gma_file_handle, format253, [xp.NR, xp.NT, xp.NCO, NNN, xp.NID[0:4]])
-        fort_write(file_IO2, format253, [xp.NR, xp.NT, xp.NCO, NNN, xp.NID[0:4]])
+        fort_write(gma_file_handle, format253, [ds.NR, ds.NT, ds.NCO, NNN, ds.NID[0:4]])
+        fort_write(file_IO2, format253, [ds.NR, ds.NT, ds.NCO, NNN, ds.NID[0:4]])
 
         format254 = '(3I5,A28,8X,A20)'
-        fort_write(gma_file_handle, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
-        fort_write(file_IO2, format254, [xp.NY, xp.NQ, xp.NCS, xp.NAU, xp.NREF])
+        fort_write(gma_file_handle, format254, [ds.NY, ds.NQ, ds.NCS, ds.NAU, ds.NREF])
+        fort_write(file_IO2, format254, [ds.NY, ds.NQ, ds.NCS, ds.NAU, ds.NREF])
 
-        if xp.NT not in (2, 4, 8, 9):
+        if ds.NT not in (2, 4, 8, 9):
             # normalization uncertainties
             format261 = '(10F5.1,10I3)'
-            fort_write(gma_file_handle, format261, [xp.ENF[0:10], xp.NENF[0:10]])
-            fort_write(file_IO2, format261, [xp.ENF[0:10], xp.NENF[0:10]])
+            fort_write(gma_file_handle, format261, [ds.ENF[0:10], ds.NENF[0:10]])
+            fort_write(file_IO2, format261, [ds.ENF[0:10], ds.NENF[0:10]])
 
         # energy dep. unc. parameters
         format262 = '(3F5.2,I3)'
         # NOTE: this loop is implicit in the write statement
         #       of the fortran code
         for K in range(11):
-            fort_write(file_IO2, format262, [xp.EPA[0:3, K], xp.NETG[K]])
-            fort_write(gma_file_handle, format262, [xp.EPA[0:3, K], xp.NETG[K]])
-        if xp.NCS != 0:
+            fort_write(file_IO2, format262, [ds.EPA[0:3, K], ds.NETG[K]])
+            fort_write(gma_file_handle, format262, [ds.EPA[0:3, K], ds.NETG[K]])
+        if ds.NCS != 0:
             # cross correlations
             format263 = '(I5,20I3)'
             format293 = '(10F5.1)'
-            for K in range(xp.NCS):  # 83
+            for K in range(ds.NCS):  # 83
                 # NOTE: during flattening in fort_write first index should
                 #       change fastest
-                fort_write(gma_file_handle, format263, [xp.NCST[K], xp.NEC[:, :, K]])
-                fort_write(file_IO2, format263, [xp.NCST[K], xp.NEC[:, :, K]])
-                fort_write(gma_file_handle, format293, [xp.FCFC[0:10, K]])
-                fort_write(file_IO2, format293, [xp.FCFC[0:10, K]])
+                fort_write(gma_file_handle, format263, [ds.NCST[K], ds.NEC[:, :, K]])
+                fort_write(file_IO2, format263, [ds.NCST[K], ds.NEC[:, :, K]])
+                fort_write(gma_file_handle, format293, [ds.FCFC[0:10, K]])
+                fort_write(file_IO2, format293, [ds.FCFC[0:10, K]])
 
-        if xp.NT == 6:
+        if ds.NT == 6:
             # fission spectrum average data set
-            fort_write(file_IO2, FORMAT200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-            fort_write(gma_file_handle, FORMAT200, [xp.E[0], xp.S[0], xp.F[0:12, 0]])
-            fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
-            fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+            fort_write(file_IO2, FORMAT200, [ds.E[0], ds.S[0], ds.F[0:12, 0]])
+            fort_write(gma_file_handle, FORMAT200, [ds.E[0], ds.S[0], ds.F[0:12, 0]])
+            fort_write(file_IO2, FORMAT200, [0, 0, ds.F[0:12, MAXF-1]])
+            fort_write(gma_file_handle, FORMAT200, [0, 0, ds.F[0:12, MAXF-1]])
             return
 
         # write out more for data types different from NT==6
         format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
         fort_write(file_IO2, format5173, [None])
-        for k in range(xp.NO):
-            EEE = xp.E[k]
-            QQQ = xp.S[k]
-            DIF = xp.DIF[k]
-            fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, xp.F[0:12, k]])
-            fort_write(file_IO2, FORMAT290, [EEE, QQQ, xp.F[0:12, k], DIF])
+        for k in range(ds.NO):
+            EEE = ds.E[k]
+            QQQ = ds.S[k]
+            DIF = ds.DIF[k]
+            fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, ds.F[0:12, k]])
+            fort_write(file_IO2, FORMAT290, [EEE, QQQ, ds.F[0:12, k], DIF])
 
         # end of data set
-        fort_write(gma_file_handle, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
-        fort_write(file_IO2, FORMAT200, [0, 0, xp.F[0:12, MAXF-1]])
+        fort_write(gma_file_handle, FORMAT200, [0, 0, ds.F[0:12, MAXF-1]])
+        fort_write(file_IO2, FORMAT200, [0, 0, ds.F[0:12, MAXF-1]])
 
-        if xp.NCO == 0:
+        if ds.NCO == 0:
             return
 
         format6114 = '(1X,10F8.5)'
         format6115 = '(10F8.5)'
-        for KL in range(xp.NCO):  # 6113
-            fort_write(file_IO2, format6114, [xp.ECOR[KL, :(KL+1)]])
-            fort_write(gma_file_handle, format6115, [xp.ECOR[KL, :(KL+1)]])
+        for KL in range(ds.NCO):  # 6113
+            fort_write(file_IO2, format6114, [ds.ECOR[KL, :(KL+1)]])
+            fort_write(gma_file_handle, format6115, [ds.ECOR[KL, :(KL+1)]])
 
     def write_datablock_header(self):
         gma_file_handle = self._file_handle

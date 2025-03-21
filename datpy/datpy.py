@@ -36,12 +36,12 @@ from .constants import (
 
 @must_be_called
 def deal_with_CS_and_CS_SHAPE(
-    xp, prior_number_points, prior_energy_mesh, prior_cross_section
+    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # CS + CS SHAPE
-    M1 = xp.NID[0] - 1
+    M1 = dataset.NID[0] - 1
     NON = prior_number_points[M1]
     NON1 = NON-1
     E11 = (prior_energy_mesh[M1, 0] + prior_energy_mesh[M1, 1]) / 2.
@@ -56,13 +56,13 @@ def deal_with_CS_and_CS_SHAPE(
 
 @must_be_called
 def deal_with_RATIO_and_RATIO_SHAPE(
-    xp, prior_number_points, prior_energy_mesh, prior_cross_section
+    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # RATIO + RATIO SHAPE
-    M1 = xp.NID[0] - 1
-    M2 = xp.NID[1] - 1
+    M1 = dataset.NID[0] - 1
+    M2 = dataset.NID[1] - 1
     NO1 = prior_number_points[M1]
     NON = prior_number_points[M2]
     mxm = 0
@@ -91,14 +91,14 @@ def deal_with_RATIO_and_RATIO_SHAPE(
 
 @must_be_called
 def deal_with_SUM_and_SHAPE_OF_SUM(
-    xp, prior_number_points, prior_energy_mesh, prior_cross_section
+    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     # SUM AND SHAPE OF SUM
-    M1 = xp.NID[0] - 1
-    M2 = xp.NID[1] - 1
-    M3 = xp.NID[2] - 1
+    M1 = dataset.NID[0] - 1
+    M2 = dataset.NID[1] - 1
+    M3 = dataset.NID[2] - 1
     NO1 = prior_number_points[M1]
     NON = prior_number_points[M2]
     if M3 != -1:
@@ -137,14 +137,14 @@ def deal_with_SUM_and_SHAPE_OF_SUM(
 
 @must_be_called
 def deal_with_CS_VS_SUM_PLUS_SHAPE(
-    xp, prior_number_points, prior_energy_mesh, prior_cross_section
+    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
     Q = np.zeros((MAX_NUM_POINTS,), dtype=float)
     #  RATIO OF CS VS. SUM + SHAPE
-    M1 = xp.NID[0] - 1
-    M2 = xp.NID[1] - 1
-    M3 = xp.NID[2] - 1
+    M1 = dataset.NID[0] - 1
+    M2 = dataset.NID[1] - 1
+    M3 = dataset.NID[2] - 1
     NO1 = prior_number_points[M1]
     NON = prior_number_points[M2]
     NO3 = prior_number_points[M3]
@@ -183,22 +183,22 @@ def deal_with_CS_VS_SUM_PLUS_SHAPE(
 
 
 def reduce_dataset(
-    xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+    dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
 ):
-    xp = deepcopy(xp)
-    new_xp = deepcopy(xp)
+    dataset = deepcopy(dataset)
+    new_dataset = deepcopy(dataset)
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
     interp_type = 'lin-lin'
-    if (xp.NT in (1, 2, 5, 8) and
-            xp.NID[0] not in (2, 5, 10) and
-            xp.NID[0] <= 10):
+    if (dataset.NT in (1, 2, 5, 8) and
+            dataset.NID[0] not in (2, 5, 10) and
+            dataset.NID[0] <= 10):
         interp_type = 'log-log'
 
     # GET GRID VALUES  - try at all apriori energies to find data
-    new_xp.NO = 0
-    new_xp.E = np.zeros(mxm1-1, dtype=float)
-    new_xp.S = np.zeros(mxm1-1, dtype=float)
+    new_dataset.NO = 0
+    new_dataset.E = np.zeros(mxm1-1, dtype=float)
+    new_dataset.S = np.zeros(mxm1-1, dtype=float)
 
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
@@ -214,7 +214,7 @@ def reduce_dataset(
         WTS = 0.
         NKOT = 0
         for N in range(12):  # 133
-            xp.F[N, MAXF-1] = 0.
+            dataset.F[N, MAXF-1] = 0.
 
         if E1 > .03:
             interp_type = 'lin-lin'
@@ -234,32 +234,32 @@ def reduce_dataset(
             QAR = Q[L]*(EQ[L]**QBR)
 
         # GRID VALUES
-        for K in range(xp.NO):  # 35
-            if xp.E[K] < E1*(1.-1e-5) or xp.E[K] >= E2*(1.+1e-5):
+        for K in range(dataset.NO):  # 35
+            if dataset.E[K] < E1*(1.-1e-5) or dataset.E[K] >= E2*(1.+1e-5):
                 continue
 
-            WT = 1./xp.F[11, K]
+            WT = 1./dataset.F[11, K]
             WT = WT*WT
-            if xp.E[K] > EQ[L]:
+            if dataset.E[K] > EQ[L]:
                 # right of energy grid point
                 if interp_type == 'lin-lin':
-                    ADD = AR*xp.E[K] + BR
-                    AD = xp.S[K] + Q[L] - ADD
+                    ADD = AR*dataset.E[K] + BR
+                    AD = dataset.S[K] + Q[L] - ADD
                 elif interp_type == 'log-log':
-                    ADD = QAR / (xp.E[K]**QBR)
-                    AD = xp.S[K] * Q[L] / ADD
+                    ADD = QAR / (dataset.E[K]**QBR)
+                    AD = dataset.S[K] * Q[L] / ADD
 
-            elif xp.E[K] < EQ[L]:
+            elif dataset.E[K] < EQ[L]:
                 # left o energy grid point
                 if interp_type == 'lin-lin':
-                    ADD = AL * xp.E[K] + BL
-                    AD = xp.S[K] + Q[L] - ADD
+                    ADD = AL * dataset.E[K] + BL
+                    AD = dataset.S[K] + Q[L] - ADD
                 elif interp_type == 'log-log':
-                    ADD = QAL / (xp.E[K]**QBL)
-                    AD = xp.S[K] * Q[L] / ADD
+                    ADD = QAL / (dataset.E[K]**QBL)
+                    AD = dataset.S[K] * Q[L] / ADD
             else:
                 # same energy as grid point
-                AD = xp.S[K]
+                AD = dataset.S[K]
 
             # check if difference is within requested limit of ULI*sigma
             if ULI != 0:
@@ -267,12 +267,12 @@ def reduce_dataset(
                 T2X = T1X*T1X
                 TEST = np.sqrt(WT*T2X)
                 if TEST >= ULI:
-                    F33 = xp.F[2, K] * xp.F[2, K]
+                    F33 = dataset.F[2, K] * dataset.F[2, K]
                     F44 = 1./WT - F33
                     FNEW = T2X / (ULI*ULI)
                     F33N = FNEW - F44
-                    xp.F[11, K] = np.sqrt(FNEW)
-                    xp.F[2, K] = np.sqrt(F33N)
+                    dataset.F[11, K] = np.sqrt(FNEW)
+                    dataset.F[2, K] = np.sqrt(F33N)
                     WT = 1./FNEW
 
                     format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
@@ -284,10 +284,10 @@ def reduce_dataset(
             # statistical uncertainty reduces if more than one value contributes,
             # average for all other uncertainties
             for M in range(11):  # 38
-                if xp.NETG[M] != 9:
-                    xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + xp.F[M, K]
-                elif xp.F[M, K] != 0.0:
-                    xp.F[M, MAXF-1] = xp.F[M, MAXF-1] + (1./xp.F[M, K])**2
+                if dataset.NETG[M] != 9:
+                    dataset.F[M, MAXF-1] = dataset.F[M, MAXF-1] + dataset.F[M, K]
+                elif dataset.F[M, K] != 0.0:
+                    dataset.F[M, MAXF-1] = dataset.F[M, MAXF-1] + (1./dataset.F[M, K])**2
 
             NKOT = NKOT + 1
 
@@ -298,25 +298,25 @@ def reduce_dataset(
             QQQ = AV / WTS
             DIF = QQQ / Q[L]
             for N in range(11):  # 39
-                if xp.NETG[N] != 9:
-                    xp.F[N, MAXF-1] = xp.F[N, MAXF-1] / AKOT
-                elif xp.F[N, MAXF-1] > 0.0:
-                    xp.F[N, MAXF-1] = 1. / np.sqrt(xp.F[N, MAXF-1])
+                if dataset.NETG[N] != 9:
+                    dataset.F[N, MAXF-1] = dataset.F[N, MAXF-1] / AKOT
+                elif dataset.F[N, MAXF-1] > 0.0:
+                    dataset.F[N, MAXF-1] = 1. / np.sqrt(dataset.F[N, MAXF-1])
                 else:
-                    xp.F[N, MAXF-1] = 0.
+                    dataset.F[N, MAXF-1] = 0.
 
             # OUTPUT
-            new_xp.E[new_xp.NO] = EEE
-            new_xp.S[new_xp.NO] = QQQ
-            new_xp.F[0:12, new_xp.NO] = xp.F[0:12, MAXF-1]
-            new_xp.NO += 1
+            new_dataset.E[new_dataset.NO] = EEE
+            new_dataset.S[new_dataset.NO] = QQQ
+            new_dataset.F[0:12, new_dataset.NO] = dataset.F[0:12, MAXF-1]
+            new_dataset.NO += 1
 
-            if not hasattr(new_xp, 'DIF'):
-                new_xp.DIF = []
-            new_xp.DIF.append(DIF)
+            if not hasattr(new_dataset, 'DIF'):
+                new_dataset.DIF = []
+            new_dataset.DIF.append(DIF)
 
-    new_xp.F[0:12, MAXF-1] = xp.F[0:12, MAXF-1]
-    return new_xp
+    new_dataset.F[0:12, MAXF-1] = dataset.F[0:12, MAXF-1]
+    return new_dataset
 
 
 @must_be_called
@@ -346,43 +346,43 @@ def reduce_data():
     while True:
         # Bunch allows to access the dictionary elements
         # returned by DATRCL using the syntax expdata.varname
-        xp = Bunch(read_dataset(expdata_file_handle, 1, 1))
-        if xp.NR == 9999:
+        dataset = Bunch(read_dataset(expdata_file_handle, 1, 1))
+        if dataset.NR == 9999:
             break
         format3733 = "(' read data set  ',i7)"
-        fort_write(None, format3733, [xp.NR])
+        fort_write(None, format3733, [dataset.NR])
 
         # CONSTRUCT APRIORI
 
         # NOTE: computed goto of fortran replaced
         #       by if-else statements
-        if xp.NT in (1, 2):
+        if dataset.NT in (1, 2):
             E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
-                xp, prior_number_points, prior_energy_mesh, prior_cross_section
+                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
             )
-        elif xp.NT in (3, 4):
+        elif dataset.NT in (3, 4):
             E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
-                xp, prior_number_points, prior_energy_mesh, prior_cross_section
+                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
             )
-        elif xp.NT in (5, 8):
+        elif dataset.NT in (5, 8):
             E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
-                xp, prior_number_points, prior_energy_mesh, prior_cross_section
+                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
             )
-        elif xp.NT in (7, 9):
+        elif dataset.NT in (7, 9):
             E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
-                xp, prior_number_points, prior_energy_mesh, prior_cross_section
+                dataset, prior_number_points, prior_energy_mesh, prior_cross_section
             )
-        assert xp.NT >= 1 and xp.NT <= 9
+        assert dataset.NT >= 1 and dataset.NT <= 9
 
         # REDUCTION
 
-        if xp.NT != 6:
+        if dataset.NT != 6:
             # FIND USEFUL DATA RANGE
-            if xp.E[0] > E22 or xp.E[xp.NO-1] < E11:
+            if dataset.E[0] > E22 or dataset.E[dataset.NO-1] < E11:
                 # out of range
                 if (NQQA != END_DATA_BLOCK_INDICATION_STRING
-                        and xp.NQQ == END_DATA_BLOCK_INDICATION_STRING):
-                    NQQA = xp.NQQ
+                        and dataset.NQQ == END_DATA_BLOCK_INDICATION_STRING):
+                    NQQA = dataset.NQQ
                 continue
 
         if datablock_encountered:
@@ -393,16 +393,16 @@ def reduce_data():
                 NQQA == END_DATA_BLOCK_INDICATION_STRING):
             gmadb_writer.write_datablock_header()
 
-        NQQA = xp.NQQ
+        NQQA = dataset.NQQ
         datablock_encountered = True
 
         # no reduction necessary for fission spectrum average data set
-        if xp.NT != 6:
-            xp = reduce_dataset(
-                xp, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
+        if dataset.NT != 6:
+            dataset = reduce_dataset(
+                dataset, E11, E22, EQ, Q, mxm1, gma_file_handle, file_IO2
             )
 
-        gmadb_writer.write_dataset(xp)
+        gmadb_writer.write_dataset(dataset)
 
 
     # DATA FILE COMPLETE
