@@ -12,13 +12,10 @@ from .reduction import reduce_datablocks
 def run_datp():
 
     basedir = '.'
-    # OPEN(14,FILE='DAT.INP')
+
     prior_file_handle = open(os.path.join(basedir, 'DAT.INP'), 'r')
-    # OPEN(15,FILE='DAT.LST')
     file_IO2 = open(os.path.join(basedir, 'DAT.LST'), 'w')
-    # OPEN(12,FILE='GMDATA.CRD')
     expdata_file_handle = open(os.path.join(basedir, 'GMDATA.CRD'), 'r')
-    # OPEN(13,FILE='DAT.RES')
     gma_file_handle = open(os.path.join(basedir, 'DAT.RES'), 'w')
 
     copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
