@@ -3,10 +3,10 @@ from copy import deepcopy
 from .helpers import fort_write
 from .constants import MAXF, ULI
 from .propagation import (
-    deal_with_CS_and_CS_SHAPE,
-    deal_with_RATIO_and_RATIO_SHAPE,
-    deal_with_SUM_and_SHAPE_OF_SUM,
-    deal_with_CS_VS_SUM_PLUS_SHAPE,
+    propagate_prior_to_CS_and_CS_SHAPE_dataset,
+    propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset,
+    propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset,
+    propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset,
 )
 
 
@@ -161,19 +161,19 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
             # NOTE: computed goto of fortran replaced
             #       by if-else statements
             if dataset.quantity_type in (1, 2):
-                E11, E22, EQ, Q, mxm1 = deal_with_CS_and_CS_SHAPE(
+                E11, E22, EQ, Q, mxm1 = propagate_prior_to_CS_and_CS_SHAPE_dataset(
                     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
                 )
             elif dataset.quantity_type in (3, 4):
-                E11, E22, EQ, Q, mxm1 = deal_with_RATIO_and_RATIO_SHAPE(
+                E11, E22, EQ, Q, mxm1 = propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset(
                     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
                 )
             elif dataset.quantity_type in (5, 8):
-                E11, E22, EQ, Q, mxm1 = deal_with_SUM_and_SHAPE_OF_SUM(
+                E11, E22, EQ, Q, mxm1 = propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset(
                     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
                 )
             elif dataset.quantity_type in (7, 9):
-                E11, E22, EQ, Q, mxm1 = deal_with_CS_VS_SUM_PLUS_SHAPE(
+                E11, E22, EQ, Q, mxm1 = propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
                     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
                 )
             assert dataset.quantity_type >= 1 and dataset.quantity_type <= 9

@@ -6,7 +6,7 @@ from .helpers import (
 from .constants import MAX_NUM_POINTS
 
 
-def deal_with_CS_and_CS_SHAPE(
+def propagate_prior_to_CS_and_CS_SHAPE_dataset(
     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
@@ -25,7 +25,7 @@ def deal_with_CS_and_CS_SHAPE(
     return E11, E22, EQ, Q, NON-1
 
 
-def deal_with_RATIO_and_RATIO_SHAPE(
+def propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset(
     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
@@ -59,7 +59,7 @@ def deal_with_RATIO_and_RATIO_SHAPE(
     return E11, E22, EQ, Q, mxm-1
 
 
-def deal_with_SUM_and_SHAPE_OF_SUM(
+def propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset(
     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
@@ -104,7 +104,7 @@ def deal_with_SUM_and_SHAPE_OF_SUM(
     return E11, E22, EQ, Q, mxm-1
 
 
-def deal_with_CS_VS_SUM_PLUS_SHAPE(
+def propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
     dataset, prior_number_points, prior_energy_mesh, prior_cross_section
 ):
     EQ = np.empty((200,), dtype=float)
