@@ -2,12 +2,7 @@ import numpy as np
 from copy import deepcopy
 from .helpers import fort_write
 from .constants import MAXF, ULI
-from .propagation import (
-    propagate_prior_to_CS_and_CS_SHAPE_dataset,
-    propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset,
-    propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset,
-    propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset,
-)
+from .propagation import propagate_prior_to_dataset
 
 
 def reduce_dataset(
@@ -148,37 +143,13 @@ def reduce_dataset(
 
 
 def reduce_datablocks(datablocks, reaction_prior, file_IO2):
-    prior_number_points = reaction_prior['number_points']
-    prior_energy_mesh = reaction_prior['energy_mesh']
-    prior_cross_section = reaction_prior['cross_section']
 
     reduced_datablocks = []
     for datablock in datablocks:
         reduced_datasets = []
         for dataset in datablock:
-            # CONSTRUCT APRIORI
 
-            # NOTE: computed goto of fortran replaced
-            #       by if-else statements
-            if dataset.quantity_type in (1, 2):
-                E11, E22, EQ, Q, mxm1 = propagate_prior_to_CS_and_CS_SHAPE_dataset(
-                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-                )
-            elif dataset.quantity_type in (3, 4):
-                E11, E22, EQ, Q, mxm1 = propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset(
-                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-                )
-            elif dataset.quantity_type in (5, 8):
-                E11, E22, EQ, Q, mxm1 = propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset(
-                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-                )
-            elif dataset.quantity_type in (7, 9):
-                E11, E22, EQ, Q, mxm1 = propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
-                    dataset, prior_number_points, prior_energy_mesh, prior_cross_section
-                )
-            assert dataset.quantity_type >= 1 and dataset.quantity_type <= 9
-
-            # REDUCTION
+            E11, E22, EQ, Q, mxm1 = propagate_prior_to_dataset(dataset, reaction_prior)
 
             if dataset.quantity_type != 6:
                 # skip datasets whose energies are byeond limits
