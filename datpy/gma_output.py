@@ -3,19 +3,55 @@ from .constants import (
     FORMAT200,
     FORMAT250,
     FORMAT290,
+    SHOULD_TEST_OUTPUT,
 )
 from .helpers import (
     fort_write
 )
 
 
-def write_gmadb_file(gma_file_handle, file_IO2, reduced_datablocks):
+def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks):
     for datablock in reduced_datablocks:
         write_datablock_header(gma_file_handle, file_IO2)
         for dataset in datablock:
             write_dataset(gma_file_handle, file_IO2, dataset)
         write_datablock_trailer(gma_file_handle, file_IO2)
     write_file_trailer(gma_file_handle, file_IO2)
+
+
+def write_prior( file_IO2, gma_file_handle, reaction_prior):
+    prior_label =  reaction_prior['label']
+    prior_number_points = reaction_prior['number_points']
+    prior_energy_mesh = reaction_prior['energy_mesh']
+    prior_cross_section = reaction_prior['cross_section']
+
+    num_reactions = prior_number_points.shape[0]
+    ITOT = 0
+    for K in range(num_reactions):
+        ITOT = ITOT + prior_number_points[K]
+    ITOT = ITOT - 2*num_reactions
+
+    format264 = '(5HAPRI ,2I5)'
+    fort_write(gma_file_handle, format264, [ITOT, num_reactions])
+    fort_write(file_IO2, format264, [ITOT, num_reactions])
+
+    format3731 = "('cross section',i5,' number',i5,A16)"
+    format101 = '(2X,I4,2X,2E12.4)'
+    format109 = '(8x,2e10.4)'
+    format100 = '(2E14.6)' if SHOULD_TEST_OUTPUT else '(2E10.4)'
+    format99 = '(A16)'  # original: (8A2)
+    for L in range(num_reactions):
+        NOR = prior_number_points[L] - 1
+        NOR2 = NOR - 1
+        fort_write(gma_file_handle, format99, [prior_label[L]])
+        fort_write(file_IO2, format99, [prior_label[L]])
+        fort_write(None, format3731, [L+1, NOR2, prior_label[L]])
+
+        for K in range(1, NOR):
+            fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], prior_cross_section[L, K]])
+            fort_write(gma_file_handle, format100, [prior_energy_mesh[L, K], prior_cross_section[L, K]])
+        fort_write(file_IO2, format109, [0, 0])
+        fort_write(gma_file_handle, format100, [0, 0])
 
 
 def write_datablock_header(gma_file_handle, file_IO2):

@@ -1,11 +1,15 @@
 import os
 from .input_output import (
     copy_gma_controls,
+)
+from .data_input import (
     read_apriori,
-    transfer_apriori_to_output_file,
     read_datablocks,
 )
-from .gma_output import write_gmadb_file
+from .gma_output import (
+    write_gmadb,
+    write_prior,
+)
 from .reduction import reduce_datablocks
 
 
@@ -20,11 +24,11 @@ def run_datp():
 
     copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
     reaction_prior = read_apriori(prior_file_handle)
-    transfer_apriori_to_output_file(file_IO2, gma_file_handle, reaction_prior)
+    write_prior(file_IO2, gma_file_handle, reaction_prior)
 
     datablocks = read_datablocks(expdata_file_handle)
     reduced_datablocks = reduce_datablocks(datablocks, reaction_prior, file_IO2)
-    write_gmadb_file(gma_file_handle, file_IO2, reduced_datablocks)
+    write_gmadb(gma_file_handle, file_IO2, reduced_datablocks)
 
     prior_file_handle.close()
     file_IO2.close()
