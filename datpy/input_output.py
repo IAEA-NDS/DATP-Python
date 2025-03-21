@@ -137,7 +137,7 @@ def transfer_apriori_to_output_file(
         fort_write(gma_file_handle, format100, [0, 0])
 
 
-def read_dataset(expdata_file_handle, NZ: int, IBZ: int):
+def read_dataset(expdata_file_handle, IBZ: int):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
@@ -151,10 +151,6 @@ def read_dataset(expdata_file_handle, NZ: int, IBZ: int):
     # this declaration is not present in Fortran code
     # but assumed to be implicitly done
     SES = 0.
-
-    if NZ == 5:
-        for K in range(1,1000):
-            NXY[K] = 0
 
     NBQZ = 1
     if NBQZ == 1: NQQ = NES
