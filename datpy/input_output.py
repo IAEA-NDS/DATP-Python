@@ -137,7 +137,7 @@ def transfer_apriori_to_output_file(
         fort_write(gma_file_handle, format100, [0, 0])
 
 
-def read_dataset(expdata_file_handle, IBZ: int):
+def read_dataset(expdata_file_handle):
 
     # variables with local scope
     NAU: str; NREF: str; NQT: str
@@ -154,7 +154,6 @@ def read_dataset(expdata_file_handle, IBZ: int):
 
     NBQZ = 1
     if NBQZ == 1: NQQ = NES
-    if IBZ == 2: NQQ = NEB
 
     # data set identification
     # original string

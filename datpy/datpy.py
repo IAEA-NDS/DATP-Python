@@ -346,7 +346,7 @@ def reduce_data():
     while True:
         # Bunch allows to access the dictionary elements
         # returned by DATRCL using the syntax expdata.varname
-        dataset = Bunch(read_dataset(expdata_file_handle, 1))
+        dataset = Bunch(read_dataset(expdata_file_handle))
         if dataset.dataset_id == 9999:
             break
         format3733 = "(' read data set  ',i7)"
