@@ -193,14 +193,13 @@ def read_dataset(expdata_file_handle):
         'cormat_dim': NCO,  # int
         'num_comments': NCCO,  # int
         'comments': NCOM,  # list[list[str]]
-        'num_values': NO,  # int  (maximal number datapoints)
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,
         'EPA': EPA,  # array (3x11, float)
         'NETG': NETG,  # array (11, int)
         'energies': E,  # array (float)
-        'measured_values': S,  # array (size(E), float)
+        'measured_values': S[:NO],  # array (size(E), float)
         'uncertainties': F,  # array (12 x 900, float)
         'NCST': NCST,  # array with dataset numbers (int)
         'NCST_size': NCS,  # int

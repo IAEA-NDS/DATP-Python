@@ -57,7 +57,8 @@ def reduce_dataset(
             QAR = Q[L]*(EQ[L]**QBR)
 
         # GRID VALUES
-        for K in range(dataset.num_values):  # 35
+        num_values = len(dataset.measured_values)
+        for K in range(num_values):  # 35
             if dataset.energies[K] < E1*(1.-1e-5) or dataset.energies[K] >= E2*(1.+1e-5):
                 continue
 
@@ -149,11 +150,12 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
         reduced_datasets = []
         for dataset in datablock:
 
+            num_values = len(dataset.measured_values)
             E11, E22, EQ, Q, mxm1 = propagate_prior_to_dataset(dataset, reaction_prior)
 
             if dataset.quantity_type != 6:
                 # skip datasets whose energies are byeond limits
-                if dataset.energies[0] > E22 or dataset.energies[dataset.num_values-1] < E11:
+                if dataset.energies[0] > E22 or dataset.energies[num_values-1] < E11:
                     continue
 
             if dataset.quantity_type != 6:
