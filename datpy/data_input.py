@@ -206,7 +206,6 @@ def read_dataset(expdata_file_handle):
         'measured_values': S[:NO],  # array (size(E), float)
         'uncertainties': F,  # array (12 x 900, float)
         'NCST': NCST,  # array with dataset numbers (int)
-        'NCST_size': NCS,  # int
         'NEC': NEC,  #  array (2x11 int)
         'FCFC': FCFC,  # array array (10 x (2,3))
         'cormat': ECOR

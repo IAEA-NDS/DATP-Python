@@ -81,8 +81,8 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
 
     format254 = '(3I5,A28,8X,A20)'
-    fort_write(gma_file_handle, format254, [ds.year, ds.tag, ds.NCST_size, ds.author, ds.pubref])
-    fort_write(file_IO2, format254, [ds.year, ds.tag, ds.NCST_size, ds.author, ds.pubref])
+    fort_write(gma_file_handle, format254, [ds.year, ds.tag, len(ds.NCST), ds.author, ds.pubref])
+    fort_write(file_IO2, format254, [ds.year, ds.tag, len(ds.NCST), ds.author, ds.pubref])
 
     if ds.quantity_type not in (2, 4, 8, 9):
         # normalization uncertainties
@@ -97,11 +97,11 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     for K in range(11):
         fort_write(file_IO2, format262, [ds.EPA[0:3, K], ds.NETG[K]])
         fort_write(gma_file_handle, format262, [ds.EPA[0:3, K], ds.NETG[K]])
-    if ds.NCST_size != 0:
+    if len(ds.NCST) != 0:
         # cross correlations
         format263 = '(I5,20I3)'
         format293 = '(10F5.1)'
-        for K in range(ds.NCST_size):  # 83
+        for K in range(len(ds.NCST)):  # 83
             # NOTE: during flattening in fort_write first index should
             #       change fastest
             fort_write(gma_file_handle, format263, [ds.NCST[K], ds.NEC[:, :, K]])
