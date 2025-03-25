@@ -19,7 +19,7 @@ def reduce_dataset(
         interp_type = 'log-log'
 
     # GET GRID VALUES  - try at all apriori energies to find data
-    new_dataset.num_values = 0
+    new_num_values = 0
     new_dataset.energies = np.zeros(mxm1-1, dtype=float)
     new_dataset.measured_values = np.zeros(mxm1-1, dtype=float)
 
@@ -130,15 +130,16 @@ def reduce_dataset(
                     dataset.uncertainties[N, MAXF-1] = 0.
 
             # OUTPUT
-            new_dataset.energies[new_dataset.num_values] = EEE
-            new_dataset.measured_values[new_dataset.num_values] = QQQ
-            new_dataset.uncertainties[0:12, new_dataset.num_values] = dataset.uncertainties[0:12, MAXF-1]
-            new_dataset.num_values += 1
+            new_dataset.energies[new_num_values] = EEE
+            new_dataset.measured_values[new_num_values] = QQQ
+            new_dataset.uncertainties[0:12, new_num_values] = dataset.uncertainties[0:12, MAXF-1]
+            new_num_values += 1
 
             if not hasattr(new_dataset, 'DIF'):
                 new_dataset.DIF = []
             new_dataset.DIF.append(DIF)
 
+    new_dataset.num_values = new_num_values
     new_dataset.uncertainties[0:12, MAXF-1] = dataset.uncertainties[0:12, MAXF-1]
     return new_dataset
 
