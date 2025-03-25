@@ -85,8 +85,8 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat_dim, NNN, ds.reaction_ids[0:4]])
 
     format254 = '(3I5,A28,8X,A20)'
-    fort_write(gma_file_handle, format254, [ds.year, ds.NQ, ds.NCST_size, ds.author, ds.pubref])
-    fort_write(file_IO2, format254, [ds.year, ds.NQ, ds.NCST_size, ds.author, ds.pubref])
+    fort_write(gma_file_handle, format254, [ds.year, ds.tag, ds.NCST_size, ds.author, ds.pubref])
+    fort_write(file_IO2, format254, [ds.year, ds.tag, ds.NCST_size, ds.author, ds.pubref])
 
     if ds.quantity_type not in (2, 4, 8, 9):
         # normalization uncertainties

@@ -188,7 +188,7 @@ def read_dataset(expdata_file_handle):
         'quantity_name': NQT,  # str
         'author': NAU,  # str
         'pubref': NREF,  # str
-        'NQ': NQ,  # number quantity? int
+        'tag': NQ,  # number quantity? int
         'quantity_type': NT,  # int
         'cormat_dim': NCO,  # int
         'num_comments': NCCO,  # int
