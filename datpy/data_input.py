@@ -182,6 +182,11 @@ def read_dataset(expdata_file_handle):
         raise ValueError('Expected End-of-Datablock or End-of-Dataset indicator')
     datablock_complete = (end_indicator == END_DATA_BLOCK_INDICATION_STRING)
 
+    assert not ENF or len(ENF) == 10
+    assert not NENF or len(NENF) == 10
+    assert EPA.shape == (3, 11)
+    assert len(NETG) == 11
+
     dataset = {
         'dataset_id': NR,  # int
         'year': NY,  # int
