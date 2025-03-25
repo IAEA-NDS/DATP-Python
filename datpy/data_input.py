@@ -193,7 +193,7 @@ def read_dataset(expdata_file_handle):
         'cormat_dim': NCO,  # int
         'num_comments': NCCO,  # int
         'comments': NCOM,  # list[list[str]]
-        'NO': NO,  # int  (maximal number datapoints)
+        'num_values': NO,  # int  (maximal number datapoints)
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,

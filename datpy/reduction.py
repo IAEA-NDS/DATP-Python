@@ -19,7 +19,7 @@ def reduce_dataset(
         interp_type = 'log-log'
 
     # GET GRID VALUES  - try at all apriori energies to find data
-    new_dataset.NO = 0
+    new_dataset.num_values = 0
     new_dataset.energies = np.zeros(mxm1-1, dtype=float)
     new_dataset.measured_values = np.zeros(mxm1-1, dtype=float)
 
@@ -57,7 +57,7 @@ def reduce_dataset(
             QAR = Q[L]*(EQ[L]**QBR)
 
         # GRID VALUES
-        for K in range(dataset.NO):  # 35
+        for K in range(dataset.num_values):  # 35
             if dataset.energies[K] < E1*(1.-1e-5) or dataset.energies[K] >= E2*(1.+1e-5):
                 continue
 
@@ -129,10 +129,10 @@ def reduce_dataset(
                     dataset.uncertainties[N, MAXF-1] = 0.
 
             # OUTPUT
-            new_dataset.energies[new_dataset.NO] = EEE
-            new_dataset.measured_values[new_dataset.NO] = QQQ
-            new_dataset.uncertainties[0:12, new_dataset.NO] = dataset.uncertainties[0:12, MAXF-1]
-            new_dataset.NO += 1
+            new_dataset.energies[new_dataset.num_values] = EEE
+            new_dataset.measured_values[new_dataset.num_values] = QQQ
+            new_dataset.uncertainties[0:12, new_dataset.num_values] = dataset.uncertainties[0:12, MAXF-1]
+            new_dataset.num_values += 1
 
             if not hasattr(new_dataset, 'DIF'):
                 new_dataset.DIF = []
@@ -153,7 +153,7 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
 
             if dataset.quantity_type != 6:
                 # skip datasets whose energies are byeond limits
-                if dataset.energies[0] > E22 or dataset.energies[dataset.NO-1] < E11:
+                if dataset.energies[0] > E22 or dataset.energies[dataset.num_values-1] < E11:
                     continue
 
             if dataset.quantity_type != 6:
