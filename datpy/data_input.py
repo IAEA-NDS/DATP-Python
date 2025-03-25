@@ -11,7 +11,6 @@ from .constants import (
     MAX_NUM_POINTS,
     END_DATA_BLOCK_INDICATION_STRING,
     END_DATASET_INDICATION_STRING,
-    MAXF,
 )
 
 
@@ -114,7 +113,7 @@ def read_dataset(expdata_file_handle):
     # DATA
     E = np.empty((NO,), dtype=float)
     S = np.empty((NO,), dtype=float)
-    F = np.zeros((12, MAXF), dtype=float)
+    F = np.zeros((12, NO), dtype=float)
     format114 = '(2E10.4,12F5.1)'
     for K in range(NO):
         E[K], S[K], F[:,K] = unflatten(
@@ -203,7 +202,7 @@ def read_dataset(expdata_file_handle):
         'EPA': EPA,  # array (3x11, float)
         'NETG': NETG,  # array (11, int)
         'energies': E,  # array (float)
-        'measured_values': S[:NO],  # array (size(E), float)
+        'measured_values': S,  # array (size(E), float)
         'uncertainties': F,  # array (12 x 900, float)
         'NCST': NCST,  # array with dataset numbers (int)
         'NEC': NEC,  #  array (2x11 int)

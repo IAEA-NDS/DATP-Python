@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from .helpers import fort_write
-from .constants import MAXF, ULI
+from .constants import ULI
 from .propagation import propagate_prior_to_dataset
 
 
@@ -22,6 +22,7 @@ def reduce_dataset(
     new_num_values = 0
     new_dataset.energies = np.zeros(mxm1-1, dtype=float)
     new_dataset.measured_values = np.zeros(mxm1-1, dtype=float)
+    new_dataset.uncertainties = np.zeros((12, mxm1-1), dtype=float)
 
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
@@ -36,7 +37,7 @@ def reduce_dataset(
         AV = 0.
         WTS = 0.
         NKOT = 0
-        dataset.uncertainties[:, MAXF-1] = 0.
+        reduced_uncertainties = np.zeros(dataset.uncertainties.shape[0])
 
         if E1 > .03:
             interp_type = 'lin-lin'
@@ -108,9 +109,9 @@ def reduce_dataset(
             # average for all other uncertainties
             for M in range(11):  # 38
                 if dataset.NETG[M] != 9:
-                    dataset.uncertainties[M, MAXF-1] += dataset.uncertainties[M, K]
+                    reduced_uncertainties[M] += dataset.uncertainties[M, K]
                 elif dataset.uncertainties[M, K] != 0.0:
-                    dataset.uncertainties[M, MAXF-1] += (1./dataset.uncertainties[M, K])**2
+                    reduced_uncertainties[M] += (1./dataset.uncertainties[M, K])**2
 
             NKOT = NKOT + 1
 
@@ -122,16 +123,16 @@ def reduce_dataset(
             DIF = QQQ / Q[L]
             for N in range(11):  # 39
                 if dataset.NETG[N] != 9:
-                    dataset.uncertainties[N, MAXF-1] /= AKOT
-                elif dataset.uncertainties[N, MAXF-1] > 0.0:
-                    dataset.uncertainties[N, MAXF-1] = 1. / np.sqrt(dataset.uncertainties[N, MAXF-1])
+                    reduced_uncertainties[N] /= AKOT
+                elif reduced_uncertainties[N] > 0.0:
+                    reduced_uncertainties[N] = 1. / np.sqrt(reduced_uncertainties[N])
                 else:
-                    dataset.uncertainties[N, MAXF-1] = 0.
+                    reduced_uncertainties[N] = 0.
 
             # OUTPUT
             new_dataset.energies[new_num_values] = EEE
             new_dataset.measured_values[new_num_values] = QQQ
-            new_dataset.uncertainties[0:12, new_num_values] = dataset.uncertainties[0:12, MAXF-1]
+            new_dataset.uncertainties[0:12, new_num_values] = reduced_uncertainties[0:12]
             new_num_values += 1
 
             if not hasattr(new_dataset, 'DIF'):
@@ -139,7 +140,7 @@ def reduce_dataset(
             new_dataset.DIF.append(DIF)
 
     new_dataset.measured_values = new_dataset.measured_values[:new_num_values]
-    new_dataset.uncertainties[0:12, MAXF-1] = dataset.uncertainties[0:12, MAXF-1]
+    new_dataset.reduced_uncertainties = reduced_uncertainties
     return new_dataset
 
 
@@ -165,6 +166,7 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
             else:
                 # no reduction necessary for fission spectrum average dataset
                 reduced_dataset = deepcopy(dataset)
+                reduced_dataset.reduced_uncertainties = np.zeros(12, dtype=float)
 
             reduced_datasets.append(reduced_dataset)
 
