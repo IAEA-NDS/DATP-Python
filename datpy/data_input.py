@@ -84,7 +84,7 @@ def read_dataset(expdata_file_handle):
     format106 = '(A80)'
     NCOM = []
     for i in range(NCCO):
-        NCOM.append(fort_read(expdata_file_handle, format106))
+        NCOM.append(fort_read(expdata_file_handle, format106)[0])
 
     # NORMALIZATION UNCERTAINTIES
     ENF = None
@@ -191,8 +191,7 @@ def read_dataset(expdata_file_handle):
         'tag': NQ,  # number quantity? int
         'quantity_type': NT,  # int
         'cormat_dim': NCO,  # int
-        'num_comments': NCCO,  # int
-        'comments': NCOM,  # list[list[str]]
+        'comments': NCOM[:NCCO],  # list[list[str]]
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,
