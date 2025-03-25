@@ -183,30 +183,30 @@ def read_dataset(expdata_file_handle):
     datablock_complete = (end_indicator == END_DATA_BLOCK_INDICATION_STRING)
 
     dataset = {
-        'dataset_id': NR,
-        'year': NY,
-        'quantity_name': NQT,
-        'author': NAU,
-        'pubref': NREF,
-        'NQ': NQ,
-        'quantity_type': NT,
-        'cormat_dim': NCO,
-        'num_comments': NCCO,
-        'comments': NCOM,
-        'NO': NO,
-        'reaction_ids': NID,
+        'dataset_id': NR,  # int
+        'year': NY,  # int
+        'quantity_name': NQT,  # str
+        'author': NAU,  # str
+        'pubref': NREF,  # str
+        'NQ': NQ,  # number quantity? int
+        'quantity_type': NT,  # int
+        'cormat_dim': NCO,  # int
+        'num_comments': NCCO,  # int
+        'comments': NCOM,  # list[list[str]]
+        'NO': NO,  # int  (maximal number datapoints)
+        'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,
-        'SES': SES,
-        'EPA': EPA,
-        'NETG': NETG,
-        'energies': E,
-        'measured_values': S,
-        'uncertainties': F,
-        'NCST': NCST,
-        'NCST_size': NCS, 
-        'NEC': NEC,
-        'FCFC': FCFC,
+        'SES': SES,  # float (derived quantity)
+        'EPA': EPA,  # array (3x11, float)
+        'NETG': NETG,  # array (11, int)
+        'energies': E,  # array (float)
+        'measured_values': S,  # array (size(E), float)
+        'uncertainties': F,  # array (12 x 900, float)
+        'NCST': NCST,  # array with dataset numbers (int)
+        'NCST_size': NCS,  # int
+        'NEC': NEC,  #  array (2x11 int)
+        'FCFC': FCFC,  # array array (10 x (2,3))
         'cormat': ECOR
     }
 
