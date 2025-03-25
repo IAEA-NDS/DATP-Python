@@ -190,7 +190,6 @@ def read_dataset(expdata_file_handle):
         'pubref': NREF,  # str
         'tag': NQ,  # number quantity? int
         'quantity_type': NT,  # int
-        'cormat_dim': NCO,  # int
         'comments': NCOM[:NCCO],  # list[list[str]]
         'num_reaction_ids': NID.index(0),
         'reaction_ids': NID,  # list[int]

@@ -77,8 +77,8 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     NNN = ds.num_reaction_ids
 
     format253 = '(5HDATA ,9I5)'
-    fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat_dim, NNN, ds.reaction_ids[0:4]])
-    fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat_dim, NNN, ds.reaction_ids[0:4]])
+    fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
+    fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
 
     format254 = '(3I5,A28,8X,A20)'
     fort_write(gma_file_handle, format254, [ds.year, ds.tag, ds.NCST_size, ds.author, ds.pubref])
@@ -131,11 +131,11 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     fort_write(gma_file_handle, FORMAT200, [0, 0, ds.uncertainties[0:12, MAXF-1]])
     fort_write(file_IO2, FORMAT200, [0, 0, ds.uncertainties[0:12, MAXF-1]])
 
-    if ds.cormat_dim == 0:
+    if not hasattr(ds, 'cormat') or ds.cormat.shape[0] == 0:
         return
 
     format6114 = '(1X,10F8.5)'
     format6115 = '(10F8.5)'
-    for KL in range(ds.cormat_dim):  # 6113
+    for KL in range(ds.cormat.shape[0]):  # 6113
         fort_write(file_IO2, format6114, [ds.cormat[KL, :(KL+1)]])
         fort_write(gma_file_handle, format6115, [ds.cormat[KL, :(KL+1)]])
