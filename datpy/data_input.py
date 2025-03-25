@@ -192,6 +192,7 @@ def read_dataset(expdata_file_handle):
         'quantity_type': NT,  # int
         'cormat_dim': NCO,  # int
         'comments': NCOM[:NCCO],  # list[list[str]]
+        'num_reaction_ids': NID.index(0),
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,

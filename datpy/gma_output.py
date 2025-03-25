@@ -73,12 +73,8 @@ def write_file_trailer(gma_file_handle, file_IO2):
 
 def write_dataset(gma_file_handle, file_IO2, dataset):
     ds = dataset
-    # find nr of CS involved
-    for MN in range(1, 5):  # 66
-        pyMN = MN - 1
-        if ds.reaction_ids[pyMN] == 0:
-            break
-    NNN = MN - 1
+    # find number of CS involved
+    NNN = ds.num_reaction_ids
 
     format253 = '(5HDATA ,9I5)'
     fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat_dim, NNN, ds.reaction_ids[0:4]])
