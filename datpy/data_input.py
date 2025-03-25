@@ -185,6 +185,7 @@ def read_dataset(expdata_file_handle):
     assert not NENF or len(NENF) == 10
     assert EPA.shape == (3, 11)
     assert len(NETG) == 11
+    assert NCCO == len(NCOM)
 
     dataset = {
         'dataset_id': NR,  # int
@@ -194,7 +195,7 @@ def read_dataset(expdata_file_handle):
         'pubref': NREF,  # str
         'tag': NQ,  # number quantity? int
         'quantity_type': NT,  # int
-        'comments': NCOM[:NCCO],  # list[list[str]]
+        'comments': NCOM,  # list[list[str]]
         'num_reaction_ids': NID.index(0),
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
