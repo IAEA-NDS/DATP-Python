@@ -139,7 +139,7 @@ def reduce_dataset(
                 new_dataset.DIF = []
             new_dataset.DIF.append(DIF)
 
-    new_dataset.num_values = new_num_values
+    new_dataset.measured_values = new_dataset.measured_values[:new_num_values]
     new_dataset.uncertainties[0:12, MAXF-1] = dataset.uncertainties[0:12, MAXF-1]
     return new_dataset
 

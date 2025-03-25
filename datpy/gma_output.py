@@ -124,7 +124,7 @@ def write_dataset(gma_file_handle, file_IO2, dataset):
     # write out more for data types different from NT==6
     format5173 = "(/' ENERGY/MEV  VALUE       UNCERTAINTIES                     RATIO TO APRIORI'/)"
     fort_write(file_IO2, format5173, [None])
-    for k in range(ds.num_values):
+    for k in range(len(ds.measured_values)):
         EEE = ds.energies[k]
         QQQ = ds.measured_values[k]
         DIF = ds.DIF[k]
