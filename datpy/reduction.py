@@ -36,8 +36,7 @@ def reduce_dataset(
         AV = 0.
         WTS = 0.
         NKOT = 0
-        for N in range(12):  # 133
-            dataset.uncertainties[N, MAXF-1] = 0.
+        dataset.uncertainties[:, MAXF-1] = 0.
 
         if E1 > .03:
             interp_type = 'lin-lin'
@@ -109,9 +108,9 @@ def reduce_dataset(
             # average for all other uncertainties
             for M in range(11):  # 38
                 if dataset.NETG[M] != 9:
-                    dataset.uncertainties[M, MAXF-1] = dataset.uncertainties[M, MAXF-1] + dataset.uncertainties[M, K]
+                    dataset.uncertainties[M, MAXF-1] += dataset.uncertainties[M, K]
                 elif dataset.uncertainties[M, K] != 0.0:
-                    dataset.uncertainties[M, MAXF-1] = dataset.uncertainties[M, MAXF-1] + (1./dataset.uncertainties[M, K])**2
+                    dataset.uncertainties[M, MAXF-1] += (1./dataset.uncertainties[M, K])**2
 
             NKOT = NKOT + 1
 
@@ -123,7 +122,7 @@ def reduce_dataset(
             DIF = QQQ / Q[L]
             for N in range(11):  # 39
                 if dataset.NETG[N] != 9:
-                    dataset.uncertainties[N, MAXF-1] = dataset.uncertainties[N, MAXF-1] / AKOT
+                    dataset.uncertainties[N, MAXF-1] /= AKOT
                 elif dataset.uncertainties[N, MAXF-1] > 0.0:
                     dataset.uncertainties[N, MAXF-1] = 1. / np.sqrt(dataset.uncertainties[N, MAXF-1])
                 else:
