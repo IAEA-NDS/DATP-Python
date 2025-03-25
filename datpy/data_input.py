@@ -197,7 +197,6 @@ def read_dataset(expdata_file_handle):
         'reaction_ids': NID,  # list[int]
         'ENF': ENF,
         'NENF': NENF,
-        'SES': SES,  # float (derived quantity)
         'EPA': EPA,  # array (3x11, float)
         'NETG': NETG,  # array (11, int)
         'energies': E,  # array (float)
