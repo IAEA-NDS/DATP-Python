@@ -124,7 +124,7 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
     for k in range(len(ds.measured_values)):
         EEE = ds.energies[k]
         QQQ = ds.measured_values[k]
-        DIF = ds.DIF[k]
+        DIF = auxinfo[ds.dataset_id]['DIF'][k]
         fort_write(gma_file_handle, FORMAT200, [EEE, QQQ, ds.uncertainties[0:12, k]])
         fort_write(file_IO2, FORMAT290, [EEE, QQQ, ds.uncertainties[0:12, k], DIF])
 
