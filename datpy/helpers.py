@@ -13,6 +13,15 @@ class Bunch(object):
         self.__dict__.update(adict)
 
 
+def unroot(obj):
+    """function to deal with pydantic root models"""
+    if hasattr(obj, 'root'):
+        obj = obj.root
+    if isinstance(obj, list):
+        return [unroot(x) for x in obj]
+    return obj
+
+
 def fort_read(fobj, formatstr, none_as=None, debug=False):
 
     frr = FortranRecordReader(formatstr)
