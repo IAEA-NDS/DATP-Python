@@ -136,13 +136,9 @@ def reduce_dataset(
             new_dataset.uncertainties[0:12, new_num_values] = reduced_uncertainties[0:12]
             new_num_values += 1
 
-            if not hasattr(new_dataset, 'DIF'):
-                new_dataset.DIF = []
-            new_dataset.DIF.append(DIF)
-            t = auxinfo.setdefault('DIF', []).append(DIF)
+            auxinfo.setdefault('DIF', []).append(DIF)
 
     new_dataset.measured_values = new_dataset.measured_values[:new_num_values]
-    new_dataset.reduced_uncertainties = reduced_uncertainties
     auxinfo['reduced_uncertainties'] = reduced_uncertainties
 
     return new_dataset, auxinfo
