@@ -12,6 +12,7 @@ from .constants import (
     END_DATA_BLOCK_INDICATION_STRING,
     END_DATASET_INDICATION_STRING,
 )
+from .datamodels.models import Dataset
 
 
 def read_apriori(prior_file_handle):
@@ -187,7 +188,7 @@ def read_dataset(expdata_file_handle):
     assert len(NETG) == 11
     assert NCCO == len(NCOM)
 
-    dataset = {
+    dataset = Dataset(**{
         'dataset_id': NR,  # int
         'year': NY,  # int
         'quantity_name': NQT,  # str
@@ -209,7 +210,7 @@ def read_dataset(expdata_file_handle):
         'NEC': NEC,  #  array (2x11 int)
         'FCFC': FCFC,  # array array (10 x (2,3))
         'cormat': ECOR
-    }
+    }).dict(use_arrays=True)
 
     return dataset, datablock_complete
 
