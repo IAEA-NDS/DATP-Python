@@ -55,6 +55,22 @@ def _multidim_array_property(elem_property, sizes):
     return elem_property
 
 
+reaction_prior = {
+    '$schema': 'https://json-schema.org/draft/2020-12/schema',
+    'version': '0.0.1',
+    'title': 'ReactionPriorBase',
+    'description': 'List of energy-dependent cross sections with prior values',
+    'type': 'object',
+    'properties': {
+        'energy_mesh': _multidim_array_property(_float_property(), [None, None]),
+        'cross_section': _multidim_array_property(_float_property(), [None, None]),
+        'label': _array_property(_str_property())
+    },
+    'required': ['energy_mesh', 'cross_section', 'label']
+}
+schema_list.append(reaction_prior)
+
+
 dataset_schema = {
     '$schema': 'https://json-schema.org/draft/2020-12/schema',
     'version': '0.0.1',

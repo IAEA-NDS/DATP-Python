@@ -1,5 +1,12 @@
-from .basemodels import DatasetBase
+from .basemodels import (
+    DatasetBase,
+    ReactionPriorBase,
+)
 import numpy as np
+
+
+class ReactionPrior(ReactionPriorBase):
+    pass
 
 
 class Dataset(DatasetBase):

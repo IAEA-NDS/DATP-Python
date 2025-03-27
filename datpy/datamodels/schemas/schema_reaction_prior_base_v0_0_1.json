@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "0.0.1",
+  "title": "ReactionPriorBase",
+  "description": "List of energy-dependent cross sections with prior values",
+  "type": "object",
+  "properties": {
+    "energy_mesh": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "cross_section": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "energy_mesh",
+    "cross_section",
+    "label"
+  ]
+}
