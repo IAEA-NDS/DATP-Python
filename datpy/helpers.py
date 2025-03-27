@@ -1,3 +1,4 @@
+import io
 import numpy as np
 # helpful for tentative fortran to python conversion
 from fortranformat import FortranRecordReader
@@ -26,7 +27,10 @@ def fort_read(fobj, formatstr, none_as=None, debug=False):
 
     frr = FortranRecordReader(formatstr)
     if not isinstance(fobj, str):
-        fname = fobj.name
+        if hasattr(fobj, 'name'):
+            fname = fobj.name
+        else:
+            fname = 'unknown'  # StringIO does not have `name` field
         inpline = fobj.readline()
     else:
         fname = 'console'
