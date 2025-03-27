@@ -113,8 +113,9 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
         # fission spectrum average data set
         fort_write(file_IO2, FORMAT200, [ds.energies[0], ds.measured_values[0], ds.uncertainties[0:12, 0]])
         fort_write(gma_file_handle, FORMAT200, [ds.energies[0], ds.measured_values[0], ds.uncertainties[0:12, 0]])
-        fort_write(file_IO2, FORMAT200, [0, 0, ds.reduced_uncertainties[0:12]])
-        fort_write(gma_file_handle, FORMAT200, [0, 0, ds.reduced_uncertainties[0:12]])
+        reduced_uncertainties = [0.0]*12
+        fort_write(file_IO2, FORMAT200, [0, 0, reduced_uncertainties])
+        fort_write(gma_file_handle, FORMAT200, [0, 0, reduced_uncertainties])
         return
 
     # write out more for data types different from NT==6
@@ -128,8 +129,9 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
         fort_write(file_IO2, FORMAT290, [EEE, QQQ, ds.uncertainties[0:12, k], DIF])
 
     # end of data set
-    fort_write(gma_file_handle, FORMAT200, [0, 0, ds.reduced_uncertainties[0:12]])
-    fort_write(file_IO2, FORMAT200, [0, 0, ds.reduced_uncertainties[0:12]])
+    reduced_uncertainties = auxinfo[ds.dataset_id]['reduced_uncertainties']
+    fort_write(gma_file_handle, FORMAT200, [0, 0, reduced_uncertainties])
+    fort_write(file_IO2, FORMAT200, [0, 0, reduced_uncertainties])
 
     if not hasattr(ds, 'cormat') or ds.cormat.shape[0] == 0:
         return
