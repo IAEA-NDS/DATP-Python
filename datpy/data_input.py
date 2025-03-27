@@ -13,7 +13,7 @@ from .constants import (
     END_DATA_BLOCK_INDICATION_STRING,
     END_DATASET_INDICATION_STRING,
 )
-from .datamodels.models import Dataset
+from .datamodels.models import Dataset, ReactionPrior
 
 
 logger = logging.getLogger(__name__)
@@ -56,11 +56,11 @@ def read_apriori(prior_file_handle):
     pens = [x[:c] for x, c in zip(pens, pnum)]
     pxs = [x[:c] for x, c in zip(pxs, pnum)]
 
-    return {
+    return ReactionPrior(**{
         'energy_mesh': pens,
         'cross_section': pxs,
         'label': plab,
-    }
+    })
 
 
 def read_dataset(expdata_file_handle):

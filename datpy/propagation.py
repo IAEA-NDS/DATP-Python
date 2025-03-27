@@ -10,6 +10,7 @@ from .datamodels.models import Dataset
 
 def propagate_prior_to_dataset(dataset: Dataset, reaction_prior):
     dataset = Bunch(dataset.dict(use_arrays=True))
+    reaction_prior = reaction_prior.dict()
     prior_energy_mesh = reaction_prior['energy_mesh']
     prior_cross_section = reaction_prior['cross_section']
 

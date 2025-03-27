@@ -20,7 +20,8 @@ def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks):
     write_file_trailer(gma_file_handle, file_IO2)
 
 
-def write_prior( file_IO2, gma_file_handle, reaction_prior):
+def write_prior(file_IO2, gma_file_handle, reaction_prior):
+    reaction_prior = reaction_prior.dict()
     prior_label =  reaction_prior['label']
     prior_energy_mesh = reaction_prior['energy_mesh']
     prior_cross_section = reaction_prior['cross_section']
