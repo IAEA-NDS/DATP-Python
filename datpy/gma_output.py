@@ -22,14 +22,13 @@ def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks):
 
 def write_prior( file_IO2, gma_file_handle, reaction_prior):
     prior_label =  reaction_prior['label']
-    prior_number_points = reaction_prior['number_points']
     prior_energy_mesh = reaction_prior['energy_mesh']
     prior_cross_section = reaction_prior['cross_section']
 
-    num_reactions = prior_number_points.shape[0]
+    num_reactions = len(prior_energy_mesh)
     ITOT = 0
     for K in range(num_reactions):
-        ITOT = ITOT + prior_number_points[K]
+        ITOT = ITOT + len(prior_energy_mesh[K])
     ITOT = ITOT - 2*num_reactions
 
     format264 = '(5HAPRI ,2I5)'
@@ -42,15 +41,15 @@ def write_prior( file_IO2, gma_file_handle, reaction_prior):
     format100 = '(2E14.6)' if SHOULD_TEST_OUTPUT else '(2E10.4)'
     format99 = '(A16)'  # original: (8A2)
     for L in range(num_reactions):
-        NOR = prior_number_points[L] - 1
+        NOR = len(prior_energy_mesh[L]) - 1
         NOR2 = NOR - 1
         fort_write(gma_file_handle, format99, [prior_label[L]])
         fort_write(file_IO2, format99, [prior_label[L]])
         fort_write(None, format3731, [L+1, NOR2, prior_label[L]])
 
         for K in range(1, NOR):
-            fort_write(file_IO2, format101, [K, prior_energy_mesh[L, K], prior_cross_section[L, K]])
-            fort_write(gma_file_handle, format100, [prior_energy_mesh[L, K], prior_cross_section[L, K]])
+            fort_write(file_IO2, format101, [K, prior_energy_mesh[L][K], prior_cross_section[L][K]])
+            fort_write(gma_file_handle, format100, [prior_energy_mesh[L][K], prior_cross_section[L][K]])
         fort_write(file_IO2, format109, [0, 0])
         fort_write(gma_file_handle, format100, [0, 0])
 
@@ -66,7 +65,7 @@ def write_datablock_trailer(gma_file_handle, file_IO2):
     fort_write(file_IO2, FORMAT250, [0, 0])
 
 
-def write_file_trailer(gma_file_handle, file_IO2): 
+def write_file_trailer(gma_file_handle, file_IO2):
     format256 = '(4HEND*,1X,2I5)'
     fort_write(gma_file_handle, format256, [0, 0])
     fort_write(file_IO2, format256, [0, 0])

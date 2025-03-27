@@ -48,11 +48,18 @@ def read_apriori(prior_file_handle):
         num_reactions += 1
 
     # shrink arrays to real data size
+    pnum = prior_number_points[:num_reactions].tolist()
+    pens = prior_energy_mesh[:num_reactions,:].tolist()
+    pxs = prior_cross_section[:num_reactions,:].tolist()
+    plab = prior_label[:num_reactions].tolist()
+
+    pens = [x[:c] for x, c in zip(pens, pnum)]
+    pxs = [x[:c] for x, c in zip(pxs, pnum)]
+
     return {
-        'number_points': prior_number_points[:num_reactions],
-        'energy_mesh': prior_energy_mesh[:num_reactions,:],
-        'cross_section': prior_cross_section[:num_reactions,:],
-        'label': prior_label[:num_reactions],
+        'energy_mesh': pens,
+        'cross_section': pxs,
+        'label': plab,
     }
 
 
