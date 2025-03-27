@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import logging
 from .helpers import (
     fort_read,
     fort_write,
@@ -13,6 +14,9 @@ from .constants import (
     END_DATASET_INDICATION_STRING,
 )
 from .datamodels.models import Dataset
+
+
+logger = logging.getLogger(__name__)
 
 
 def read_apriori(prior_file_handle):
@@ -221,8 +225,7 @@ def read_datablocks(expdata_file_handle):
         if dataset is None:
             break
 
-        format3733 = "(' read data set  ',i7)"
-        fort_write(None, format3733, [dataset.dataset_id])
+        logger.info('read dataset {:d}'.format(dataset.dataset_id))
         datasets.append(dataset)
 
         if datablock_complete:
