@@ -71,9 +71,7 @@ def read_dataset(expdata_file_handle):
         NR, NY, NQT, NAU, NREF = fort_read(expdata_file_handle, format100)
 
     if NR == 9999:
-        dataset = {'dataset_id': NR}
-        datablock_complete = True
-        return dataset, datablock_complete
+        return (None, True)
 
     format103 = '(4I2,I3,I5,5I3)'
     NQ, NT, NCO, NCS, NCCO, NO, NID = unflatten(
@@ -210,7 +208,7 @@ def read_dataset(expdata_file_handle):
         'NEC': NEC,  #  array (2x11 int)
         'FCFC': FCFC,  # array array (10 x (2,3))
         'cormat': ECOR
-    }).dict(use_arrays=True)
+    })
 
     return dataset, datablock_complete
 
@@ -220,8 +218,7 @@ def read_datablocks(expdata_file_handle):
     datasets = []
     while True:
         dataset, datablock_complete = read_dataset(expdata_file_handle)
-        dataset = Bunch(dataset)
-        if dataset.dataset_id == 9999:
+        if dataset is None:
             break
 
         format3733 = "(' read data set  ',i7)"

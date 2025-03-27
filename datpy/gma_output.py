@@ -6,7 +6,8 @@ from .constants import (
     SHOULD_TEST_OUTPUT,
 )
 from .helpers import (
-    fort_write
+    Bunch,
+    fort_write,
 )
 
 
@@ -72,7 +73,7 @@ def write_file_trailer(gma_file_handle, file_IO2):
 
 
 def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
-    ds = dataset
+    ds = Bunch(dataset.dict(use_arrays=True))
     # find number of CS involved
     NNN = ds.num_reaction_ids
 

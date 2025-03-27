@@ -1,12 +1,15 @@
 import numpy as np
 from .helpers import (
+    Bunch,
     fort_write,
     find_indices_with_tol,
 )
 from .constants import MAX_NUM_POINTS
+from .datamodels.models import Dataset
 
 
-def propagate_prior_to_dataset(dataset, reaction_prior):
+def propagate_prior_to_dataset(dataset: Dataset, reaction_prior):
+    dataset = Bunch(dataset.dict(use_arrays=True))
     prior_number_points = reaction_prior['number_points']
     prior_energy_mesh = reaction_prior['energy_mesh']
     prior_cross_section = reaction_prior['cross_section']
@@ -125,7 +128,7 @@ def propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset(
         if M3 != -1:
             Q[mxm] = Q[mxm] + prior_cross_section[M3, J]
 
-        mxm += 1 
+        mxm += 1
 
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.

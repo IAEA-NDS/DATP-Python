@@ -1,15 +1,16 @@
 import numpy as np
 from copy import deepcopy
-from .helpers import fort_write
+from .helpers import fort_write, Bunch
 from .constants import ULI
 from .propagation import propagate_prior_to_dataset
+from .datamodels.models import Dataset
 
 
 def reduce_dataset(
     dataset, E11, E22, EQ, Q, mxm1, file_IO2
 ):
-    dataset = deepcopy(dataset)
-    new_dataset = deepcopy(dataset)
+    orig_dataset = dataset
+    dataset = Bunch(dataset.dict(use_arrays=True))
     auxinfo = {}
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
@@ -21,9 +22,9 @@ def reduce_dataset(
 
     # GET GRID VALUES  - try at all apriori energies to find data
     new_num_values = 0
-    new_dataset.energies = np.zeros(mxm1-1, dtype=float)
-    new_dataset.measured_values = np.zeros(mxm1-1, dtype=float)
-    new_dataset.uncertainties = np.zeros((12, mxm1-1), dtype=float)
+    new_energies = np.zeros(mxm1-1, dtype=float)
+    new_measured_values = np.zeros(mxm1-1, dtype=float)
+    new_uncertainties = np.zeros((12, mxm1-1), dtype=float)
 
     for L in range(1, mxm1):  # 40
         E1 = (EQ[L-1] + EQ[L]) / 2.
@@ -131,16 +132,23 @@ def reduce_dataset(
                     reduced_uncertainties[N] = 0.
 
             # OUTPUT
-            new_dataset.energies[new_num_values] = EEE
-            new_dataset.measured_values[new_num_values] = QQQ
-            new_dataset.uncertainties[0:12, new_num_values] = reduced_uncertainties[0:12]
+            new_energies[new_num_values] = EEE
+            new_measured_values[new_num_values] = QQQ
+            new_uncertainties[0:12, new_num_values] = reduced_uncertainties[0:12]
             new_num_values += 1
 
             auxinfo.setdefault('DIF', []).append(DIF)
 
-    new_dataset.measured_values = new_dataset.measured_values[:new_num_values]
+    new_measured_values = new_measured_values[:new_num_values]
     auxinfo['reduced_uncertainties'] = reduced_uncertainties
 
+    new_datadict = orig_dataset.dict()
+    new_datadict.update({
+        'energies': new_energies,
+        'measured_values': new_measured_values,
+        'uncertainties': new_uncertainties,
+    })
+    new_dataset = Dataset(**new_datadict)
     return new_dataset, auxinfo
 
 
@@ -169,7 +177,6 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
             else:
                 # no reduction necessary for fission spectrum average dataset
                 reduced_dataset = deepcopy(dataset)
-                reduced_dataset.reduced_uncertainties = np.zeros(12, dtype=float)
 
             reduced_datasets.append(reduced_dataset)
 
