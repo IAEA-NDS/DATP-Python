@@ -27,8 +27,10 @@ def run_datp():
     write_prior(file_IO2, gma_file_handle, reaction_prior)
 
     datablocks = read_datablocks(expdata_file_handle)
-    reduced_datablocks = reduce_datablocks(datablocks, reaction_prior, file_IO2)
-    write_gmadb(gma_file_handle, file_IO2, reduced_datablocks)
+    reduced_datablocks, auxinfo_blocks = (
+        reduce_datablocks(datablocks, reaction_prior, file_IO2)
+    )
+    write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks)
 
     prior_file_handle.close()
     file_IO2.close()

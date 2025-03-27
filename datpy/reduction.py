@@ -10,6 +10,7 @@ def reduce_dataset(
 ):
     dataset = deepcopy(dataset)
     new_dataset = deepcopy(dataset)
+    auxinfo = {}
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
     interp_type = 'lin-lin'
@@ -138,17 +139,22 @@ def reduce_dataset(
             if not hasattr(new_dataset, 'DIF'):
                 new_dataset.DIF = []
             new_dataset.DIF.append(DIF)
+            t = auxinfo.setdefault('DIF', []).append(DIF)
 
     new_dataset.measured_values = new_dataset.measured_values[:new_num_values]
     new_dataset.reduced_uncertainties = reduced_uncertainties
-    return new_dataset
+    auxinfo['reduced_uncertainties'] = reduced_uncertainties
+
+    return new_dataset, auxinfo
 
 
 def reduce_datablocks(datablocks, reaction_prior, file_IO2):
 
     reduced_datablocks = []
+    auxinfo_blocks = []
     for datablock in datablocks:
         reduced_datasets = []
+        auxinfo = {}
         for dataset in datablock:
 
             num_values = len(dataset.measured_values)
@@ -160,9 +166,10 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
                     continue
 
             if dataset.quantity_type != 6:
-                reduced_dataset = reduce_dataset(
+                reduced_dataset, cur_auxinfo = reduce_dataset(
                     dataset, E11, E22, EQ, Q, mxm1, file_IO2
                 )
+                auxinfo[dataset.dataset_id] = cur_auxinfo
             else:
                 # no reduction necessary for fission spectrum average dataset
                 reduced_dataset = deepcopy(dataset)
@@ -172,6 +179,7 @@ def reduce_datablocks(datablocks, reaction_prior, file_IO2):
 
         if len(reduced_datasets) > 0:
             reduced_datablocks.append(reduced_datasets)
+            auxinfo_blocks.append(auxinfo)
 
-    return reduced_datablocks
+    return reduced_datablocks, auxinfo_blocks
 

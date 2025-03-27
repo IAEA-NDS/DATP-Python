@@ -1,3 +1,4 @@
+import numpy as np
 from .constants import (
     FORMAT200,
     FORMAT250,
@@ -9,11 +10,11 @@ from .helpers import (
 )
 
 
-def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks):
-    for datablock in reduced_datablocks:
+def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks):
+    for datablock, auxinfo in zip(reduced_datablocks, auxinfo_blocks):
         write_datablock_header(gma_file_handle, file_IO2)
         for dataset in datablock:
-            write_dataset(gma_file_handle, file_IO2, dataset)
+            write_dataset(gma_file_handle, file_IO2, dataset, auxinfo)
         write_datablock_trailer(gma_file_handle, file_IO2)
     write_file_trailer(gma_file_handle, file_IO2)
 
@@ -70,7 +71,7 @@ def write_file_trailer(gma_file_handle, file_IO2):
     fort_write(file_IO2, format256, [0, 0])
 
 
-def write_dataset(gma_file_handle, file_IO2, dataset):
+def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
     ds = dataset
     # find number of CS involved
     NNN = ds.num_reaction_ids
