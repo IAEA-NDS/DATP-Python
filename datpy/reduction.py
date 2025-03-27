@@ -7,7 +7,7 @@ from .datamodels.models import Dataset
 
 
 def reduce_dataset(
-    dataset, E11, E22, EQ, Q, mxm1, file_IO2
+    dataset, E11, E22, EQ, Q, mxm1, file_IO2=None
 ):
     orig_dataset = dataset
     dataset = Bunch(dataset.dict(use_arrays=True))
@@ -102,7 +102,8 @@ def reduce_dataset(
                     WT = 1./FNEW
 
                     format511 = "(20X,' VALUE OUTSIDE ',F5.2,' SIGMA BY ',F10.2)"
-                    fort_write(file_IO2, format511, [ULI, TEST])
+                    if file_IO2 is not None:
+                        fort_write(file_IO2, format511, [ULI, TEST])
 
             AV = AV + AD*WT
             WTS = WTS + WT
@@ -152,7 +153,7 @@ def reduce_dataset(
     return new_dataset, auxinfo
 
 
-def reduce_datablocks(datablocks, reaction_prior, file_IO2):
+def reduce_datablocks(datablocks, reaction_prior, file_IO2=None):
 
     reduced_datablocks = []
     auxinfo_blocks = []
