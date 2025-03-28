@@ -10,6 +10,9 @@ from .data_input import (
     read_apriori,
     read_datablocks,
 )
+from .input_output import (
+    copy_gma_controls,
+)
 from .gma_output import (
     write_gmadb,
     write_prior,
@@ -51,6 +54,13 @@ def extract_datasets(gmdata_crd_content: str) -> Dict[int, dict]:
     return datasets
 
 
+def extract_prior(prior_content: str) -> dict:
+    fileobj = io.StringIO(prior_content)
+    copy_gma_controls(fileobj, file_IO2=None, gma_file_handle=None)
+    reaction_prior = read_apriori(fileobj)
+    return reaction_prior.dict()
+
+
 def reduce_datasets(datasets: Dict[int, dict]) -> dict:
     reduced_datasets = {}
     for dataset_id, raw_dataset in datasets.items():
@@ -74,14 +84,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
 
-    extract_parser = subparsers.add_parser('extract', help='Extract data from GMDATA.CRD format')
+    extract_parser = subparsers.add_parser(
+        'extract', help='Extract expeirmental data from GMDATA.CRD format'
+    )
+    extract_parser.add_argument(
+        '--prior', action='store_true', help='Extract the reaction prior given in DAT.INP format'
+    )
+
     reduce_parser = subparsers.add_parser('reduce', help='Reduce datasets')
 
     args = parser.parse_args()
 
     if args.command == 'extract':
-        datasets = extract_datasets(stdin_cont)
-        print(json.dumps(datasets, indent=2))
+        if not args.prior:
+            datasets = extract_datasets(stdin_cont)
+            print(json.dumps(datasets, indent=2))
+        else:
+            prior = extract_prior(stdin_cont)
+            print(json.dumps(prior, indent=2))
     elif args.command == 'reduce':
         datasets = json.loads(stdin_cont)
         print(json.dumps(reduce_datasets(datasets), indent=2))
