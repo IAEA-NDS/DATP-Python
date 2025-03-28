@@ -56,11 +56,16 @@ def read_apriori(prior_file_handle):
     pens = [x[:c] for x, c in zip(pens, pnum)]
     pxs = [x[:c] for x, c in zip(pxs, pnum)]
 
-    return ReactionPrior(**{
-        'energy_mesh': pens,
-        'cross_section': pxs,
-        'label': plab,
-    })
+    prior_dict = {}
+    for reac_id, (label, en_arr, xs_arr) in enumerate(zip(plab, pens, pxs), start=1):
+        prior_dict[str(reac_id)] = {
+            'label': label,
+            'reaction_id': reac_id,
+            'energies': en_arr,
+            'cross_sections': xs_arr
+        }
+
+    return ReactionPrior(**prior_dict)
 
 
 def read_dataset(expdata_file_handle):

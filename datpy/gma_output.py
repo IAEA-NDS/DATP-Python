@@ -22,9 +22,9 @@ def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks):
 
 def write_prior(file_IO2, gma_file_handle, reaction_prior):
     reaction_prior = reaction_prior.dict()
-    prior_label =  reaction_prior['label']
-    prior_energy_mesh = reaction_prior['energy_mesh']
-    prior_cross_section = reaction_prior['cross_section']
+    prior_label =  [p['label'] for p in reaction_prior.values()]
+    prior_energy_mesh = [p['energies'] for p in reaction_prior.values()]
+    prior_cross_section = [p['cross_sections'] for p in  reaction_prior.values()]
 
     num_reactions = len(prior_energy_mesh)
     ITOT = 0

@@ -1,7 +1,12 @@
-__all__ = ['schema_list'] 
+__all__ = ['schema_list']
 
 schema_list = []
 
+# auxiliary info
+
+_intstr_regex = '^[0-9]+$'
+
+# recurring properies
 
 def _int_property(min_value=None, max_value=None):
     ret = {'type': 'integer'}
@@ -61,12 +66,19 @@ reaction_prior = {
     'title': 'ReactionPriorBase',
     'description': 'List of energy-dependent cross sections with prior values',
     'type': 'object',
-    'properties': {
-        'energy_mesh': _multidim_array_property(_float_property(), [None, None]),
-        'cross_section': _multidim_array_property(_float_property(), [None, None]),
-        'label': _array_property(_str_property())
+    'patternProperties': {
+        _intstr_regex: {
+            'type': 'object',
+            'properties': {
+                'label': _str_property(16, 16),
+                'reaction_id': _int_property(1, None),
+                'energies': _array_property(_float_property()),
+                'cross_sections': _array_property(_float_property()),
+            },
+            'required': ['label', 'energies', 'cross_sections']
+        }
     },
-    'required': ['energy_mesh', 'cross_section', 'label']
+    'additionalProperties': False,
 }
 schema_list.append(reaction_prior)
 
@@ -83,17 +95,17 @@ dataset_schema = {
         'author': _str_property(None, 28),
         'pubref': _str_property(None, 20),
         'tag': _int_property(0, 99),
-        'quantity_type': _int_property(0, 9), 
+        'quantity_type': _int_property(0, 9),
         'comments': _array_property(_str_property(None, 80)),
         'num_reaction_ids': _int_property(1, 5),
         'reaction_ids': _array_property(_int_property(0, None), 1, 5),
         'ENF': _array_property(_float_property(), 10, 10),
-        'NENF': _array_property(_int_property(0, 999), 10, 10), 
+        'NENF': _array_property(_int_property(0, 999), 10, 10),
         'EPA': _multidim_array_property(_float_property(), [3, 11]),
         'NETG': _array_property(_int_property(0, 999), 11, 11),
-        'energies': _array_property(_float_property()), 
+        'energies': _array_property(_float_property()),
         'measured_values': _array_property(_float_property()),
-        'uncertainties': _multidim_array_property(_float_property(), [12, None]), 
+        'uncertainties': _multidim_array_property(_float_property(), [12, None]),
         'NCST': _array_property(_int_property(0, 9999)),
         'NEC': _multidim_array_property(_int_property(0, 21), [2, 10, None]),
         'FCFC': _multidim_array_property(_float_property(), [10, None]),

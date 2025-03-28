@@ -4,35 +4,38 @@
   "title": "ReactionPriorBase",
   "description": "List of energy-dependent cross sections with prior values",
   "type": "object",
-  "properties": {
-    "energy_mesh": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "number"
+  "patternProperties": {
+    "^[0-9]+$": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 16
+        },
+        "reaction_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "energies": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "cross_sections": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
         }
-      }
-    },
-    "cross_section": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "number"
-        }
-      }
-    },
-    "label": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      },
+      "required": [
+        "label",
+        "energies",
+        "cross_sections"
+      ]
     }
   },
-  "required": [
-    "energy_mesh",
-    "cross_section",
-    "label"
-  ]
+  "additionalProperties": false
 }
