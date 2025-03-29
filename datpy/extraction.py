@@ -91,25 +91,36 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
 
     extract_parser = subparsers.add_parser(
-        'extract', help='Extract expeirmental data from GMDATA.CRD format'
+        'extract', help='Extract experimental data from GMDATA.CRD format'
+    )
+    extract_parser.add_argument(
+        '--datasets', action='store_true', help='Extract the datasets from GMDATA.CRD'
     )
     extract_parser.add_argument(
         '--prior', action='store_true', help='Extract the reaction prior given in DAT.INP format'
     )
-
-    reduce_parser = subparsers.add_parser('reduce', help='Reduce datasets')
+    extract_parser.add_argument(
+        '--spectrum', action='store_true', help='Extract spectrum given in DAT.INP format'
+    )
 
     args = parser.parse_args()
 
     if args.command == 'extract':
-        if not args.prior:
-            datasets = extract_datasets(stdin_cont)
-            print(json.dumps(datasets, indent=2))
-        else:
+        combined_dict = {}
+        if args.prior:
             prior = extract_prior(stdin_cont)
-            print(json.dumps(prior, indent=2))
+            combined_dict['prior'] = prior
+        if args.spectrum:
+            spectrum = extract_spectrum(stdin_cont)
+            combined_dict['spectrum'] = spectrum
+        if args.datasets:
+            datasets = extract_datasets(stdin_cont)
+            combined_dict['datasets'] = datasets
+        print(json.dumps(combined_dict, indent=2))
+        sys.exit(0)
     elif args.command == 'reduce':
         datasets = json.loads(stdin_cont)
         print(json.dumps(reduce_datasets(datasets), indent=2))
+        sys.exit(0)
     else:
         raise ValueError('unknown command')
