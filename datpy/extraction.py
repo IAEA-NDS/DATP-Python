@@ -61,6 +61,12 @@ def extract_prior(prior_content: str) -> dict:
     return reaction_prior.dict()
 
 
+def extract_spectrum(prior_content: str) -> dict:
+    fileobj = io.StringIO(prior_content)
+    ret = copy_gma_controls(fileobj)
+    return ret['spectrum']
+
+
 def reduce_datasets(datasets: Dict[int, dict]) -> dict:
     reduced_datasets = {}
     for dataset_id, raw_dataset in datasets.items():
