@@ -78,7 +78,7 @@ def copy_gma_controls(
             format408 = '(16i5)'
             format468 = "('Data Sets to be Excluded')"
             NEXL = fort_read(prior_file_handle, format408)
-            fort_write(gma_file_handle, format408, NEXL)
+            _fort_write(gma_file_handle, format408, NEXL)
             _fort_write(file_IO2, format468, [None])
             _fort_write(file_IO2, format408, NEXL)
     return result
