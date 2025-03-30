@@ -6,6 +6,10 @@ from .helpers import (
 )
 from .constants import MAX_NUM_POINTS
 from .datamodels.models import Dataset
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def propagate_prior_to_dataset(dataset: Dataset, reaction_prior):
@@ -54,8 +58,7 @@ def propagate_prior_to_CS_and_CS_SHAPE_dataset(
     for K in range(NON):
         EQ[K] = prior_energy_mesh[M1][K]
         Q[K] = prior_cross_section[M1][K]
-    format4611 = "(i6,'  cr. sec. apriori for interp. ')"
-    fort_write(None, format4611, [NON-1])
+    logging.info('{:6d}  cr. sec. apriori for interp.'.format(NON-1))
     return E11, E22, EQ, Q, NON-1
 
 
@@ -78,9 +81,7 @@ def propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset(
             continue
         EQ[mxm] = prior_energy_mesh[M1][K]
         if prior_cross_section[M2][L] == 0.:
-            format4618 = ":(' apriori constr. ',4i5,f10.7,'*****************')"
-            fort_write(None, format4618, [M1-1, K+1, M2-1, L+1, EQ[mxm]])
-            exit()
+            ValueError('Prior cross section entering denominator for ratio measurement is zero')
 
         Q[mxm] = prior_cross_section[M1][K] / prior_cross_section[M2][L]
         mxm += 1
@@ -88,8 +89,7 @@ def propagate_prior_to_RATIO_and_RATIO_SHAPE_dataset(
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
 
-    format4612 = "(i6,'  ratio apriori for interp. ')"
-    fort_write(None, format4612, [mxm])
+    logging.info('{:6d}  ratio apriori for interp.'.format(mxm))
     return E11, E22, EQ, Q, mxm-1
 
 
@@ -133,8 +133,7 @@ def propagate_prior_to_SUM_and_SHAPE_OF_SUM_dataset(
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
 
-    format4613 = "(i6,'  sum apriori for interp. ')"
-    fort_write(None, format4613, [mxm])
+    logging.info('{:6d}  sum apriori for interp.'.format(mxm))
     return E11, E22, EQ, Q, mxm-1
 
 
@@ -179,6 +178,5 @@ def propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
     E11 = (EQ[0] + EQ[1]) / 2.
     E22 = (EQ[pymxm] + EQ[mxm1-1]) / 2.
 
-    format4614 = "(i6,'  cr. sec. vs sum apriori for interp. ')"
-    fort_write(None, format4614, [mxm])
+    logging.info('{:6d}  cr. sec. vs. sum apriori for interp.'.format(mxm))
     return E11, E22, EQ, Q, mxm1
