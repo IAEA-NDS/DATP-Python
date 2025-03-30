@@ -140,14 +140,13 @@ def reduce_dataset(
 
             auxinfo.setdefault('DIF', []).append(DIF)
 
-    new_measured_values = new_measured_values[:new_num_values]
     auxinfo['reduced_uncertainties'] = reduced_uncertainties
 
     new_datadict = orig_dataset.dict()
     new_datadict.update({
-        'energies': new_energies,
-        'measured_values': new_measured_values,
-        'uncertainties': new_uncertainties,
+        'energies': new_energies[:new_num_values],
+        'measured_values': new_measured_values[:new_num_values],
+        'uncertainties': new_uncertainties[:,:new_num_values],
     })
     new_dataset = Dataset(**new_datadict)
     return new_dataset, auxinfo
