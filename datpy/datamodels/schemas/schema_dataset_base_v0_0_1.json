@@ -122,7 +122,7 @@
       "items": {
         "type": "integer",
         "minimum": 0,
-        "maximum": 9999
+        "maximum": 99999
       }
     },
     "NEC": {
@@ -134,7 +134,7 @@
           "items": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 21
+            "maximum": 100
           }
         },
         "minItems": 10,
