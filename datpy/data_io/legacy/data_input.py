@@ -1,19 +1,19 @@
 import numpy as np
 import math
 import logging
-from .helpers import (
+from ...helpers import (
     fort_read,
     fort_write,
     unflatten,
     Bunch,
 )
-from .constants import (
+from ...constants import (
     MAX_NUM_REACTIONS,
     MAX_NUM_POINTS,
     END_DATA_BLOCK_INDICATION_STRING,
     END_DATASET_INDICATION_STRING,
 )
-from .datamodels.models import Dataset, ReactionPrior
+from ...datamodels.models import Dataset, ReactionPrior
 
 
 logger = logging.getLogger(__name__)

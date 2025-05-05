@@ -1,12 +1,12 @@
 import os
-from .input_output import (
+from .data_io.legacy.input_output import (
     copy_gma_controls,
 )
-from .data_input import (
+from .data_io.legacy.data_input import (
     read_apriori,
     read_datablocks,
 )
-from .gma_output import (
+from .data_io.legacy.gma_output import (
     write_gmadb,
     write_prior,
 )

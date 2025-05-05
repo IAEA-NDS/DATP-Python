@@ -4,17 +4,17 @@ import sys
 import json
 from pathlib import Path
 from typing import Optional, Dict
-from .input_output import (
+from .data_io.legacy.input_output import (
     copy_gma_controls,
 )
-from .data_input import (
+from .data_io.legacy.data_input import (
     read_apriori,
     read_datablocks,
 )
-from .input_output import (
+from .data_io.legacy.input_output import (
     copy_gma_controls,
 )
-from .gma_output import (
+from .data_io.legacy..gma_output import (
     write_gmadb,
     write_prior,
 )

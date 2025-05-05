@@ -1,11 +1,11 @@
 from typing import TextIO, Optional
 import numpy as np
 import math
-from .helpers import (
+from ...helpers import (
     fort_read,
     fort_write,
 )
-from .constants import (
+from ...constants import (
     ELIMINATION_BLOCK_INDICATION_STRING,
     DOWNWEIGHT_BLOCK_INDICATION_STRING,
     FISSION_SPECTRUM_BLOCK_INDICATION_STRING,
