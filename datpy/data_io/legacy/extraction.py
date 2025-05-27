@@ -1,31 +1,31 @@
 import os
 import io
 import sys
+import argparse
+import logging
 import json
 from pathlib import Path
 from typing import Optional, Dict
-from .data_io.legacy.input_output import (
+
+from .input_output import (
     copy_gma_controls,
 )
-from .data_io.legacy.data_input import (
+from .data_input import (
     read_apriori,
     read_datablocks,
 )
-from .data_io.legacy.input_output import (
+from .input_output import (
     copy_gma_controls,
 )
-from .data_io.legacy..gma_output import (
+from .gma_output import (
     write_gmadb,
     write_prior,
 )
-from .reduction import reduce_datablocks
-import argparse
-import logging
-from .datamodels.models import (
+from ...reduction import reduce_datablocks
+from ...datamodels.models import (
     Dataset,
     ReactionPrior,
 )
-from .reduction import reduce_datablocks
 
 
 logger = logging.getLogger(__name__)
