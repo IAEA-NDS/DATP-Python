@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "0.0.1",
+  "title": "FissionSpectrumBase",
+  "description": "Fission spectrum for folding cross sections to obtain Spectrum-averaged cross sections",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 16
+    },
+    "energies": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "spectrum_values": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "label",
+    "energies",
+    "spectrum_values"
+  ]
+}

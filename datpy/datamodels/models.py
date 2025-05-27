@@ -1,6 +1,7 @@
 from .basemodels import (
     DatasetBase,
     ReactionPriorBase,
+    FissionSpectrumBase,
 )
 import numpy as np
 
@@ -19,3 +20,7 @@ class Dataset(DatasetBase):
             if isinstance(value, list) and key not in ('comments',):
                 model_dict[key] = np.array(value)
         return model_dict
+
+
+class FissionSpectrum(FissionSpectrumBase):
+    pass

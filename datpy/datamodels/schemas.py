@@ -83,6 +83,24 @@ reaction_prior = {
 schema_list.append(reaction_prior)
 
 
+fission_spectrum = {
+    '$schema': 'https://json-schema.org/draft/2020-12/schema',
+    'version': '0.0.1',
+    'title': 'FissionSpectrumBase',
+    'description': (
+        'Fission spectrum for folding cross sections to obtain Spectrum-averaged cross sections'
+    ),
+    'type': 'object',
+    'properties': {
+        'label': _str_property(16, 16),
+        'energies': _array_property(_float_property()),
+        'spectrum_values': _array_property(_float_property()),
+    },
+    'required': ['label', 'energies', 'spectrum_values'],
+}
+schema_list.append(fission_spectrum)
+
+
 dataset_schema = {
     '$schema': 'https://json-schema.org/draft/2020-12/schema',
     'version': '0.0.1',
