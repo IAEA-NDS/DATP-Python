@@ -14,7 +14,6 @@ from .data_io.legacy.gma_output import (
     write_prior,
 )
 from .reduction import reduce_datablocks
-from .data_io.database import reduce_database
 import argparse
 
 
@@ -90,7 +89,7 @@ if __name__ == '__main__':
             parser.error('--input and --output are required unless --legacy is specified')
 
     if args.legacy is True:
-        run_legacy_datpy()
+        run_legacy_datp()
     else:
         input_file = Path(args.input)
         output_file = Path(args.output)

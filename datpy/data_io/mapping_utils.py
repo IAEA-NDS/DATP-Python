@@ -38,7 +38,7 @@ def simple_map(dest_key, source_key, cond):
 
 def identity_map(key, cond):
     """Identity map"""
-    return simplemap(key, key, cond)
+    return simple_map(key, key, cond)
 
 
 def oneway_func_map(key, func, cond):

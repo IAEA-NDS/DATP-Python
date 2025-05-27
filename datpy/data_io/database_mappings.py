@@ -39,7 +39,7 @@ GMAPY_DATPY_DATASET_MAPPINGS = [
     simple_map('author', 'CLABL', 'required'),
     simple_map('pubref', 'BREF', 'required'),
     simple_map('tag', 'TAG', 'required'),
-    simple_map('quantity_type', 'MT', 'required')
+    simple_map('quantity_type', 'MT', 'required'),
     identity_map('comments', 'optional'),
     oneway_func_map('num_reaction_ids', lambda d: len(d['NT']), 'required'),
     simple_map('reaction_ids', 'NT', 'required'),

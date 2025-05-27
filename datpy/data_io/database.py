@@ -1,3 +1,9 @@
+from typing import List
+from ..datamodels.models import (
+    ReactionPrior,
+    Dataset,
+    FissionSpectrum
+)
 from .database_mappings import (
     map_priorblocks,
     map_datablocks,
@@ -5,7 +11,7 @@ from .database_mappings import (
 
 
 def assemble_database(
-    reaction_prior: ReactionPrior, datablocks: list[Dataset], fission_spectrum: FissionSpectrum
+    reaction_prior: ReactionPrior, datablocks: List[Dataset], fission_spectrum: FissionSpectrum
 ) -> dict:
     reaction_prior = reaction_prior.dict()
     datablocks = [blck.dict() for blck in datablocks]
