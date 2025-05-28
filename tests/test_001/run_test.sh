@@ -65,7 +65,7 @@ mkdir python
 cd python
 cp $testpath/input/* .
 export TEST_DATP=yes
-python -m datpy.datpy --legacy  > output
+python -m datpy.datpy --legacy > output
 
 # compare the output files
 cd $testpath/result
