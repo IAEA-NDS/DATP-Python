@@ -150,7 +150,6 @@ def propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
     NON = len(prior_energy_mesh[M2])
     NO3 = len(prior_energy_mesh[M3])
     mxm = 0
-    pymxm = mxm - 1
 
     for K in range(NO1):
 
@@ -174,9 +173,8 @@ def propagate_prior_to_CS_VS_SUM_PLUS_SHAPE_dataset(
         )
         mxm += 1
 
-    mxm1 = mxm - 1
     E11 = (EQ[0] + EQ[1]) / 2.
-    E22 = (EQ[pymxm] + EQ[mxm1-1]) / 2.
+    E22 = (EQ[mxm-1] + EQ[mxm-2]) / 2.
 
     logging.info('{:6d}  cr. sec. vs. sum apriori for interp.'.format(mxm))
-    return E11, E22, EQ, Q, mxm1
+    return E11, E22, EQ, Q, mxm-1
