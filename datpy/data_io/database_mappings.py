@@ -27,7 +27,7 @@ GMAPY_DATPY_PRIOR_MAPPINGS = [
     simple_augmentation('type', 'legacy-prior-cross-section', 'backward'),
     simple_map('label', 'CLAB', 'required'),
     simple_map('reaction_id', 'ID', 'required'),
-    simple_map('energies', 'EN', 'required'), 
+    simple_map('energies', 'EN', 'required'),
     simple_map('cross_sections', 'CS', 'required'),
 ]
 
@@ -64,7 +64,7 @@ def map_priorblock(priorblock: dict, direction: str='forward'):
             new_priorblock = map_dict(priorblock, mappings, direction)
             success = True
             break
-        except:
+        except Exception as Exc:
             pass
     if not success:
         raise ValueError('unable to map priorblock')
@@ -73,7 +73,7 @@ def map_priorblock(priorblock: dict, direction: str='forward'):
 
 def map_priorblocks(priorblocks: list, direction: str='forward'):
     new_priorblocks = []
-    for block in priorblocks:
+    for idx, block in priorblocks.items():
         new_priorblock = map_priorblock(block, direction)
         new_priorblocks.append(new_priorblock)
     return new_priorblocks
@@ -84,18 +84,30 @@ def map_dataset(dataset: dict, direction: str='forward'):
 
 
 def map_datablocks(datablocks: list, direction: str='forward'):
-    new_datablocks = deepcopy(datablocks) 
-    for block in tuple(new_datablocks):
-        datasets = block['datasets']
-        # special-casing for moving the correlation matrix
-        # from block-level into the last dataset of the block
-        if direction == 'forward' and 'ECOR' in block:
-            datasets[-1]['ECOR'] = block.pop('ECOR')
-        # here the generic mapping
-        new_datasets = [map_dataset(ds, direction) for ds in datasets]
-        block['datasets'] = new_datasets
-        # special-casing for moving the correlation matrix
-        # from last dataset to block level
-        if direction == 'backward' and 'ECOR' in new_datasets[-1]:
-            block['ECOR'] = new_datasets[-1].pop('ECOR')
+    if direction not in ('forward', 'backward'):
+        raise ValueError('direction must be `forward` or `backward`')
+
+    new_datablocks = []
+    for block in tuple(datablocks):
+
+        datasets = block['datasets'] if direction == 'forward' else block
+
+        if direction == 'forward':
+            datasets = block['datasets']
+            new_datasets = [map_dataset(ds, direction) for ds in datasets]
+            # special-casing for moving the correlation matrix
+            # from block-level into the last dataset of the block
+            if 'ECOR' in block:
+                new_datasets[-1]['ECOR'] = block['ECOR']
+            new_block = new_datasets
+
+        elif direction == 'backward':
+            datasets = block
+            new_datasets = [map_dataset(ds, direction) for ds in datasets]
+            new_block = {'datasets': new_datasets}
+            if 'ECOR' in datasets[-1]:
+                new_block['ECOR'] = new_datasets[-1]['ECOR']
+
+        new_datablocks.append(new_block)
+
     return new_datablocks
