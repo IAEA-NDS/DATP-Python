@@ -81,7 +81,7 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
         file_IO2.close()
         gma_file_handle.close()
     else:
-        reaction_prior_out = map_priorblocks(reaction_prior.dict(), direction='backward')
+        reaction_prior_out = map_priorblocks(reaction_prior.model_dump(), direction='backward')
         red_db = [[ds.dict() for ds in db] for db in reduced_datablocks]
         datablocks_out = map_datablocks(red_db, direction='backward')
         dbout = {'prior': reaction_prior_out, 'datablocks': datablocks_out}
