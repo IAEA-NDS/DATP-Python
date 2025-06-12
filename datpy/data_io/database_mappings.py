@@ -70,11 +70,14 @@ GMAPY_DATPY_DATASET_MAPPINGS = [
 ]
 
 
-def map_priorblock(priorblock: dict, direction: str='forward'):
+def map_priorblock(priorblock: dict, direction: str='forward', do_reduce: bool=False):
     success = False
-    for mappings in (GMAPY_DATPY_PRIOR_MAPPINGS, GMAPY_DATPY_FISSION_MAPPINGS):
+    for midx, mappings in enumerate((GMAPY_DATPY_PRIOR_MAPPINGS, GMAPY_DATPY_FISSION_MAPPINGS)):
         try:
             new_priorblock = map_dict(priorblock, mappings, direction)
+            if midx == 0 and do_reduce and direction == 'backward':
+                new_priorblock['EN'] = new_priorblock['EN'][1:-1]
+                new_priorblock['CS'] = new_priorblock['CS'][1:-1]
             success = True
             break
         except Exception as Exc:
@@ -84,10 +87,10 @@ def map_priorblock(priorblock: dict, direction: str='forward'):
     return new_priorblock
 
 
-def map_priorblocks(priorblocks: list, direction: str='forward'):
+def map_priorblocks(priorblocks: list, direction: str='forward', do_reduce: bool=False):
     new_priorblocks = []
     for idx, block in priorblocks.items():
-        new_priorblock = map_priorblock(block, direction)
+        new_priorblock = map_priorblock(block, direction, do_reduce)
         new_priorblocks.append(new_priorblock)
     return new_priorblocks
 
