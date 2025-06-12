@@ -1,6 +1,7 @@
 def is_empty(arr):
     if isinstance(arr, list):
         return all(is_empty(a) for a in arr)
+    return arr is None
 
 
 def transpose2d(arr):
