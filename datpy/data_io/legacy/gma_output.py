@@ -77,7 +77,7 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
     # find number of CS involved
     NNN = ds.num_reaction_ids
 
-    format253 = '(5HDATA ,9I5)'
+    format253 = '(5HDATA ,8I5)'
     fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
     fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
 
