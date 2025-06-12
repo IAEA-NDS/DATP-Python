@@ -105,7 +105,7 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
         for K in range(len(ds.NCST)):  # 83
             # NOTE: during flattening in fort_write first index should
             #       change fastest
-            fort_write(gma_file_handle, format263, [ds.NCST[K], ds.NEC[:, :, K]])
+            fort_write(gma_file_handle, format263, [ds.NCST[K], np.transpose(ds.NEC[:, :, K])])
             fort_write(file_IO2, format263, [ds.NCST[K], ds.NEC[:, :, K]])
             fort_write(gma_file_handle, format293, [ds.FCFC[0:10, K]])
             fort_write(file_IO2, format293, [ds.FCFC[0:10, K]])

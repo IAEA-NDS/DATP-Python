@@ -157,8 +157,8 @@ def read_dataset(expdata_file_handle):
         tmp2 = np.zeros((20,), dtype=int)
         tmp2[:(len(tmp)-1)] = tmp[1:]
         NCST[K] = tmp[0]
-        NEC[0, :, K] = tmp2[:10]
-        NEC[1, :, K] = tmp2[10:]
+        NEC[0, :, K] = tmp2[::2]
+        NEC[1, :, K] = tmp2[1::2]
 
         format452 = '(10F5.1)'
         tmp = fort_read(expdata_file_handle, format452, none_as=0.)
