@@ -42,7 +42,7 @@
     "num_reaction_ids": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 3
     },
     "reaction_ids": {
       "type": "array",
@@ -52,6 +52,11 @@
       },
       "minItems": 1,
       "maxItems": 5
+    },
+    "NNCOX": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
     },
     "ENF": {
       "type": "array",
@@ -176,6 +181,7 @@
     "comments",
     "num_reaction_ids",
     "reaction_ids",
+    "NNCOX",
     "EPA",
     "NETG",
     "energies",

@@ -77,9 +77,11 @@ def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
     # find number of CS involved
     NNN = ds.num_reaction_ids
 
+    if NNN > 3:
+        raise ValueError('All quantity types have not more than three reaction ids')
     format253 = '(5HDATA ,8I5)'
-    fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
-    fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:4]])
+    fort_write(gma_file_handle, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:3], ds.NNCOX])
+    fort_write(file_IO2, format253, [ds.dataset_id, ds.quantity_type, ds.cormat.shape[0], NNN, ds.reaction_ids[0:3], ds.NNCOX])
 
     format254 = '(3I5,A28,8X,A20)'
     fort_write(gma_file_handle, format254, [ds.year, ds.tag, len(ds.NCST), ds.author, ds.pubref])

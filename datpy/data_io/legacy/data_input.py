@@ -187,7 +187,7 @@ def read_dataset(expdata_file_handle):
         ECOR[L, :(L+1)] = res
 
     # special marker for thermal constants
-    NID[3] = 1 if NR >= 910 and NR <= 934 else 0
+    NNCOX = 1 if NR >= 910 and NR <= 934 else 0
 
     # read datablock/dataset termination indicator
     format118 = '(A2)'
@@ -213,6 +213,7 @@ def read_dataset(expdata_file_handle):
         'comments': NCOM,  # list[list[str]]
         'num_reaction_ids': NID.index(0),
         'reaction_ids': NID,  # list[int]
+        'NNCOX': NNCOX,
         'ENF': ENF,
         'NENF': NENF,
         'EPA': EPA,  # array (3x11, float)

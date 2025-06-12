@@ -115,8 +115,9 @@ dataset_schema = {
         'tag': _int_property(0, 99),
         'quantity_type': _int_property(0, 9),
         'comments': _array_property(_str_property(None, 80)),
-        'num_reaction_ids': _int_property(1, 5),
+        'num_reaction_ids': _int_property(1, 3),
         'reaction_ids': _array_property(_int_property(0, None), 1, 5),
+        'NNCOX': _int_property(0, 1),
         'ENF': _array_property(_float_property(), 10, 10),
         'NENF': _array_property(_int_property(0, 999), 10, 10),
         'EPA': _multidim_array_property(_float_property(), [3, 11]),
@@ -131,7 +132,7 @@ dataset_schema = {
     },
     'required': [
        'dataset_id', 'year', 'author', 'pubref', 'tag', 'quantity_type',
-       'comments', 'num_reaction_ids', 'reaction_ids', # not required: ENF, NENF
+       'comments', 'num_reaction_ids', 'reaction_ids', 'NNCOX', # not required: ENF, NENF
        'EPA', 'NETG', 'energies', 'measured_values', 'uncertainties',
        'NCST', 'NEC', 'FCFC',  # not required: cormat
     ]
