@@ -185,6 +185,7 @@ def read_dataset(expdata_file_handle):
             res += tmp
             num_el_read += len(tmp)
         ECOR[L, :(L+1)] = res
+        ECOR[:(L+1), L] = res
 
     # special marker for thermal constants
     NNCOX = 1 if NR >= 910 and NR <= 934 else 0
