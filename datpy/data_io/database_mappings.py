@@ -11,8 +11,14 @@ from .mapping_utils import (
     identity_map,
     oneway_func_map,
     map_dict,
+    is_empty,
 )
-from .mapping_utils import map_dict
+
+
+def _zero_pad(x, n):
+    if len(x) > n:
+        raise ValueError('list too long')
+    return x + ([0]*(n-len(x)))
 
 
 GMAPY_DATPY_FISSION_MAPPINGS = [
@@ -41,19 +47,26 @@ GMAPY_DATPY_DATASET_MAPPINGS = [
     simple_map('tag', 'TAG', 'required'),
     simple_map('quantity_type', 'MT', 'required'),
     identity_map('comments', 'optional'),
-    oneway_func_map('num_reaction_ids', lambda d: len(d['NT']), 'required'),
-    simple_map('reaction_ids', 'NT', 'required'),
+    oneway_func_map('num_reaction_ids', lambda d: len(d['NT']), 'required', 'forward'),
+    oneway_func_map(
+        'reaction_ids', lambda d: _zero_pad(d['NT'], 5), 'required', 'forward'
+    ),
+    oneway_func_map(
+        'NT',
+        lambda d: d['reaction_ids'][:d['num_reaction_ids']],
+        'required', 'backward'
+    ),
+    identity_map('NNCOX', 'required' ),
     simple_map('ENF', 'ENFF', 'optional'),
     identity_map('NENF', 'optional'),
     simple_map('EPA', 'EPAF', 'required'),
     identity_map('NETG', 'required'),
     simple_map('energies', 'E', 'required'),
     simple_map('measured_values', 'CSS', 'required'),
-    simple_map('uncertainties', 'CO', 'required'),
+    simple_map('uncertainties', 'CO', 'required', transpose=True),
     simple_map('NCST', 'NCSST', 'required'),
     identity_map('NEC', 'required'),
     identity_map('FCFC', 'required'),
-    simple_map('cormat', 'ECOR', 'required'),
 ]
 
 
@@ -97,16 +110,19 @@ def map_datablocks(datablocks: list, direction: str='forward'):
             new_datasets = [map_dataset(ds, direction) for ds in datasets]
             # special-casing for moving the correlation matrix
             # from block-level into the last dataset of the block
-            if 'ECOR' in block:
-                new_datasets[-1]['ECOR'] = block['ECOR']
+            if not is_empty(block.get('ECOR')):
+                new_datasets[-1]['cormat'] = block['ECOR']
             new_block = new_datasets
 
         elif direction == 'backward':
             datasets = block
             new_datasets = [map_dataset(ds, direction) for ds in datasets]
-            new_block = {'datasets': new_datasets}
-            if 'ECOR' in datasets[-1]:
-                new_block['ECOR'] = new_datasets[-1]['ECOR']
+            new_block = {
+                'type': 'legacy-experiment-datablock',
+                'datasets': new_datasets
+            }
+            if not is_empty(datasets[-1].get('cormat')):
+                new_block['ECOR'] = datasets[-1]['cormat']
 
         new_datablocks.append(new_block)
 
