@@ -16,6 +16,7 @@ from .data_io.legacy.gma_output import (
 )
 from .data_io.database_mappings import (
     map_priorblocks,
+    map_priorblock,
     map_datablocks,
 )
 from .reduction import reduce_datablocks
@@ -56,7 +57,7 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
     # if None is provided as output file handles. However, the function
     # still needs to be called as it advances the file pointer
     # of the input file containing the reaction prior.
-    copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
+    spectrum_dict = copy_gma_controls(prior_file_handle, file_IO2, gma_file_handle)
     reaction_prior = read_apriori(prior_file_handle)
     datablocks = read_datablocks(expdata_file_handle)
 
@@ -81,9 +82,16 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
         file_IO2.close()
         gma_file_handle.close()
     else:
-        reaction_prior_out = map_priorblocks(reaction_prior.model_dump(), direction='backward')
+        # map prior and fission spectrum to gmapy format
+        reaction_prior_out = map_priorblocks(
+            reaction_prior.model_dump(), direction='backward', do_reduce=do_reduce)
+        reaction_prior_out.append(
+            map_priorblock(spectrum_dict['spectrum'], direction='backward', do_reduce=do_reduce)
+        )
+        # map datablocks to gmapy format
         red_db = [[ds.dict() for ds in db] for db in reduced_datablocks]
         datablocks_out = map_datablocks(red_db, direction='backward')
+        # put everything together and write to json file
         dbout = {'prior': reaction_prior_out, 'datablocks': datablocks_out}
         with open(dbfile_out, 'w') as f:
             json.dump(dbout, f, indent=2)
