@@ -89,7 +89,7 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
             map_priorblock(spectrum_dict['spectrum'], direction='backward', do_reduce=do_reduce)
         )
         # map datablocks to gmapy format
-        red_db = [[ds.dict() for ds in db] for db in reduced_datablocks]
+        red_db = [[ds.model_dump() for ds in db] for db in reduced_datablocks]
         datablocks_out = map_datablocks(red_db, direction='backward')
         # put everything together and write to json file
         dbout = {'prior': reaction_prior_out, 'datablocks': datablocks_out}
