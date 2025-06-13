@@ -134,7 +134,7 @@ dataset_schema = {
        'dataset_id', 'year', 'author', 'pubref', 'tag', 'quantity_type',
        'comments', 'num_reaction_ids', 'reaction_ids', 'NNCOX', # not required: ENF, NENF
        'EPA', 'NETG', 'energies', 'measured_values', 'uncertainties',
-       'NCST', 'NEC', 'FCFC',  # not required: cormat
+       # not required: cormat, NCST, NEC, FCFC
     ]
 }
 schema_list.append(dataset_schema)

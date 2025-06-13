@@ -186,9 +186,6 @@
     "NETG",
     "energies",
     "measured_values",
-    "uncertainties",
-    "NCST",
-    "NEC",
-    "FCFC"
+    "uncertainties"
   ]
 }
