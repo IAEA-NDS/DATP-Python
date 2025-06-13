@@ -6,6 +6,7 @@ dependencies = [
   "fortranformat",
   "pydantic",
   "numpy",
+  "pytest",
 ]
 
 [build-system]
