@@ -3,6 +3,10 @@ import os
 from typing import Optional
 from pathlib import Path
 from copy import deepcopy
+from .datamodels.models import (
+    Dataset,
+    ReactionPrior,
+)
 from .data_io.legacy.input_output import (
     copy_gma_controls,
 )
@@ -101,25 +105,50 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
 
 
 def _reduce_database(gmadb):
-    reaction_prior = map_priorblocks(gmadb['prior'], direction='forward')
-    datablocks = map_datablocks(gmadb['datablocks'], direction='forward')
-    reduced_datablocks = []
-    # NOTE: Fission spectrum is assumed to come last in prior.
-    #       If not true, prior indexing would produce garbage.
-    assert reaction_prior[-1]['type'] == 'legacy-fission-spectrum'
+    if gmadb['prior'][-1]['type'] != 'legacy-fission-spectrum':
+        raise ValueError(
+            'The last list item in `prior` is expected to be of type `legacy-fission-spectrum`'
+        )
+    spectrum_raw = gmadb['prior'][-1]
+    reaction_prior_raw = gmadb['prior'][:-1]
 
-    new_datablocks = []
-    for datablock in datablocks:
-        new_datablock = deepcopy(datablock)
+    reaction_prior = map_priorblocks(
+        reaction_prior_raw, direction='forward', do_reduce=True
+    )
+    reaction_prior_internal = ReactionPrior(reaction_prior)
+
+    datablocks = map_datablocks(gmadb['datablocks'], direction='forward')
+    datablocks_internal = [[Dataset(**ds) for ds in b] for b in datablocks]
+
+    new_datablocks_out = []
+    for datablock in datablocks_internal:
         reduced_datablock, _ = (
-            reduce_datablocks([datablock['datasets']], reaction_prior)
+            reduce_datablocks([datablock], reaction_prior_internal)
         )
         if len(reduced_datablock) == 1:
-            new_datablock['datasets'] = reduced_datablock[1]
-            new_datablocks.append(new_datablock)
+            new_datablock = [ds.model_dump() for ds in reduced_datablock[0]]
+            new_datablock_out = map_datablocks([new_datablock], direction='backward')[0]
+            new_datablocks_out.append(new_datablock_out)
 
-    new_gmadb = deepcopy(gmadb)
-    new_gmadb['datablocks'] = new_datablocks
+    # NOTE: The prior mesh in the input file to DATP (DAT.INP or JSON file) is
+    #       NOT identical to the one in the output file. The first
+    #       and last mesh point are removed in the output file.
+    #       The `reduce_datablocks` routine expects the full prior mesh
+    #       and the prior cross section dictionary with field names
+    #       as used internally in `datpy` described in datamodels/schemas.py.
+    #       Therefore, afterwards, we need to convert back and the `do_reduce` flag
+    #       takes care of removing the point.
+    reaction_prior_out = map_priorblocks(
+        reaction_prior, direction='backward', do_reduce=True
+    )
+
+    reaction_prior_out = map_priorblocks(
+        reaction_prior_internal.model_dump(), direction='backward', do_reduce=True
+    )
+    new_gmadb = {
+        'prior': reaction_prior_out + [spectrum_raw],
+        'datablocks': new_datablocks_out
+    }
     return new_gmadb
 
 
