@@ -64,9 +64,9 @@ GMAPY_DATPY_DATASET_MAPPINGS = [
     simple_map('energies', 'E', 'required'),
     simple_map('measured_values', 'CSS', 'required'),
     simple_map('uncertainties', 'CO', 'required', transpose=True),
-    simple_map('NCST', 'NCSST', 'required'),
-    identity_map('NEC', 'required'),
-    identity_map('FCFC', 'required'),
+    simple_map('NCST', 'NCSST', 'optional'),
+    identity_map('NEC', 'optional'),
+    identity_map('FCFC', 'optional'),
 ]
 
 
