@@ -88,10 +88,26 @@ def map_priorblock(priorblock: dict, direction: str='forward', do_reduce: bool=F
 
 
 def map_priorblocks(priorblocks: list, direction: str='forward', do_reduce: bool=False):
-    new_priorblocks = []
-    for idx, block in priorblocks.items():
-        new_priorblock = map_priorblock(block, direction, do_reduce)
-        new_priorblocks.append(new_priorblock)
+    if direction not in ('forward', 'backward'):
+        raise ValueError('`direction` must be either `forward` or `backward`')
+    if direction == 'forward':
+        new_priorblocks = {}
+        for block in priorblocks:
+            newblock = map_priorblock(block, direction, do_reduce)
+            # NOTE: Somehow it feels bad to intertwine declarative mappings
+            #       dealt with by generic code and ad-hoc imperative mapping code.
+            #       Any idea how this can be better conceptualized and implemented?
+            if 'reaction_id' not in newblock:
+                raise NotImplementedError('Forward mapping only possible for prior cross sections')
+            reacid_str = str(newblock['reaction_id'])
+            if reacid_str in new_priorblocks:
+                raise IndexError('duplicate reaction id {reacid_str} found')
+            new_priorblocks[reacid_str] = newblock
+    elif direction == 'backward':
+        new_priorblocks = []
+        for idx, block in priorblocks.items():
+            new_priorblock = map_priorblock(block, direction, do_reduce)
+            new_priorblocks.append(new_priorblock)
     return new_priorblocks
 
 
