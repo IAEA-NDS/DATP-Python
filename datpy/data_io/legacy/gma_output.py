@@ -21,7 +21,7 @@ def write_gmadb(gma_file_handle, file_IO2, reduced_datablocks, auxinfo_blocks):
 
 
 def write_prior(file_IO2, gma_file_handle, reaction_prior):
-    reaction_prior = reaction_prior.dict()
+    reaction_prior = reaction_prior.model_dump()
     prior_label =  [p['label'] for p in reaction_prior.values()]
     prior_energy_mesh = [p['energies'] for p in reaction_prior.values()]
     prior_cross_section = [p['cross_sections'] for p in  reaction_prior.values()]
@@ -73,7 +73,7 @@ def write_file_trailer(gma_file_handle, file_IO2):
 
 
 def write_dataset(gma_file_handle, file_IO2, dataset, auxinfo):
-    ds = Bunch(dataset.dict(use_arrays=True))
+    ds = Bunch(dataset.model_dump(use_arrays=True))
     # find number of CS involved
     NNN = ds.num_reaction_ids
 

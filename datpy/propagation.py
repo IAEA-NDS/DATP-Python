@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 def propagate_prior_to_dataset(dataset: Dataset, reaction_prior):
-    dataset = Bunch(dataset.dict(use_arrays=True))
-    reaction_prior = reaction_prior.dict()
+    dataset = Bunch(dataset.model_dump(use_arrays=True))
+    reaction_prior = reaction_prior.model_dump()
     prior_energy_mesh = [p['energies'] for p in reaction_prior.values()]
     prior_cross_section = [p['cross_sections'] for p in reaction_prior.values()]
 

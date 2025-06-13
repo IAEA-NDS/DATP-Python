@@ -56,7 +56,7 @@ def extract_datasets(gmdata_crd_content: str) -> Dict[int, dict]:
                         f'Dataset {curid} already exists in block with '
                         'with several other datasets, reassignment not possible.'
                     )
-            datasets[curid] = dataset.dict(use_arrays=False)
+            datasets[curid] = dataset.model_dump(use_arrays=False)
     return datasets
 
 
@@ -64,7 +64,7 @@ def extract_prior(prior_content: str) -> dict:
     fileobj = io.StringIO(prior_content)
     copy_gma_controls(fileobj, file_IO2=None, gma_file_handle=None)
     reaction_prior = read_apriori(fileobj)
-    return reaction_prior.dict()
+    return reaction_prior.model_dump()
 
 
 def extract_spectrum(prior_content: str) -> dict:

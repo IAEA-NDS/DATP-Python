@@ -13,9 +13,9 @@ from .database_mappings import (
 def assemble_database(
     reaction_prior: ReactionPrior, datablocks: List[Dataset], fission_spectrum: FissionSpectrum
 ) -> dict:
-    reaction_prior = reaction_prior.dict()
-    datablocks = [blck.dict() for blck in datablocks]
-    fission_spectrum = fission_spectrum.dict()
+    reaction_prior = reaction_prior.model_dump()
+    datablocks = [blck.model_dump() for blck in datablocks]
+    fission_spectrum = fission_spectrum.model_dump()
 
     new_db = {}
     new_db['prior'] = map_priorblocks(reaction_prior, direction='backward')

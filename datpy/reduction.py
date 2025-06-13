@@ -10,7 +10,7 @@ def reduce_dataset(
     dataset, E11, E22, EQ, Q, mxm1, file_IO2=None
 ):
     orig_dataset = dataset
-    dataset = Bunch(dataset.dict(use_arrays=True))
+    dataset = Bunch(dataset.model_dump(use_arrays=True))
     auxinfo = {}
     #  Interpolation type (this is very system specific -
     # does not apply for other simultaneous evaluations
@@ -142,7 +142,7 @@ def reduce_dataset(
 
     auxinfo['reduced_uncertainties'] = reduced_uncertainties
 
-    new_datadict = orig_dataset.dict()
+    new_datadict = orig_dataset.model_dump()
     new_datadict.update({
         'energies': new_energies[:new_num_values],
         'measured_values': new_measured_values[:new_num_values],
