@@ -1,4 +1,4 @@
-import json
+from .data_io import json
 import os
 from typing import Optional
 from pathlib import Path
