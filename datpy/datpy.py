@@ -104,7 +104,7 @@ def run_legacy_datp(dbfile_out: Optional[str]=None, do_reduce=True):
     expdata_file_handle.close()
 
 
-def _reduce_database(gmadb):
+def reduce_database(gmadb):
     if gmadb['prior'][-1]['type'] != 'legacy-fission-spectrum':
         raise ValueError(
             'The last list item in `prior` is expected to be of type `legacy-fission-spectrum`'
@@ -157,7 +157,7 @@ def run_datp(dbfile_in, dbfile_out):
     with open(dbfile_in, 'r') as f:
         gmadb = json.load(f)
 
-    new_gmadb = _reduce_database(gmadb)
+    new_gmadb = reduce_database(gmadb)
     with open(dbfile_out, 'w') as f:
         json.dump(new_gmadb, f, indent=2)
 
