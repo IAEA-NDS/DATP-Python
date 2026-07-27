@@ -495,7 +495,7 @@ def _is_int(x):
 
 def _is_float(x):
     return isinstance(
-        x, (np.float16, np.float32, np.float64, np.float128, float)
+        x, (np.float16, np.float32, np.float64, float)
     )
 
 
